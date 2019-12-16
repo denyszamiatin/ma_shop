@@ -29,7 +29,6 @@ def get_all_from_cart(con, user_id: int) -> list:
         cursor.execute("""SELECT product_id FROM postgres.public.cart
                     WHERE user_id = {}""".format(user_id))
     result = cursor.fetchall()
-    cursor.close()
     return [''.join(i) for i in result]
 
 
@@ -44,7 +43,6 @@ def get_one_from_cart(con, user_id: int, prod) -> str:
         cursor.execute("""SELECT product_id FROM postgres.public.cart
                     WHERE id_user = {}""".format(user_id))
     result = cursor.fetchone()
-    cursor.close()
     return result[0]
 
 

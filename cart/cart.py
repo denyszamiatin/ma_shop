@@ -3,7 +3,7 @@ CRUD
 """
 
 
-def add_to_cart(con, user_id: int, product_id: int) -> None:
+def add_to(con, user_id: int, product_id: int) -> None:
     """
     Add new prodact and 
     user id to cart.
@@ -22,7 +22,7 @@ def add_to_cart(con, user_id: int, product_id: int) -> None:
     con.commit()
 
 
-def get_all_from_cart(con, user_id: int) -> list:
+def get_all_from(con, user_id: int) -> list:
     """
     Get all products_id from db using index user_id.
     :param con: str
@@ -40,7 +40,7 @@ def get_all_from_cart(con, user_id: int) -> list:
     return [''.join(i) for i in result]
 
 
-def get_one_from_cart(con, user_id: int, prod) -> str:
+def get_one_from(con, user_id: int, prod) -> str:
     """
     Get product from db using index parameter.
     :param con: str
@@ -58,7 +58,7 @@ def get_one_from_cart(con, user_id: int, prod) -> str:
     return result[0]
 
 
-def delete_from_cart(con, user_id, product_id,) -> None:
+def delete_from(con, user_id, product_id,) -> None:
     """
     Delete task in db.
     :param con: str

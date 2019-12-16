@@ -1,0 +1,10 @@
+INSERT INTO Products(Name,Price,Image) VALUES ('Chair',180,'https://secure.img1-ag.wfcdn.com/im/19556338/resize-h600-w600%5Ecompr-r85/3444/34441276/Kitchen+%26+Dining+Chairs.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Table',1900,'https://media.conforama.fr/Medias/600000/60000/9000/000/00/G_669002_A.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Desk',1200,'https://www.ikea.com/ca/en/images/products/alex-desk-white__0735966_PE740300_S5.JPG');
+INSERT INTO Products(Name,Price,Image) VALUES ('Bookshelf',800,'https://images-na.ssl-images-amazon.com/images/I/81sIW5kLG8L._SX466_.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Divan',5000,'https://5.imimg.com/data5/KJ/DE/MY-37220964/suede-lounge-sofa-500x500.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Sofa bed',4000,'https://www.thesleepjudge.com/wp-content/uploads/2017/12/Charlton-Contemporary-Corner-Sectional.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Armchair',2000,'https://cdn20.pamono.com/p/g/4/4/440141_x8dub3qyg8/mid-century-italian-cream-velvet-armchair-1950s-1.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Rocking chair',2500,'https://concepto.com.ua/image/cache/catalog/products/Concepto/05Plastic-chairs/Serenity/DSC01715-grey-1000x1000.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Stool',900,'https://designtorget.com/media/catalog/product/cache/f8a01cad91576334892a3e0a12c03ecd/p/a/pallpalleljusgron_1009974_stolab_dt_1.jpg');
+INSERT INTO Products(Name,Price,Image) VALUES ('Hammock',1000,'https://pawleysislandhammocks.com/gallery/12oc-pawleys-island-single-cotton-rope-studio-xx.jpg');

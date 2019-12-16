@@ -1,6 +1,0 @@
-CREATE TABLE Products (
-	ProductID SERIAL PRIMARY KEY,
-	ProductName VARCHAR(255),
-	Price MONEY,
-	Image VARCHAR(255)
-);

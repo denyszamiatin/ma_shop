@@ -1,1 +1,1 @@
-insert into product_category (name) values ('Soldering irons');
+insert into product_categories (name) values ('Soldering irons');

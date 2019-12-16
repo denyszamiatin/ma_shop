@@ -15,6 +15,10 @@ def add_to_cart(con, user_id: int, product_id: int) -> None:
     with con.cursor() as cursor:
         cursor.execute("""INSERT INTO postgres.public.cart(user_id, product_id)
                             VALUES ('{}', '{}')""".format(user_id, product_id))
+        try:
+            cursor.fetchone()
+        except TypeError:
+            raise KeyError
     con.commit()
 
 
@@ -28,6 +32,10 @@ def get_all_from_cart(con, user_id: int) -> list:
     with con.cursor() as cursor:
         cursor.execute("""SELECT product_id FROM postgres.public.cart
                     WHERE user_id = {}""".format(user_id))
+        try:
+            cursor.fetchone()
+        except TypeError:
+            raise KeyError
     result = cursor.fetchall()
     return [''.join(i) for i in result]
 
@@ -42,6 +50,10 @@ def get_one_from_cart(con, user_id: int, prod) -> str:
     with con.cursor() as cursor:
         cursor.execute("""SELECT product_id FROM postgres.public.cart
                     WHERE id_user = {}""".format(user_id))
+        try:
+            cursor.fetchone()
+        except TypeError:
+            raise KeyError
     result = cursor.fetchone()
     return result[0]
 
@@ -56,4 +68,8 @@ def delete_from_cart(con, user_id, product_id,) -> None:
     with con.cursor() as cursor:
         cursor.execute("""DELETE FROM postgres.public.cart 
                         WHERE (user_id, product_id) VALUES ({}, {})""".format(user_id, product_id))
+        try:
+            cursor.fetchone()
+        except TypeError:
+            raise KeyError
     con.commit()

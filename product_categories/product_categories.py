@@ -1,10 +1,9 @@
 """category CRUD realisation"""
 
 import psycopg2
-from config import DATABASE
+import errors.errors as errors
 
-
-def create_category(conn, name: str) -> None:
+def create(conn, name: str) -> None:
     """
     Create new category
     conn: connection
@@ -12,27 +11,27 @@ def create_category(conn, name: str) -> None:
     """
     with conn.cursor() as cursor:
         try:
-            cursor.execute("insert into product_categories (name) values('{0}')".format(name))
+            cursor.execute(f"insert into product_categories (name) values('{name}')")
             conn.commit()
         except psycopg2.errors.UniqueViolation:
-            raise KeyError
+            raise errors.StoreError
 
 
-def read_category(conn, id: int) -> str:
+def read(conn, category_id: int) -> str:
     """
     Read category from DB
     conn: connection
     id: category id in DB
     """
     with conn.cursor() as cursor:
-        cursor.execute("select name from product_categories where id = {0}".format(id))
+        cursor.execute(f"select name from product_categories where id = {category_id}")
         try:
             return cursor.fetchone()[0]
         except TypeError:
-            raise KeyError
+            raise errors.StoreError
 
 
-def update_category(conn, id: int, new_name: str) -> None:
+def update(conn, category_id: int, new_name: str) -> None:
     """
     Update category in DB
     conn: connection
@@ -40,24 +39,23 @@ def update_category(conn, id: int, new_name: str) -> None:
     new_name: category new name
     """
     with conn.cursor() as cursor:
-        cursor.execute("select name from product_categories where id = {0}".format(id))
+        cursor.execute(f"select name from product_categories where id = {category_id}")
         if cursor.fetchone():
-            cursor.execute("update product_categories set name = '{0}' where id = {1}".format(new_name, id))
+            cursor.execute(f"update product_categories set name = '{new_name}' where id = {category_id}")
             conn.commit()
         else:
-            raise KeyError
+            raise errors.StoreError
 
 
-def delete_category(conn, id: int) -> None:
+def delete(conn, category_id: int) -> None:
     """
     Delete category from DB
     conn: connection
     id: category id in DB
     """
     with conn.cursor() as cursor:
-        cursor.execute("select name from product_categories where id = {0}".format(id))
+        cursor.execute(f"delete from product_categories where id = {category_id} returning id")
         if cursor.fetchone():
-            cursor.execute("delete from product_categories where id = {0}".format(id))
             conn.commit()
         else:
-            raise KeyError
+            raise errors.StoreError

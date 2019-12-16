@@ -1,5 +1,5 @@
 create table news (
-    id_news serial primary key,
+    id serial primary key,
     title varchar(255) not null,
     post varchar(max) not null,
     id_user integer references user(id),

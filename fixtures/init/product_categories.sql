@@ -1,4 +1,4 @@
-create table product_category (
+create table product_categories (
 id serial primary key,
 name varchar(255)
 );

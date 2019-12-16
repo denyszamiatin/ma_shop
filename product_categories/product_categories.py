@@ -17,6 +17,7 @@ def create_category(conn, name: str) -> None:
         except psycopg2.errors.UniqueViolation:
             raise KeyError
 
+
 def read_category(conn, id: int) -> str:
     """
     Read category from DB
@@ -29,6 +30,7 @@ def read_category(conn, id: int) -> str:
             return cursor.fetchone()[0]
         except TypeError:
             raise KeyError
+
 
 def update_category(conn, id: int, new_name: str) -> None:
     """
@@ -44,6 +46,7 @@ def update_category(conn, id: int, new_name: str) -> None:
             conn.commit()
         else:
             raise KeyError
+
 
 def delete_category(conn, id: int) -> None:
     """

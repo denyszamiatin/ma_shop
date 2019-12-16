@@ -1,6 +1,6 @@
 CREATE TABLE Products (
-	ProductID SERIAL PRIMARY KEY,
-	ProductName VARCHAR(255),
+	Id SERIAL PRIMARY KEY,
+	Name VARCHAR(255),
 	Price INTEGER,
 	Image VARCHAR(255)
 );

@@ -13,7 +13,7 @@ def add_product(con, product_name: str, price: int, img: str) -> None:
     :return: None
     """
     with con.cursor() as cursor:
-        cursor.execute("""INSERT INTO postgres.public.products(productname, price, image)
+        cursor.execute("""INSERT INTO postgres.public.products(name, price, image)
                             VALUES ('{0}', '{1}', '{2}')""".format(product_name, price, img))
     con.commit()
 
@@ -26,8 +26,8 @@ def get_product(con, product_id: int) -> str:
     :return: str
     """
     cursor = con.cursor()
-    cursor.execute("""SELECT productname FROM postgres.public.products
-                    WHERE productid = {0}""".format(product_id))
+    cursor.execute("""SELECT name FROM postgres.public.products
+                    WHERE id = {0}""".format(product_id))
     result = cursor.fetchone()
     cursor.close()
     return result[0]
@@ -42,7 +42,7 @@ def get_product_price(con, product_id: int) -> str:
     """
     cursor = con.cursor()
     cursor.execute("""SELECT price FROM postgres.public.products
-                    WHERE productid = {0}""".format(product_id))
+                    WHERE id = {0}""".format(product_id))
     result = cursor.fetchone()
     cursor.close()
     return result[0]
@@ -59,7 +59,7 @@ def edit_product(con, product_id: int, new_price: int) -> None:
     with con.cursor() as cursor:
         cursor.execute("""UPDATE postgres.public.products
                         SET price = '{0}'
-                        WHERE productid = '{1}'""".format(new_price, product_id))
+                        WHERE id = '{1}'""".format(new_price, product_id))
     con.commit()
 
 
@@ -72,5 +72,5 @@ def delete_product(con, product_id: int) -> None:
     """
     with con.cursor() as cursor:
         cursor.execute("""DELETE FROM postgres.public.products 
-                        WHERE productid = {0}""".format(product_id))
+                        WHERE id = {0}""".format(product_id))
     con.commit()

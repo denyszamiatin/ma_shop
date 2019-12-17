@@ -1,7 +1,7 @@
-CREATE TABLE user(
-    id SERIAL PRIMARY KEY,
-    first_name VARCHAR(35) NOT NULL,
-    second_name VARCHAR (50),
-    email VARCHAR (50) NOT NULL unique,
-    password VARCHAR (25) NOT NULL
+create table user(
+    id serial primary key,
+    first_name varchar(35) not null,
+    second_name varchar (50),
+    email varchar (50) not null unique,
+    password varchar (25) not null
 )

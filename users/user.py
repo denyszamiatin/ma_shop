@@ -28,7 +28,7 @@ def read(con, user_id: int) -> str:
     :return: str
     """
     with con.cursor() as cursor:
-        cursor.execute(f'SELECT first_name, second_name FROM user WHERE id={user_id}')
+        cursor.execute(f'select first_name, second_name from user where id={user_id}')
         try:
             return cursor.fetchone()[0]
         except TypeError:
@@ -44,7 +44,7 @@ def delete(con, user_id: int) -> None:
     """
     with con.cursor() as cursor:
         try:
-            cursor.execute(f'DELETE FROM user WHERE id = {user_id}')
+            cursor.execute(f'delete from user where id = {user_id}')
         except TypeError:
             raise ValueError
         if not cursor.rowcount:
@@ -63,8 +63,8 @@ def update_name(con, first_name: str, second_name: str, user_id: int) -> None:
     """
     with con.cursor() as cursor:
         try:
-            cursor.execute(f'UPDATE user SET first_name = {first_name},'
-                           f' second_nam = {second_name} WHERE id = {user_id}')
+            cursor.execute(f'update user set first_name = {first_name},'
+                           f' second_nam = {second_name} where id = {user_id}')
         except TypeError:
             raise ValueError
         if not cursor.rowcount:

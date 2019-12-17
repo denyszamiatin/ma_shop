@@ -1,7 +1,6 @@
-
-CREATE TABLE mark (
-    id_user INTEGER,
-    id_product INTEGER,
-    mark_date DATE,
-    rating INTEGER
+create table mark (
+    id_user integer,
+    id_product integer,
+    mark_date date,
+    rating integer
 );

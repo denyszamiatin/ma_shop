@@ -13,8 +13,8 @@ def add(conn, user_id: int, product_id: int) -> None:
     :return: None
     """
     with conn.cursor() as cursor:
-        cursor.execute(f"""INSERT INTO cart(user_id, product_id)
-                            VALUES ({user_id}, {product_id})""")
+        cursor.execute(f"""insert into cart(user_id, product_id)
+                            values ({user_id}, {product_id})""")
     conn.commit()
 
 
@@ -26,8 +26,8 @@ def get_all(conn, user_id: int) -> list:
     :return: list
     """
     cursor = conn.cursor()
-    cursor.execute(f"""SELECT product_id FROM cart
-                    WHERE user_id = {user_id}""")
+    cursor.execute(f"""select product_id from cart
+                    where user_id = {user_id}""")
     result = cursor.fetchall()
     cursor.close()
     return [''.join(i) for i in result]
@@ -42,8 +42,8 @@ def delete(conn, user_id, product_id) -> None:
     :return: None
     """
     with conn.cursor() as cursor:
-        cursor.execute(f"""DELETE FROM cart 
-                        WHERE (user_id, product_id) VALUES ({user_id}, {product_id})""")
+        cursor.execute(f"""delete from cart 
+                        where (user_id, product_id) VALUES ({user_id}, {product_id})""")
     conn.commit()
 
 
@@ -55,6 +55,6 @@ def delete_all(conn, user_id) -> None:
     :return: None
     """
     with conn.cursor() as cursor:
-        cursor.execute(f"""DELETE FROM cart 
-                        WHERE user_id = {user_id}""")
+        cursor.execute(f"""delete from cart 
+                        where user_id = {user_id}""")
     conn.commit()

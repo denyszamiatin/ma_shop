@@ -6,7 +6,7 @@ def add(con, first_name: str, second_name: str, email: str, password: str) -> No
             cursor.execute(f'INSERT INTO user (first_name, last_name, email, password) '
                            f'VALUES ({first_name}, {second_name}, {email}, {password})')
             con.commit()
-        except TypeError: #C   HANGE!
+        except TypeError: #CHANGE!
             raise ValueError #CHANGE!
 
 
@@ -21,23 +21,22 @@ def read(con, user_id: int) -> str:
 
 def delete(con, user_id: int) ->str:
     with con.cursor() as cursor:
-        cursor.execute(f'SELECT first_name, second_name FROM user WHERE id={user_id}')
-        if cursor.rowcount:
-            try:
-                cursor.execute(f'DELETE FROM user WHERE id = {user_id}')
-            except TypeError:
-                raise ValueError #CHANGE!
-        else:#CHANGE!
+        try:
+            cursor.execute(f'DELETE FROM user WHERE id = {user_id}')
+        except TypeError:
             raise ValueError #CHANGE!
+        if cursor.rowcount is None:
+            raise TypeError
+        con.commit()
+
 
 def update_name(con, first_name:str , second_name: str, user_id: int):
     with con.cursor() as cursor:
-        cursor.execute(f'SELECT first_name, second_name FROM user WHERE id={user_id}')
-        if cursor.rowcount:
-            try:
-                cursor.execute(f'UPDATE user SET first_name = {first_name},'
-                               f' second_nam = {second_name} WHERE id = {user_id}')
-            except TypeError:
-                raise ValueError #CHANGE!
-            else:
-                raise ValueError  #CHANGE!
+        try:
+            cursor.execute(f'UPDATE user SET first_name = {first_name},'
+                           f' second_nam = {second_name} WHERE id = {user_id}')
+        except TypeError:
+            raise ValueError #CHANGE!
+        if cursor.rowcount is None:
+            raise TypeError
+        con.commit()

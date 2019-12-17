@@ -1,6 +1,6 @@
-CREATE TABLE Products (
-	Id SERIAL PRIMARY KEY,
-	Name VARCHAR(255),
-	Price INTEGER,
-	Image VARCHAR(255)
+create table Products (
+	Id SERIAL primary key,
+	Name varchar(255),
+	Price integer,
+	Image varchar(255)
 );

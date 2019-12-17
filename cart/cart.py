@@ -5,7 +5,7 @@ CRUD
 
 def add(conn, user_id: int, product_id: int) -> None:
     """
-    Add new prodact and
+    Add new product and
     user id to cart.
     :param conn: str
     :param user_id: int

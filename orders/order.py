@@ -16,9 +16,8 @@ def create(conn, id_product, id_user):
     """
     with conn.cursor() as cursor:
         price = products.get_product_price(conn, id_product)
-        current_date = datetime.date.today()
         cursor.execute(f"""insert into orders
-            (id, id_product, price, date) values ('{id_user}', '{id_product}','{price}','{current_date}')""")
+            (id, id_product, price) values ('{id_user}', '{id_product}','{price}')""")
         conn.commit()
 
 

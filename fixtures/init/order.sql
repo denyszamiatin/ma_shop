@@ -3,5 +3,5 @@ create table orders(
     id_user integer references user(user_id),
     id_product integer references products(Id),
     price decimal not null,
-    order_date date not null
+    order_date date default current_date
 );

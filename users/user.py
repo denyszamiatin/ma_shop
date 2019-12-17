@@ -30,7 +30,7 @@ def delete(con, user_id: int) ->str:
         else:#CHANGE!
             raise ValueError #CHANGE!
 
-def update_name(con, first_name:str , second_name: str, user_id: int) ->:
+def update_name(con, first_name:str , second_name: str, user_id: int):
     with con.cursor() as cursor:
         cursor.execute(f'SELECT first_name, second_name FROM user WHERE id={user_id}')
         if cursor.rowcount:

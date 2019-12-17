@@ -63,7 +63,7 @@ def edit_product(conn, product_id: int, new_price: int) -> None:
         cursor.execute("""UPDATE products
                         SET price = '{0}'
                         WHERE id = '{1}'""".format(new_price, product_id))
-        if cursor.fetchone():
+        if cursor.rowcount:
             conn.commit()
         else:
             raise errors.StoreError

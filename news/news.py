@@ -1,4 +1,4 @@
-"""This module provides model of news creation, read and update"""
+"""This module provides model of news creation, reading and update"""
 import datetime
 import psycopg2
 import errors.errors

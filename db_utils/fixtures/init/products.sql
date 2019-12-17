@@ -2,5 +2,5 @@ CREATE TABLE Products (
 	Id SERIAL PRIMARY KEY,
 	Name VARCHAR(255),
 	Price INTEGER,
-	Image VARCHAR(255)
+	Image BYTEA
 );

@@ -1,36 +1,38 @@
 """
 CRUD properties implementation
 """
+import errors.errors as errors
 
 
-def add_product(con, product_name: str, price: int, img: str) -> None:
+def add_product(conn, product_name: str, price: int, img: str) -> None:
     """
     Add new product to db.
-    :param con: str
+    :param conn: str
     :param product_name: str
     :param price: int
     :param img: str
     :return: None
     """
-    with con.cursor() as cursor:
-        cursor.execute("""INSERT INTO postgres.public.products(name, price, image)
+    with conn.cursor() as cursor:
+        cursor.execute("""INSERT INTO products(name, price, image)
                             VALUES ('{0}', '{1}', '{2}')""".format(product_name, price, img))
-    con.commit()
+    conn.commit()
 
 
-def get_product(con, product_id: int) -> str:
+def get_product(conn, product_id: int) -> str:
     """
     Get product from db using index parameter.
     :param con: str
     :param product_id: int
     :return: str
     """
-    cursor = con.cursor()
-    cursor.execute("""SELECT name FROM postgres.public.products
-                    WHERE id = {0}""".format(product_id))
-    result = cursor.fetchone()
-    cursor.close()
-    return result[0]
+    with conn.cursor() as cursor:
+        cursor.execute("""SELECT name FROM products
+                                WHERE id = {0}""".format(product_id))
+        try:
+            return cursor.fetchone()[0]
+        except TypeError:
+            raise errors.StoreError
 
 
 def get_product_price(con, product_id: int) -> str:
@@ -40,37 +42,44 @@ def get_product_price(con, product_id: int) -> str:
     :param product_id: int
     :return: str
     """
-    cursor = con.cursor()
-    cursor.execute("""SELECT price FROM postgres.public.products
-                    WHERE id = {0}""".format(product_id))
-    result = cursor.fetchone()
-    cursor.close()
-    return result[0]
+    with con.cursor() as cursor:
+        cursor.execute("""SELECT price FROM products
+                            WHERE id = {0}""".format(product_id))
+        try:
+            return cursor.fetchone()[0]
+        except TypeError:
+            raise errors.StoreError
 
 
-def edit_product(con, product_id: int, new_price: int) -> None:
+def edit_product(conn, product_id: int, new_price: int) -> None:
     """
     Update task in db.
-    :param con: str
+    :param conn: str
     :param new_price: int
     :param product_id: int
     :return: None
     """
-    with con.cursor() as cursor:
-        cursor.execute("""UPDATE postgres.public.products
+    with conn.cursor() as cursor:
+        cursor.execute("""UPDATE products
                         SET price = '{0}'
                         WHERE id = '{1}'""".format(new_price, product_id))
-    con.commit()
+        if cursor.fetchone():
+            conn.commit()
+        else:
+            raise errors.StoreError
 
 
-def delete_product(con, product_id: int) -> None:
+def delete_product(conn, product_id: int) -> None:
     """
     Delete task in db.
-    :param con: str
+    :param conn: str
     :param product_id: int
     :return: None
     """
-    with con.cursor() as cursor:
-        cursor.execute("""DELETE FROM postgres.public.products 
+    with conn.cursor() as cursor:
+        cursor.execute("""DELETE FROM products 
                         WHERE id = {0}""".format(product_id))
-    con.commit()
+        if cursor.fetchone():
+            conn.commit()
+        else:
+            raise errors.StoreError

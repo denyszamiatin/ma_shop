@@ -1,7 +1,7 @@
 import psycopg2
 
 from db_utils.config import DATABASE
-from db_utils.db_utils import clear_tables, drop_tables
+from db_utils.db_utils_func import clear_tables, drop_tables
 
 if __name__ == "__main__":
     con = psycopg2.connect(**DATABASE)

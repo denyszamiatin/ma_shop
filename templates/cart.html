@@ -1,10 +1,6 @@
-{% extends "bootstrap/base.html" %}
+{% extends "index.html" %}
 {% block title %} Cart {% endblock %}
-{% block navbar %}
-<ul class="nav">
-    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-</ul>
-{% endblock %}
+
 {% block content %}
 <script src="https://use.fontawesome.com/c560c025cf.js"></script>
 <div class="container">
@@ -12,7 +8,7 @@
         <div class="card-header bg-dark text-light">
             <i class="fa fa-shopping-cart" aria-hidden="true"></i>
             <b>Shipping cart</b>
-            <a href="" class="btn btn-outline-info btn-sm pull-right">Continue shopping</a>
+            <a href="/product" class="btn btn-outline-info btn-sm pull-right">Continue shopping</a>
             <div class="clearfix"></div>
         </div>
         <div class="card-body">
@@ -44,11 +40,8 @@
                 </div>
             </div>
             <hr>
-            <!-- END PRODUCT -->
-            <div class="pull-right">
-                <a href="" class="btn btn-outline-secondary pull-right">Update shopping cart</a>
-            </div>
         </div>
+        <!-- END PRODUCT -->
         <div class="card-footer">
             <div class="coupon col-md-5 col-sm-5 no-padding-left pull-left">
                 <div class="row">

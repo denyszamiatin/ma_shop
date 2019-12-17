@@ -1,5 +1,5 @@
 create table order_archive (
- archive_id serial primary key,
+ id serial primary key,
  id_user integer references user(id),
  id_order integer references order(id),
  id_product integer references products(id),

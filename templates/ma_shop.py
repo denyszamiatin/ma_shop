@@ -40,3 +40,8 @@ def registration():
 
 def product_comments():
     return render_template("product_comments.html")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+

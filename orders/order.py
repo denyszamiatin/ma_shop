@@ -38,9 +38,9 @@ def get(conn, id_order):
             raise errors.StoreError
 
 
-def delete_order(conn, id_order):
+def cancel(conn, id_order):
     """
-    Delete order
+    Cancel order
     :param conn: connection
     :param id_order: id of order
     :return:

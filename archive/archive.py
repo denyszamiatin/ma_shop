@@ -1,8 +1,6 @@
 """Order CRUD realisation"""
 
-import psycopg2
 import datetime
-from config import DATABASE
 from products import products
 import errors.errors as errors
 

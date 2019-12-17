@@ -2,7 +2,7 @@ import psycopg2
 import pytest
 
 from products import products
-from config import DATABASE
+from db_utils.config import DATABASE
 
 
 def test_create_product():

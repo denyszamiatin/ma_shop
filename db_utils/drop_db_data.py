@@ -1,13 +1,14 @@
 import psycopg2
 
-from config import DATABASE
-from db_utils import init_tables
+from db_utils.config import DATABASE
+from db_utils.db_utils import clear_tables, drop_tables
 
 if __name__ == "__main__":
     con = psycopg2.connect(**DATABASE)
     with con.cursor() as cursor:
         try:
-            init_tables(cursor)
+            clear_tables(cursor)
+            drop_tables(cursor)
             con.commit()
         finally:
             if con:

@@ -39,9 +39,8 @@ def update(conn, category_id: int, new_name: str) -> None:
     new_name: category new name
     """
     with conn.cursor() as cursor:
-        cursor.execute(f"select name from product_categories where id = {category_id}")
-        if cursor.fetchone():
-            cursor.execute(f"update product_categories set name = '{new_name}' where id = {category_id}")
+        cursor.execute(f"update product_categories set name = '{new_name}' where id = {category_id}")
+        if cursor.rowcount:
             conn.commit()
         else:
             raise errors.StoreError
@@ -54,8 +53,8 @@ def delete(conn, category_id: int) -> None:
     id: category id in DB
     """
     with conn.cursor() as cursor:
-        cursor.execute(f"delete from product_categories where id = {category_id} returning id")
-        if cursor.fetchone():
+        cursor.execute(f"delete from product_categories where id = {category_id}")
+        if cursor.rowcount:
             conn.commit()
         else:
             raise errors.StoreError

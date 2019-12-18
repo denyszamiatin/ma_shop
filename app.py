@@ -1,5 +1,5 @@
 import psycopg2
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, g
 from flask_bootstrap import Bootstrap
 
 from db_utils.config import DATABASE
@@ -9,8 +9,12 @@ from users import validation, user
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = "sadasdasdasd"
-con = psycopg2.connect(**DATABASE)
 
+
+@app.before_request
+def get_db():
+    if not hasattr(g, 'db'):
+        g.db = psycopg2.connect(**DATABASE)
 
 @app.route('/')
 def index():
@@ -58,7 +62,7 @@ def registration():
         password = request.form.get("password", "")
         if validation.register_form_validation(first_name, second_name, email, password):
             try:
-                user.add(con, first_name, second_name, email, password)
+                user.add(g.db, first_name, second_name, email, password)
                 flash("Registration was successful")
                 return redirect(url_for('index'))
             except psycopg2.errors.UniqueViolation:

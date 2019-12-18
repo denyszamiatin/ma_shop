@@ -1,7 +1,7 @@
 """This module provides model of news creation, reading and update"""
 import datetime
 import psycopg2
-import errors.errors
+from errors import errors
 
 
 def add(connection, title: str, post: str, id_user: int, author: str) -> None:
@@ -12,7 +12,7 @@ def add(connection, title: str, post: str, id_user: int, author: str) -> None:
                            f'values ({title}, {post}, {id_user}, {datetime.date.today()}, {author})')
             connection.commit()
         except psycopg2.DatabaseError:
-            raise errors.errors.StoreError
+            raise errors.StoreError
 
 
 def read(connection, news_id: int) -> str:
@@ -22,7 +22,7 @@ def read(connection, news_id: int) -> str:
         try:
             return cursor.fetchone()
         except TypeError:
-            raise errors.errors.StoreError
+            raise errors.StoreError
 
 
 def get_all_news(connection) -> str:
@@ -32,7 +32,7 @@ def get_all_news(connection) -> str:
         try:
             return cursor.fetchall()
         except TypeError:
-            raise errors.errors.StoreError
+            raise errors.StoreError
 
 
 def update_title(connection, title: str, news_id: int) -> None:
@@ -42,7 +42,7 @@ def update_title(connection, title: str, news_id: int) -> None:
         if cursor.rowcount:
             connection.commit()
         else:
-            raise errors.errors.StoreError
+            raise errors.StoreError
 
 
 def update_post(connection, post: str, news_id: int) -> None:
@@ -52,4 +52,4 @@ def update_post(connection, post: str, news_id: int) -> None:
         if cursor.rowcount:
             connection.commit()
         else:
-            raise errors.errors.StoreError
+            raise errors.StoreError

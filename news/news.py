@@ -8,7 +8,7 @@ def add(connection, title: str, post: str, id_user: int) -> None:
     """Add new post to news table"""
     with connection.cursor() as cursor:
         try:
-            cursor.execute(f'insert into news (title, post, id_user, date) '
+            cursor.execute(f'insert into news (title, post, id_user, news_date) '
                            f'values ({title}, {post}, {id_user}, {datetime.date.today()})')
             connection.commit()
         except psycopg2.DatabaseError:
@@ -18,7 +18,7 @@ def add(connection, title: str, post: str, id_user: int) -> None:
 def read(connection, news_id: int) -> str:
     """Read the post from news table by news_id"""
     with connection.cursor() as cursor:
-        cursor.execute(f'select title, post, date from news where id={news_id}')
+        cursor.execute(f'select title, post, news_date from news where id={news_id}')
         try:
             return cursor.fetchone()
         except TypeError:

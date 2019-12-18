@@ -88,6 +88,11 @@ def product_comments():
     return render_template("product_comments.html")
 
 
+@app.route('/admin')
+def index_admin():
+    return render_template("index_admin.html")
+
+
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
     if request.method == "POST":

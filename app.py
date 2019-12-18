@@ -16,6 +16,14 @@ def get_db():
     if not hasattr(g, 'db'):
         g.db = psycopg2.connect(**DATABASE)
 
+
+@app.teardown_request
+def close_db(error):
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()
+
+
 @app.route('/')
 def index():
     return render_template("index.html")
@@ -38,6 +46,7 @@ def cart():
 
 @app.route('/news')
 def news():
+    con = g.db
     data = get_all_news(con)
     return render_template("news.html", data=data)
 

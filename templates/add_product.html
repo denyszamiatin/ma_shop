@@ -1,0 +1,12 @@
+{% block content %}
+<form method="post">
+    <label for="name">Product name</label>
+    <p><input type = "text" name="product_name" value="{{name}}" ></p>
+    <label for="price">Product price</label>
+    <p><input type = "number" name="price" value="{{price}}" ></p>
+    <label for="category">Product category</label>
+    <p><input type = "number" name="product_category" value="{{category}}" ></p>
+    <p><input type ="file" name="img" value={{img}}></p>
+     <p><input type = "submit" value="Ok" ></p>
+</form>
+{% endblock %}

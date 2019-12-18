@@ -5,6 +5,7 @@ from flask_bootstrap import Bootstrap
 from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
+from products import products
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -85,6 +86,16 @@ def registration():
 def product_comments():
     return render_template("product_comments.html")
 
+
+@app.route('/admin/add_product', methods=("GET", "POST"))
+def add_product():
+    if request.method == "POST":
+        product_name = request.form.get("product_name", "")
+        price = request.form.get("price", "")
+        product_category = request.form.get("product_category", "")
+        #img = request.form.get("img", "")
+        products.add_product(g.db, product_name, price, product_category)
+    return render_template("add_product.html")
 
 if __name__ == '__main__':
     app.run(debug=True)

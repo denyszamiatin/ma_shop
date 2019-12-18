@@ -1,12 +1,14 @@
 import psycopg2
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
 
 from db_utils.config import DATABASE
 from news.news import get_all_news
+from users import validation, user
 
 app = Flask(__name__)
 Bootstrap(app)
+app.config["SECRET_KEY"] = ""
 con = psycopg2.connect(**DATABASE)
 
 

@@ -22,7 +22,7 @@ def get(conn, archive_id):
     Read archive from DB
     '''
     with conn.cursor() as cursor:
-        cursor.execute(f"select price, date_archive from order_archive where archive_id='{archive_id}'")
+        cursor.execute(f"select price, date_archive from order_archive where id='{archive_id}'")
         try:
             return cursor.fetchone()[0]
         except TypeError:

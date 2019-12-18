@@ -17,8 +17,8 @@ def add(con, product_id: int, user_id: int, body: str) -> None:
     """
     with con.cursor() as cursor:
         try:
-            cursor.execute(f"""INSERT INTO Comments(product_id, user_id, body)
-                                    VALUES ({product_id}, {user_id}, {body})"""
+            cursor.execute(f"""insert into Comments(id_product, id_user, body)
+                                    values ({product_id}, {user_id}, {body})""")
             con.commit()
         except psycopg2.DatabaseError:
             raise errors.StoreError
@@ -32,7 +32,7 @@ def get(con, product_id: int) -> list:
     :return: list
     """
     with con.cursor() as cursor:
-        cursor.execute(f"""SELECT user_id, body, date FROM Comments WHERE product_id={product_id}""")
+        cursor.execute(f"""select id_user, body, date from Comments where id_product={product_id}""")
         try:
             result = cursor.fetchall()
         except TypeError:
@@ -49,7 +49,7 @@ def edit(con, comment_id: int, body: str) -> None:
     :return: None
     """
     with con.cursor() as cursor:
-        cursor.execute(f"""UPDATE Comments SET body={body} WHERE comment_id={comment_id}""")
+        cursor.execute(f"""update Comments set body={body} where id={comment_id}""")
         if cursor.rowcount:
             con.commit()
         else:
@@ -64,7 +64,7 @@ def delete(con, comment_id: int) -> None:
     :return: None
     """
     with con.cursor() as cursor:
-        cursor.execute(f"""DELETE FROM Comments WHERE comments_id={comment_id}""")
+        cursor.execute(f"""delete from Comments where id={comment_id}""")
         if cursor.rowcount:
             con.commit()
         else:

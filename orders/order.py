@@ -29,7 +29,7 @@ def get(conn, id_order):
     :return:
     """
     with conn.cursor() as cursor:
-        cursor.execute(f"""select id, id_user, id_product, price, date 
+        cursor.execute(f"""select id, id_user, id_product, price, order_date 
                                 from orders where id='{id_order}'""")
         try:
             return cursor.fecthone()

@@ -1,7 +1,7 @@
-CREATE TABLE Comments (
-	comment_id SERIAL PRIMARY KEY,
-    product_id INTEGER REFERENCES product(id),
-    user_id INTEGER REFERENCES user(id),
-    date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+create table Comments (
+	id serial primary key,
+    id_product integer references product(id),
+    id_user integer references users(id),
+    comment_date TIMESTAMPTZ not null default NOW(),
     body TEXT
 );

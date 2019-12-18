@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+{% for category in categories %}
+<p>{{category[1]}}</p>
+{% for product in products %}
+{% if category[0] == product[0] %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm text-center">
+            <img class="img-responsive" src="https://image.shutterstock.com/image-vector/no-image-available-sign-internet-260nw-261719003.jpg" alt="prewiew" width="120" height="70">
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <h4 style="margin-top:20px;"><a style="text-decoration: none;" href=" "><strong>{{product[1]}}</strong></a></h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">{{product[2]}}</h4>
+        </div>
+        <div class="col-sm text-center" style="margin-top:10px;">
+            <button type="button" class="btn btn-success btn-lg"></i>Buy <i class='fas fa-cart-arrow-down'></i></button>
+        </div>
+        <div class="col-sm text-center" style="margin-top:10px;">
+            <button type="button" class="btn btn-success btn-lg">Add to cart <i class='fas fa-cart-plus'></i></button>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endblock %}

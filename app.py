@@ -6,6 +6,7 @@ from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
 from products import products
+from product_categories import product_categories
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -96,6 +97,13 @@ def add_product():
         #img = request.form.get("img", "")
         products.add_product(g.db, product_name, price, product_category)
     return render_template("add_product.html")
+
+
+@app.route('/categories_test', methods=("GET", "POST"))
+def categories():
+    all_categories = product_categories.read_all(g.db)
+    all_products = products.get_by_category(g.db)
+    return render_template("categories_test.html", categories=all_categories, products=all_products)
 
 if __name__ == '__main__':
     app.run(debug=True)

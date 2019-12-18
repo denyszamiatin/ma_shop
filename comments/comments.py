@@ -2,37 +2,37 @@
 Module Comments with add, get, edit and delete
 """
 
-
+import psycopg2
 from errors import errors
 
 
-def add(con, product_id: int, user_id: int, body: str) -> None:
+def add(con, id_product: int, id_user: int, body: str) -> None:
     """
     Add new comment in db.
     :param con: str
-    :param product_id: int
-    :param user_id: int
+    :param id_product: int
+    :param id_user: int
     :param body: str
     :return: None
     """
     with con.cursor() as cursor:
         try:
             cursor.execute(f"""insert into Comments(id_product, id_user, body)
-                                    values ({product_id}, {user_id}, {body})""")
+                                    values ({id_product}, {id_user}, {body})""")
             con.commit()
         except psycopg2.DatabaseError:
             raise errors.StoreError
 
 
-def get(con, product_id: int) -> list:
+def get(con, id_product: int) -> list:
     """
     Get comments from db using index parameter.
     :param con: str
-    :param product_id: int
+    :param id_product: int
     :return: list
     """
     with con.cursor() as cursor:
-        cursor.execute(f"""select id_user, body, date from Comments where id_product={product_id}""")
+        cursor.execute(f"""select id_user, body, date from Comments where id_product={id_product}""")
         try:
             result = cursor.fetchall()
         except TypeError:
@@ -40,31 +40,31 @@ def get(con, product_id: int) -> list:
     return result
 
 
-def edit(con, comment_id: int, body: str) -> None:
+def edit(con, id: int, body: str) -> None:
     """
     Update comment in db.
     :param con: str
-    :param comment_id: int
+    :param id: int
     :param body: str
     :return: None
     """
     with con.cursor() as cursor:
-        cursor.execute(f"""update Comments set body={body} where id={comment_id}""")
+        cursor.execute(f"""update Comments set body={body} where id={id}""")
         if cursor.rowcount:
             con.commit()
         else:
             raise errors.StoreError
 
 
-def delete(con, comment_id: int) -> None:
+def delete(con, id: int) -> None:
     """
     Delete comment in db.
     :param con: str
-    :param comment_id: int
+    :param id: int
     :return: None
     """
     with con.cursor() as cursor:
-        cursor.execute(f"""delete from Comments where id={comment_id}""")
+        cursor.execute(f"""delete from Comments where id={id}""")
         if cursor.rowcount:
             con.commit()
         else:

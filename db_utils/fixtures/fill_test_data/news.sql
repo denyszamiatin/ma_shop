@@ -1,4 +1,4 @@
-insert into news (title,post,id_user,news_date,author) values
+insert into news (title,post,id_user,news_date) values
 ('7 Skills to Help You Get Noticed by Hiring Companies in 2020',
  'Need a leg up on the competition finding your first or next position this upcoming ' ||
  'year? Be warned: the top professional skills desired these days are less science- and ' ||
@@ -9,8 +9,8 @@ insert into news (title,post,id_user,news_date,author) values
  'more flexible one. 7 Most Helpfully Skills: Visualizing Data, Creativity, Emotional Intelligence,' ||
  'Complex Problem-Solving, Cognitive Flexibility, People Management, Negotiation. ' ||
  'Learn more on www.simplilearn.com',
- 1,'2019-12-18','Nikita Duggal');
-insert into news (title,post,id_user,news_date,author) values
+ 2,'2019-12-18');
+insert into news (title,post,id_user,news_date) values
 ('Top Business and IT Certification Courses for 2020',
  'If your career has been built upon technologies or practices that are fading away, ' ||
  'it’s time to get reskilled and ready for your next opportunity. Below are ' ||
@@ -20,8 +20,8 @@ insert into news (title,post,id_user,news_date,author) values
  'Project Management, Business Intelligence, Networking, Software Development, DevOps, ' ||
  'Cyber Security, Digital Marketing. ' ||
  'Learn more on www.simplilearn.com',
- 1,'2019-12-11','Nikita Duggal');
-insert into news (title,post,id_user,news_date,author) values
+ 2,'2019-12-11');
+insert into news (title,post,id_user,news_date) values
 ('Top 10 Highest Paying Tech Jobs in 2020',
  'We live in a time of great change career-wise; jobs are lost to automation and others are ' ||
  'changing what skills are required. With changes like these in the market, ' ||
@@ -32,8 +32,8 @@ insert into news (title,post,id_user,news_date,author) values
  '6: DevOps Engineer, 5: Blockchain Engineer, 4: Software Architect, 3: Internet of Things (IoT) Solutions Architect, ' ||
  '2: Big Data Engineer, 1: Data Scientist. ' ||
  'Learn more on www.simplilearn.com',
- 1,'2019-11-29','Nikita Duggal');
-insert into news (title,post,id_user,news_date,author) values
+ 2,'2019-11-29');
+insert into news (title,post,id_user,news_date) values
 ('Top 8 Technology Trends for 2020',
 'Technology is now evolving at such a rapid pace that annual predictions of ' ||
 'trends can seem out-of-date before they even go live as a published blog post ' ||
@@ -43,4 +43,4 @@ insert into news (title,post,id_user,news_date,author) values
 'Machine Learning, Robotic Process Automation or RPA, Edge Computing, Virtual Reality and Augmented Reality, ' ||
 'Blockchain, Internet of Things (IoT), Cybersecurity. ' ||
 'Learn more on www.simplilearn.com',
- 1,'2019-11-28','Nikita Duggal');
+ 2,'2019-11-28');

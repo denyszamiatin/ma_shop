@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, g
 from flask_bootstrap import Bootstrap
 
 from db_utils.config import DATABASE
-from news.news import get_all_news
+from news import news_
 from users import validation, user
 
 app = Flask(__name__)
@@ -46,8 +46,7 @@ def cart():
 
 @app.route('/news')
 def news():
-    con = g.db
-    data = get_all_news(con)
+    data = news_.get_all(g.db)
     return render_template("news.html", data=data)
 
 

@@ -1,6 +1,7 @@
 create table mark (
-    id_user integer,
-    id_product integer,
+    id serial primary key,
+    id_user integer references user(id),
+    id_product integer references product(id),
     mark_date date,
     rating integer
 );

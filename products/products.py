@@ -6,7 +6,7 @@ from base64 import b64encode
 import requests
 
 
-def add_product(conn, product_name: str, price: int, img: str) -> None:
+def add_product(conn, product_name: str, price: int, img: str, category_id: int) -> None:
     """
     Add new product to db.
     :param conn: str
@@ -21,8 +21,8 @@ def add_product(conn, product_name: str, price: int, img: str) -> None:
     response = requests.get(img)
 
     with conn.cursor() as cursor:
-        cursor.execute("""insert into products(name, price, image)
-                            values ('{0}', '{1}', '{2}')""".format(product_name, price, response.content))
+        cursor.execute("""insert into products(name, price, image, category_id)
+                            values ('{0}', '{1}', '{2}','{3}')""".format(product_name, price, response.content, category_id))
     conn.commit()
 
 

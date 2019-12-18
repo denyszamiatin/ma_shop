@@ -1,7 +1,8 @@
 
-CREATE TABLE mark (
-    id_user INTEGER,
-    id_product INTEGER,
-    mark_date DATE,
-    rating INTEGER
+create table mark (
+    id serial primary key,
+    id_user integer references user (id),
+    id_product integer references products (id),
+    mark_date date default current_date,
+    rating integer
 );

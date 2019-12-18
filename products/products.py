@@ -6,13 +6,14 @@ from base64 import b64encode
 import requests
 
 
-def add_product(conn, product_name: str, price: int, img: str, category_id: int) -> None:
+def add(conn, product_name: str, price: int, img: str, category_id: int) -> None:
     """
     Add new product to db.
     :param conn: str
     :param product_name: str
     :param price: int
     :param img: str-> URL to image
+    :param category_id: int
     :return: None
     """
 

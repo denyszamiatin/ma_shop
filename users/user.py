@@ -1,4 +1,5 @@
 """User crud"""
+from errors import errors
 
 
 def add(con, first_name: str, second_name: str, email: str, password: str) -> None:
@@ -13,11 +14,11 @@ def add(con, first_name: str, second_name: str, email: str, password: str) -> No
     """
     with con.cursor() as cursor:
         try:
-            cursor.execute(f'INSERT INTO users (first_name, second_name, email, password) '
-                           f'VALUES ({first_name}, {second_name}, {email},crypt({password},gen_salt("md5"))')
+            cursor.execute(f"insert into users (first_name, second_name, email, password) "
+                           f"VALUES ('{first_name}', '{second_name}', '{email}', '{hash(password)}')")
             con.commit()
         except TypeError:
-            raise ValueError
+            raise errors.StoreError
 
 
 def read(con, user_id: int) -> str:
@@ -32,7 +33,7 @@ def read(con, user_id: int) -> str:
         try:
             return cursor.fetchone()[0]
         except TypeError:
-            raise ValueError
+            raise errors.StoreError
 
 
 def delete(con, user_id: int) -> None:
@@ -46,9 +47,9 @@ def delete(con, user_id: int) -> None:
         try:
             cursor.execute(f'delete from users where id = {user_id}')
         except TypeError:
-            raise ValueError
+            raise errors.StoreError
         if not cursor.rowcount:
-            raise TypeError
+            raise errors.StoreError
         con.commit()
 
 
@@ -63,10 +64,10 @@ def update_name(con, first_name: str, second_name: str, user_id: int) -> None:
     """
     with con.cursor() as cursor:
         try:
-            cursor.execute(f'update users set first_name = {first_name},'
-                           f' second_nam = {second_name} where id = {user_id}')
+            cursor.execute(f"update users set first_name = '{first_name}',"
+                           f" second_nam = '{second_name}' where id = {user_id}")
         except TypeError:
-            raise ValueError
+            raise errors.StoreError
         if not cursor.rowcount:
-            raise TypeError
+            raise errors.StoreError
         con.commit()

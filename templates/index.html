@@ -28,6 +28,9 @@
 {% block content %}
     <!-- Page Content -->
     <div class="container">
+    {% for message in get_flashed_messages() %}
+      <p class="badge badge-success">{{ message }}</p>
+    {% endfor %}
       <h1 class="mt-4">Mate-academy shop</h1>
       <p>Free shipping allover the world!</p>
     </div>

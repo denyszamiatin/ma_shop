@@ -8,7 +8,7 @@ from users import validation, user
 
 app = Flask(__name__)
 Bootstrap(app)
-app.config["SECRET_KEY"] = "sadasdasdasd"
+app.config["SECRET_KEY"] = ""
 
 
 @app.before_request

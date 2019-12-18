@@ -115,7 +115,7 @@ def get_by_category(conn):
     :return: category_id, name, price, image for all products
     """
     with conn.cursor() as cursor:
-        cursor.execute(f"""select category_id, name, price, image from products""")
+        cursor.execute(f"""select category_id, name, price, image, id from products""")
         try:
             return cursor.fetchall()
         except TypeError:

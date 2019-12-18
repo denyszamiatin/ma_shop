@@ -107,8 +107,13 @@ def add_product():
 @app.route('/categories_test', methods=("GET", "POST"))
 def categories():
     all_categories = product_categories.read_all(g.db)
-    all_products = products.get_by_category(g.db)
+    all_products = tuple(products.get_by_category(g.db))
+    # images = []
+    # for prod in all_products:
+    #     images.append((products.get_product_image(g.db, prod[4])))
+
     return render_template("categories_test.html", categories=all_categories, products=all_products)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

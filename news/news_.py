@@ -25,10 +25,11 @@ def read(connection, news_id: int) -> str:
             raise errors.StoreError
 
 
-def get_all_news(connection) -> str:
-    """Read the post from news table by news_id"""
+def get_all(connection) -> str:
+    """Read all posts"""
     with connection.cursor() as cursor:
-        cursor.execute(f'select title, post, news_date, author from news')
+        cursor.execute(f'select title, post, news_date, first_name, second_name '
+                       f'from news n inner join users u on n.id_user = u.id;')
         try:
             return cursor.fetchall()
         except TypeError:

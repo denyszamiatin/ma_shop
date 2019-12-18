@@ -3,5 +3,6 @@ create table news (
     title varchar(255) not null,
     post text not null,
     id_user integer references users(id),
-    news_date date not null
+    news_date date not null,
+    author varchar(30) not null
 );

@@ -4,12 +4,12 @@ import psycopg2
 import errors.errors
 
 
-def add(connection, title: str, post: str, id_user: int) -> None:
+def add(connection, title: str, post: str, id_user: int, author: str) -> None:
     """Add new post to news table"""
     with connection.cursor() as cursor:
         try:
-            cursor.execute(f'insert into news (title, post, id_user, news_date) '
-                           f'values ({title}, {post}, {id_user}, {datetime.date.today()})')
+            cursor.execute(f'insert into news (title, post, id_user, news_date, author) '
+                           f'values ({title}, {post}, {id_user}, {datetime.date.today()}, {author})')
             connection.commit()
         except psycopg2.DatabaseError:
             raise errors.errors.StoreError
@@ -18,9 +18,19 @@ def add(connection, title: str, post: str, id_user: int) -> None:
 def read(connection, news_id: int) -> str:
     """Read the post from news table by news_id"""
     with connection.cursor() as cursor:
-        cursor.execute(f'select title, post, news_date from news where id={news_id}')
+        cursor.execute(f'select title, post, news_date, author from news where id={news_id}')
         try:
             return cursor.fetchone()
+        except TypeError:
+            raise errors.errors.StoreError
+
+
+def get_all_news(connection) -> str:
+    """Read the post from news table by news_id"""
+    with connection.cursor() as cursor:
+        cursor.execute(f'select title, post, news_date, author from news')
+        try:
+            return cursor.fetchall()
         except TypeError:
             raise errors.errors.StoreError
 

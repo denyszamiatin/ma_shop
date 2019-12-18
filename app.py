@@ -1,8 +1,13 @@
+import psycopg2
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 
+from db_utils.config import DATABASE
+from news.news import get_all_news
+
 app = Flask(__name__)
 Bootstrap(app)
+con = psycopg2.connect(**DATABASE)
 
 
 @app.route('/')
@@ -27,7 +32,8 @@ def cart():
 
 @app.route('/news')
 def news():
-    return render_template("news.html")
+    data = get_all_news(con)
+    return render_template("news.html", data=data)
 
 
 @app.route('/contacts')

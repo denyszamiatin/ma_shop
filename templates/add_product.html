@@ -1,13 +1,22 @@
 {% extends "index_admin.html" %}
 {% block content %}
+<div class="container">
+<p class="badge badge-warning">{{ message }}</p>
+<h1 class="m-5">Add_product</h1>
 <form method="post">
-    <label for="name">Product name</label>
-    <p><input type = "text" name="product_name" value="{{name}}" ></p>
-    <label for="price">Product price</label>
-    <p><input type = "number" name="price" value="{{price}}" ></p>
-    <label for="category">Product category</label>
-    <p><input type = "number" name="product_category" value="{{category}}" ></p>
-    <p><input type ="file" name="img" value={{img}}></p>
-     <p><input type = "submit" value="Ok" ></p>
+  <div class="form-group">
+    <label for="product_name">Name</label>
+    <input type="text" class="form-control" id="name_input" name="product_name" value="">
+  </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" class="form-control" id="price_input" name="price" value="">
+    </div>
+    <div class="form-group">
+        <label for="product_category">Category id</label>
+        <input type="number" class="form-control" id="product_category" name="product_category" value="">
+    </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+</div>
 {% endblock %}

@@ -2,7 +2,8 @@
 {% block title %}Categories{% endblock %}
 {% block content %}
 {% for category in categories %}
-<p>{{category[1]}}</p>
+<br>
+<h2 class = "text-center" style="margin-top:20px;"><strong>{{category[1]}}</strong></h2>
 {% for product in products %}
 {% if category[0] == product[0] %}
 <div class="container-fluid">

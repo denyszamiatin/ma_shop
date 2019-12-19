@@ -60,7 +60,7 @@ def delete(conn, category_id: int) -> None:
             raise errors.StoreError
 
 
-def read_all(conn):
+def get_all(conn):
     """
     :param conn: connection
     :return: all categories from database

@@ -1,5 +1,5 @@
 import psycopg2
-from flask import Flask, render_template, request, redirect, url_for, flash, g
+from flask import Flask, render_template, request, redirect, url_for, flash, g, session
 from flask_bootstrap import Bootstrap
 
 from db_utils.config import DATABASE
@@ -7,10 +7,11 @@ from news import news_
 from users import validation, user
 from products import products
 from product_categories import product_categories
+from errors import errors
 
 app = Flask(__name__)
 Bootstrap(app)
-app.config["SECRET_KEY"] = ""
+app.config["SECRET_KEY"] = "3123123123"
 
 
 @app.before_request
@@ -57,9 +58,24 @@ def contacts():
     return render_template("contacts.html")
 
 
-@app.route('/login')
+@app.route('/login', methods=("GET", "POST"))
 def login():
-    return render_template("login.html")
+    message = ""
+    if request.method == "POST":
+        email = request.form.get("email", "")
+        password = request.form.get("password", "")
+        if validation.login_form_validation(email, password):
+            try:
+                session['user_id'] = user.login(g.db, email, password)
+                flash("You are logged")
+                return redirect(url_for('index'))
+            except errors.StoreError:
+                message = "Wrong password or email"
+
+        else:
+            message = "Something wrong, check form"
+
+    return render_template("login.html", message=message)
 
 
 @app.route('/registration', methods=("GET", "POST"))

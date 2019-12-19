@@ -36,6 +36,25 @@ def read(con, user_id: int) -> str:
         except TypeError:
             raise errors.StoreError
 
+def login(con, email, password) -> int:
+    """
+    Get user by email and check password
+    :param con: connection
+    :param email: user email
+    :param password: user password
+    :return: user id or raise error
+    """
+    with con.cursor() as cursor:
+        cursor.execute(f"select id, password from users where email='{email}'")
+        data = cursor.fetchone()
+        try:
+            hash_password = hashlib.md5(password.encode('utf-8'))
+            if data[1] == hash_password.hexdigest():
+                return data[0]
+            raise errors.StoreError
+        except TypeError:
+            raise errors.StoreError
+
 
 def delete(con, user_id: int) -> None:
     """

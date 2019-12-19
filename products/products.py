@@ -2,11 +2,12 @@
 CRUD properties implementation
 """
 import errors.errors as errors
-from base64 import b64encode
-import requests
+import psycopg2
+# from base64 import b64encode
+# import requests
 
 
-def add_product(conn, product_name: str, price: int, category_id: int) -> None:
+def add_product(conn, product_name: str, price: int, img: str, category_id: int) -> None:
     """
     Add new product to db.
     :param conn: str
@@ -16,16 +17,10 @@ def add_product(conn, product_name: str, price: int, category_id: int) -> None:
     :param category_id: int
     :return: None
     """
-
-    # download having img as URL to binary variable
-    # save content of such variable into bytea field
-    #response = requests.get(img)
-
     with conn.cursor() as cursor:
         cursor.execute("""insert into products(name, price, category_id)
-                            values ('{0}', '{1}', '{2}')""".format(product_name, price, category_id))
+                            values ('{0}', '{1}', '{2}')""".format(product_name, price, psycopg2.Binary(img), category_id))
     conn.commit()
-
 
 
 def get_product(conn, product_id: int) -> str:
@@ -59,6 +54,7 @@ def get_product_price(con, product_id: int) -> str:
         except TypeError:
             raise errors.StoreError
 
+
 def get_product_image(con, product_id: int) -> str:
     """
     Get product from db using index parameter.
@@ -67,10 +63,10 @@ def get_product_image(con, product_id: int) -> str:
     :return: str
     """
     with con.cursor() as cursor:
-        cursor.execute("""select Image from products
+        cursor.execute("""select image from products
                             where id = {0}""".format(product_id))
         try:
-            return b64encode(cursor.fetchone()[0]).decode("utf-8")
+            return cursor.fetchone()
         except TypeError:
             raise errors.StoreError
 

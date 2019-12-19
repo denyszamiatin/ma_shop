@@ -47,7 +47,6 @@ def login(con, email, password) -> int:
     with con.cursor() as cursor:
         cursor.execute(f"select id, password from users where email='{email}'")
         data = cursor.fetchone()
-        print(data)
         try:
             hash_password = hashlib.md5(password.encode('utf-8'))
             if data[1] == hash_password.hexdigest():

@@ -3,16 +3,16 @@
 
 {% block content %}
 <div class="container">
-<p class="badge badge-warning">{{ message }}</p>
+  <p class="badge badge-warning">{{ message }}</p>
 <h1 class="m-5">Login</h1>
 <form method="post">
   <div class="form-group">
-    <label for="email">Email</label>
-    <input required type="email" class="form-control" id="email_input" name="email" value="" placeholder="JohnSmith@mail.com">
+    <label for="login">Login</label>
+    <input type="email" class="form-control" id="email_input" value="" placeholder="example@example.example">
   </div>
   <div class="form-group">
     <label for="password">Password</label>
-    <input required type="password" class="form-control" id="eInputPassword" name="password" value="" placeholder="Some password">
+    <input type="password" class="form-control" id="eInputPassword" value="" placeholder="Some password">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>

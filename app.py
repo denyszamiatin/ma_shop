@@ -104,7 +104,7 @@ def add_product():
     return render_template("add_product.html")
 
 
-@app.route('/categories', methods=("GET", "POST"))
+@app.route('/categories')
 def categories():
     all_categories = product_categories.get_all(g.db)
     all_products = tuple(products.get_all(g.db))

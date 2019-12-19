@@ -1,4 +1,5 @@
 """User crud"""
+import hashlib
 from errors import errors
 
 
@@ -13,9 +14,10 @@ def add(con, first_name: str, second_name: str, email: str, password: str) -> No
     :return: None
     """
     with con.cursor() as cursor:
+        hash_pass = hashlib.md5(password.encode('utf-8'))
         try:
             cursor.execute(f"insert into users (first_name, second_name, email, password) "
-                           f"VALUES ('{first_name}', '{second_name}', '{email}', '{hash(password)}')")
+                           f"VALUES ('{first_name}', '{second_name}', '{email}', '{hash_pass}')")
             con.commit()
         except TypeError:
             raise errors.StoreError

@@ -1,15 +1,28 @@
 import psycopg2
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, g
 from flask_bootstrap import Bootstrap
 
 from db_utils.config import DATABASE
-from news.news import get_all_news
+from news import news_
 from users import validation, user
+from products import products
 
 app = Flask(__name__)
 Bootstrap(app)
-app.config["SECRET_KEY"] = "sadasdasdasd"
-con = psycopg2.connect(**DATABASE)
+app.config["SECRET_KEY"] = ""
+
+
+@app.before_request
+def get_db():
+    if not hasattr(g, 'db'):
+        g.db = psycopg2.connect(**DATABASE)
+
+
+@app.teardown_request
+def close_db(error):
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()
 
 
 @app.route('/')
@@ -34,7 +47,7 @@ def cart():
 
 @app.route('/news')
 def news():
-    data = get_all_news(con)
+    data = news_.get_all(g.db)
     return render_template("news.html", data=data)
 
 
@@ -58,7 +71,7 @@ def registration():
         password = request.form.get("password", "")
         if validation.register_form_validation(first_name, second_name, email, password):
             try:
-                user.add(con, first_name, second_name, email, password)
+                user.add(g.db, first_name, second_name, email, password)
                 flash("Registration was successful")
                 return redirect(url_for('index'))
             except psycopg2.errors.UniqueViolation:
@@ -72,6 +85,23 @@ def registration():
 @app.route('/product_comments')
 def product_comments():
     return render_template("product_comments.html")
+
+
+@app.route('/admin/add_product', methods=("GET", "POST"))
+def add_product():
+    if request.method == "POST":
+        product_name = request.form.get("product_name", "")
+        price = request.form.get("price", "")
+        product_category = request.form.get("product_category", "")
+        #img = request.form.get("img", "")
+        products.add_product(g.db, product_name, price, product_category)
+    return render_template("add_product.html")
+
+
+@app.route('/admin/add_news')
+def add_news():
+    return render_template('add_news.html')
+
 
 
 if __name__ == '__main__':

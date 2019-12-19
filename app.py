@@ -132,15 +132,20 @@ def categories():
     return render_template("categories.html", categories=all_categories, products=all_products)
 
 
-@app.route('/admin/add_news', method=("GET", "POST"))
+@app.route('/admin/add_news', methods=("GET", "POST"))
 def add_news():
     if request.method == "POST":
         title = request.form.get("title", "")
         post = request.form.get("post", "")
-        id_user = 1  # test
-
+        # try:
+        #     id_user = session['user_id']
+        # except KeyError:
+        #     raise errors.StoreError
+        id_user = 1
+        if session['user_id']:
+            id_user = session['user_id']
+        news_.add(g.db, title, post, id_user, 'Admin')
     return render_template('add_news.html')
-
 
 
 if __name__ == '__main__':

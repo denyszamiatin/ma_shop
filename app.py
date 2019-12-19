@@ -139,5 +139,16 @@ def add_category():
     return render_template("add_category.html", category_name=category_name)
 
 
+@app.route('/admin/add_news', method=("GET", "POST"))
+def add_news():
+    if request.method == "POST":
+        title = request.form.get("title", "")
+        post = request.form.get("post", "")
+        id_user = 1  # test
+
+    return render_template('add_news.html')
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -6,7 +6,7 @@ from base64 import b64encode
 import requests
 
 
-def add(conn, product_name: str, price: int, img: str, category_id: int) -> None:
+def add_product(conn, product_name: str, price: int, category_id: int) -> None:
     """
     Add new product to db.
     :param conn: str
@@ -19,12 +19,13 @@ def add(conn, product_name: str, price: int, img: str, category_id: int) -> None
 
     # download having img as URL to binary variable
     # save content of such variable into bytea field
-    response = requests.get(img)
+    #response = requests.get(img)
 
     with conn.cursor() as cursor:
-        cursor.execute("""insert into products(name, price, image, category_id)
-                            values ('{0}', '{1}', '{2}','{3}')""".format(product_name, price, response.content, category_id))
+        cursor.execute("""insert into products(name, price, category_id)
+                            values ('{0}', '{1}', '{2}')""".format(product_name, price, category_id))
     conn.commit()
+
 
 
 def get_product(conn, product_id: int) -> str:
@@ -105,4 +106,17 @@ def delete_product(conn, product_id: int) -> None:
         if cursor.fetchone():
             conn.commit()
         else:
+            raise errors.StoreError
+
+
+def get_by_category(conn):
+    """
+    :param conn: connection
+    :return: category_id, name, price, image for all products
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(f"""select category_id, name, price, image, id from products""")
+        try:
+            return cursor.fetchall()
+        except TypeError:
             raise errors.StoreError

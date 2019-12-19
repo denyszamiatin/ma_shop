@@ -32,7 +32,13 @@ def index():
 
 @app.route('/catalogue')
 def catalogue():
+
     return render_template("catalogue.html")
+
+
+@app.route('/categories')
+def categories():
+    return render_template("categories.html")
 
 
 @app.route('/product')
@@ -93,9 +99,10 @@ def add_product():
         product_name = request.form.get("product_name", "")
         price = request.form.get("price", "")
         product_category = request.form.get("product_category", "")
-        #img = request.form.get("img", "")
+        # img = request.form.get("img", "")
         products.add_product(g.db, product_name, price, product_category)
     return render_template("add_product.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)

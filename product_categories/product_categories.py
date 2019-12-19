@@ -3,6 +3,7 @@
 import psycopg2
 import errors.errors as errors
 
+
 def create(conn, name: str) -> None:
     """
     Create new category

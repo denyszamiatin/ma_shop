@@ -34,7 +34,6 @@ def index():
 
 @app.route('/catalogue')
 def catalogue():
-
     return render_template("catalogue.html")
 
 
@@ -128,8 +127,32 @@ def categories():
     # images = []
     # for product in all_products:
     #     images.append((products.get_product_image(g.db, product[4])))
-
     return render_template("categories.html", categories=all_categories, products=all_products)
+
+
+@app.route('/admin/add_category', methods=("GET", "POST"))
+def add_category():
+    category_name = ''
+    if request.method == "POST":
+        category_name = request.form.get("category_name", "")
+        categories.add_category(g.db, category_name)
+    return render_template("add_category.html", category_name=category_name)
+
+
+@app.route('/admin/add_news', methods=("GET", "POST"))
+def add_news():
+    if request.method == "POST":
+        title = request.form.get("title", "")
+        post = request.form.get("post", "")
+        # try:
+        #     id_user = session['user_id']
+        # except KeyError:
+        #     raise errors.StoreError
+        id_user = 1
+        if session['user_id']:
+            id_user = session['user_id']
+        news_.add(g.db, title, post, id_user, 'Admin')
+    return render_template('add_news.html')
 
 
 if __name__ == '__main__':

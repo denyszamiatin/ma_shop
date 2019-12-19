@@ -116,8 +116,8 @@ def add_product():
         product_name = request.form.get("product_name", "")
         price = request.form.get("price", "")
         product_category = request.form.get("product_category", "")
-        # img = request.form.get("img", "")
-        products.add_product(g.db, product_name, price, product_category)
+        img = request.files['img'].read()
+        products.add_product(g.db, product_name, price, img, product_category)
     return render_template("add_product.html")
 
 

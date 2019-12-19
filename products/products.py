@@ -62,10 +62,10 @@ def get_product_image(con, product_id: int) -> str:
     :return: str
     """
     with con.cursor() as cursor:
-        cursor.execute("""select Image from products
+        cursor.execute("""select image from products
                             where id = {0}""".format(product_id))
         try:
-            return cursor.fetchone()[0]
+            return cursor.fetchone()
         except TypeError:
             raise errors.StoreError
 

@@ -6,7 +6,6 @@ from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
 from products import products
-from product_categories import product_categories
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -88,11 +87,6 @@ def product_comments():
     return render_template("product_comments.html")
 
 
-@app.route('/admin')
-def index_admin():
-    return render_template("index_admin.html")
-
-
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
     if request.method == "POST":
@@ -104,15 +98,10 @@ def add_product():
     return render_template("add_product.html")
 
 
-@app.route('/categories_test', methods=("GET", "POST"))
-def categories():
-    all_categories = product_categories.read_all(g.db)
-    all_products = tuple(products.get_by_category(g.db))
-    # images = []
-    # for prod in all_products:
-    #     images.append((products.get_product_image(g.db, prod[4])))
+@app.route('/admin/add_news')
+def add_news():
+    return render_template('add_news.html')
 
-    return render_template("categories_test.html", categories=all_categories, products=all_products)
 
 
 if __name__ == '__main__':

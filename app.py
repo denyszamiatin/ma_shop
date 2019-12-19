@@ -6,6 +6,7 @@ from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
 from products import products
+from product_categories import product_categories
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -34,11 +35,6 @@ def index():
 def catalogue():
 
     return render_template("catalogue.html")
-
-
-@app.route('/categories')
-def categories():
-    return render_template("categories.html")
 
 
 @app.route('/product')
@@ -93,6 +89,11 @@ def product_comments():
     return render_template("product_comments.html")
 
 
+@app.route('/admin')
+def index_admin():
+    return render_template("index_admin.html")
+
+
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
     if request.method == "POST":
@@ -102,6 +103,17 @@ def add_product():
         # img = request.form.get("img", "")
         products.add_product(g.db, product_name, price, product_category)
     return render_template("add_product.html")
+
+
+@app.route('/categories')
+def categories():
+    all_categories = product_categories.get_all(g.db)
+    all_products = tuple(products.get_all(g.db))
+    # images = []
+    # for product in all_products:
+    #     images.append((products.get_product_image(g.db, product[4])))
+
+    return render_template("categories.html", categories=all_categories, products=all_products)
 
 
 if __name__ == '__main__':

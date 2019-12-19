@@ -107,3 +107,16 @@ def delete_product(conn, product_id: int) -> None:
             conn.commit()
         else:
             raise errors.StoreError
+
+
+def get_all(conn):
+    """
+    :param conn: connection
+    :return: category_id, name, price, image for all products
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(f"""select category_id, name, price, image, id from products""")
+        try:
+            return cursor.fetchall()
+        except TypeError:
+            raise errors.StoreError

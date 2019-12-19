@@ -2,7 +2,6 @@
 import hashlib
 from errors import errors
 
-
 def add(con, first_name: str, second_name: str, email: str, password: str) -> None:
     """
     Add user to users table
@@ -17,7 +16,7 @@ def add(con, first_name: str, second_name: str, email: str, password: str) -> No
         hash_pass = hashlib.md5(password.encode('utf-8'))
         try:
             cursor.execute(f"insert into users (first_name, second_name, email, password) "
-                           f"VALUES ('{first_name}', '{second_name}', '{email}', '{hash_pass}')")
+                           f"VALUES ('{first_name}', '{second_name}', '{email}', '{hash_pass.hexdigest()}')")
             con.commit()
         except TypeError:
             raise errors.StoreError

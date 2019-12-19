@@ -3,10 +3,9 @@ CRUD properties implementation
 """
 import errors.errors as errors
 from base64 import b64encode
-import requests
 
 
-def add_product(conn, product_name: str, price: int, category_id: int) -> None:
+def add_product(conn, product_name: str, price: int, category_id: int, image) -> None:
     """
     Add new product to db.
     :param conn: str
@@ -19,19 +18,17 @@ def add_product(conn, product_name: str, price: int, category_id: int) -> None:
 
     # download having img as URL to binary variable
     # save content of such variable into bytea field
-    #response = requests.get(img)
 
     with conn.cursor() as cursor:
-        cursor.execute("""insert into products(name, price, category_id)
-                            values ('{0}', '{1}', '{2}')""".format(product_name, price, category_id))
+        cursor.execute("""insert into products(name, price, category_id, image)
+                            values ('{0}', '{1}', '{2}', '{3}')""".format(product_name, price, category_id, image))
     conn.commit()
-
 
 
 def get_product(conn, product_id: int) -> str:
     """
     Get product from db using index parameter.
-    :param con: str
+    :param conn: str
     :param product_id: int
     :return: str
     """
@@ -58,6 +55,7 @@ def get_product_price(con, product_id: int) -> str:
             return cursor.fetchone()[0]
         except TypeError:
             raise errors.StoreError
+
 
 def get_product_image(con, product_id: int) -> str:
     """

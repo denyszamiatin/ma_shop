@@ -109,7 +109,7 @@ def delete_product(conn, product_id: int) -> None:
             raise errors.StoreError
 
 
-def get_by_category(conn):
+def get_all(conn):
     """
     :param conn: connection
     :return: category_id, name, price, image for all products

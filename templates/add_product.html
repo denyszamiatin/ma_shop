@@ -6,21 +6,31 @@
 <form method="POST" enctype="multipart/form-data">
   <div class="form-group">
     <label for="product_name">Name</label>
-    <input type="text" class="form-control" id="name_input" name="product_name" value="">
+    <input type="text" class="form-control" id="name_input" name="product_name" value="" required>
   </div>
     <div class="form-group">
         <label for="price">Price</label>
-        <input type="number" class="form-control" id="price_input" name="price" value="">
+        <input type="number" class="form-control" id="price_input" name="price" value="" required>
+    </div>
+    <div class="input-group mb-3">
+        <select class="form-control" name="category" id = "test">
+            {% for category in all_categories %}
+            <option value="{{category[0]}}">{{category[1]}}</option>
+            {% endfor %}
+        </select>
+        <div class="input-group-append">
+            <label class="input-group-text" for="test">Category</label>
+        </div>
+    </div>
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="img" name="img" value="">
+        <label class="custom-file-label" for="customFile">Choose img</label>
     </div>
     <div class="form-group">
-        <label for="product_category">Category id</label>
-        <input type="number" class="form-control" id="product_category" name="product_category" value="">
+        <p> </p>
+        <button type="submit" class="btn btn-primary btn-lg">Submit</button>
     </div>
-    <div class="form-group">
-        <label for="img">Upload img</label>
-        <input type="file" class="form-control" id="img" name="img" value="">
-    </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+
 </form>
 </div>
 {% endblock %}

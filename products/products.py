@@ -2,11 +2,12 @@
 CRUD properties implementation
 """
 import errors.errors as errors
+import psycopg2
 # from base64 import b64encode
 # import requests
 
 
-def add_product(conn, product_name: str, price: int, img: str, category_id: int) -> None:
+def add_product(conn, product_name: str, price: int, img, category_id: int) -> None:
     """
     Add new product to db.
     :param conn: str
@@ -16,9 +17,10 @@ def add_product(conn, product_name: str, price: int, img: str, category_id: int)
     :param category_id: int
     :return: None
     """
+
     with conn.cursor() as cursor:
-        cursor.execute("""insert into products(name, price, category_id)
-                            values ('{0}', '{1}', '{2}')""".format(product_name, price, img, category_id))
+        cursor.execute("""insert into products(name, price, image, category_id)
+                            values ('{0}', '{1}', '{2}', '{3}')""".format(product_name, price, (psycopg2.Binary(img),), category_id))
     conn.commit()
 
 

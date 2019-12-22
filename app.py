@@ -150,5 +150,25 @@ def add_news():
     return render_template('add_news.html')
 
 
+@app.route('/admin/add_category', methods=("GET", "POST"))
+def add_category():
+    category_name = ''
+    if request.method == "POST":
+        category_name = request.form.get("category_name", "")
+        categories.add_category(g.db, category_name)
+    return render_template("add_category.html", category_name=category_name)
+
+
+@app.route('/cart/<int:product_id>', methods=['POST'])
+def add_to_cart(product_id):
+
+    product = Product.query.filter(Product.id == product_id)
+    cart_item = CartItem(product=product)
+    db.session.add(cart_item)
+    db.session.commit()
+
+    return render_tempate('home.html', product=products)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -159,10 +159,17 @@ def add_category():
     return render_template("add_category.html", category_name=category_name)
 
 
+@app.route('/admin/delete_category', methods=("GET", "POST"))
+def delete_category():
+    all_categories = product_categories.get_all(g.db)
+    return render_template("delete_category.html", all_categories=all_categories)
+
+
+
 @app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
 
-    product = Product.query.filter(Product.id == product_id)
+    product = Prod12uct.query.filter(Product.id == product_id)
     cart_item = CartItem(product=product)
     db.session.add(cart_item)
     db.session.commit()

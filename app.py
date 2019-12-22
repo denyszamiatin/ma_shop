@@ -155,15 +155,20 @@ def add_category():
     category_name = ''
     if request.method == "POST":
         category_name = request.form.get("category_name", "")
-        categories.add_category(g.db, category_name)
+        product_categories.create(g.db, category_name)
     return render_template("add_category.html", category_name=category_name)
 
 
 @app.route('/admin/delete_category', methods=("GET", "POST"))
-def delete_category():
+def delete_category_list():
     all_categories = product_categories.get_all(g.db)
     return render_template("delete_category.html", all_categories=all_categories)
 
+
+@app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
+def delete_category(category_id):
+    product_categories.delete(g.db, category_id)
+    return redirect(url_for('delete_category_list'))
 
 
 @app.route('/cart/<int:product_id>', methods=['POST'])

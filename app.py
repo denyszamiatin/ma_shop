@@ -182,8 +182,10 @@ def edit_category():
                 product_categories.update(g.db, category_id, new_name)
                 flash("Category updated")
                 return redirect(url_for('index_admin'))
-            except errors.StoreError:
+            except psycopg2.errors.UniqueViolation:
                 flash(f"Category {new_name} already exist")
+            except errors.StoreError:
+                flash("Something wrong, check form")
         else:
             flash("Something wrong, check form")
     return render_template("edit_category.html", all_categories=all_categories, new_name=new_name, category_id=category_id)

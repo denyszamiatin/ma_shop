@@ -133,14 +133,15 @@ def categories():
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
 def add_news():
+    title, post = '', ''
     if request.method == "POST":
         title = request.form.get("title", "")
         post = request.form.get("post", "")
-        id_user = 1
-        if session['user_id']:
-            id_user = session['user_id']
-        news_.add(g.db, title, post, id_user, 'Admin')
-    return render_template('add_news.html')
+        id_user = session.get('user_id', 1)
+        news_.add(g.db, title, post, id_user)
+        if not title or not post:
+            flash('All fields must be filled in')
+    return render_template('add_news.html', title=title, post=post)
 
 
 @app.route('/admin/add_category', methods=("GET", "POST"))

@@ -1,15 +1,14 @@
 """This module provides model of news creation, reading and update"""
-import datetime
 import psycopg2
 from errors import errors
 
 
-def add(connection, title: str, post: str, id_user: int, author: str) -> None:
+def add(connection, title: str, post: str, id_user: int) -> None:
     """Add new post to news table"""
     with connection.cursor() as cursor:
         try:
-            cursor.execute(f'insert into news (title, post, id_user, news_date, author) '
-                           f'values ({title}, {post}, {id_user}, {datetime.date.today()}, {author})')
+            cursor.execute(f"""insert into news(title, post, id_user) 
+                                values ({title}, {post}, {id_user})""")
             connection.commit()
         except psycopg2.DatabaseError:
             raise errors.StoreError

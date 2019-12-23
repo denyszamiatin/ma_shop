@@ -40,7 +40,14 @@ def catalogue():
 
 @app.route('/product')
 def product():
-    return render_template("product.html")
+    prod_info = products.get_all(g.db)
+    return render_template("product.html", products=prod_info)
+
+
+@app.route('/product/product_description')
+def product_description():
+
+    return render_template("product_description.html")
 
 
 @app.route('/cart')

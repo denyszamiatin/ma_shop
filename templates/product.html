@@ -26,5 +26,30 @@
             </form>
         </div>
     </div>
+    {% for product in products %}
+    <div class="row mt-3">
+        <div class="col-sm-auto text-center">
+            <h5 style="margin-top:20px;">{{product[4]}}</h5>
+        </div>
+        <div class="col-sm text-center">
+                    <img class="img-responsive" src={{product[3]}} alt="{{product[1]}}" width="120" height="70">
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description"><strong>{{product[1]}}</strong></a></h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">{{product[2]}}₴</h4>
+        </div>
+        <div class="col-sm text-center" style="margin-top:10px;">
+            <button type="button" class="btn btn-success btn-lg"></i>Buy <i class='fas fa-cart-arrow-down'></i></button>
+        </div>
+        <div class="col-sm text-center" style="margin-top:10px;">
+            <form action="/cart" method="get">
+                <button type="submit" class="btn btn-success btn-lg">Add to cart <i class='fas fa-cart-plus'></i></button>
+            </form>
+        </div>
+
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

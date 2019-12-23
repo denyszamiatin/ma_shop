@@ -9,7 +9,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-db_utils/config_.py
+config_/config_.py
 build/
 develop-eggs/
 dist/

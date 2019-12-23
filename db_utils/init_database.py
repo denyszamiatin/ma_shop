@@ -1,6 +1,6 @@
 import psycopg2
 
-from db_utils.config_ import DATABASE
+from config_.config_ import DATABASE
 from db_utils.db_utils_func import init_tables
 
 if __name__ == "__main__":

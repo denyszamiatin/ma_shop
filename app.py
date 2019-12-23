@@ -162,9 +162,11 @@ def add_news():
         title = request.form.get("title", "")
         post = request.form.get("post", "")
         id_user = session.get('user_id', 1)
-        news_.add(g.db, title, post, id_user)
         if not title or not post:
             flash('All fields must be filled in')
+            redirect(url_for('add_news'))
+        else:
+            news_.add(g.db, title, post, id_user)
     return render_template('add_news.html', title=title, post=post)
 
 

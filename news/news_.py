@@ -19,7 +19,9 @@ def add(connection, title: str, post: str, id_user: int) -> None:
 def read(connection, news_id: int) -> str:
     """Read the post from news table by news_id"""
     with connection.cursor() as cursor:
-        cursor.execute(f'select title from news where id={news_id}')
+        cursor.execute(f'select title, post, news_date, first_name, second_name '
+                       f'from news n inner join users u on n.id_user = u.id '
+                       f'where n.id = {news_id}')
         try:
             return cursor.fetchone()
         except TypeError:

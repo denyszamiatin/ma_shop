@@ -170,12 +170,11 @@ def add_news():
 
 @app.route('/admin/edit_category/', methods=("GET", "POST"))
 def edit_category():
-    message = ""
+    message = new_name = category_id = ""
     all_categories = product_categories.get_all(g.db)
     if request.method == "POST":
-        category_id = request.form.get("category", "")
+        category_id = int(request.form.get("category", ""))
         new_name = request.form.get("new_name", "")
-        print(category_id, new_name)
         if category_validation.validator(new_name):
             try:
                 product_categories.update(g.db, category_id, new_name)
@@ -185,7 +184,7 @@ def edit_category():
                 message = f"Category {new_name} already exist"
         else:
             message = "Something wrong, check form"
-    return render_template("edit_category.html", all_categories=all_categories, message=message)
+    return render_template("edit_category.html", all_categories=all_categories, message=message, new_name=new_name, category_id=category_id)
 
 
 @app.route('/admin/delete_category', methods=("GET", "POST"))

@@ -3,16 +3,16 @@
 {% block content %}
 <div class="container">
     <h1 class="text-center mt-3 mb-5">MA shop news</h1>
-    {% for item in data %}
+    {% for item in news %}
     <div class="border-top">
-        <h3 class="text-center m-3">{{item[0]}}</h3>
-        <p>{{item[1]}}</p>
+        <h3 class="text-center m-3">{{item[1]}}</h3>
+        <p>{{item[2]}}</p>
         <div class="d-flex flex-row-reverse mb-3">
             <div class="">
-                <text class="text-muted">Publication date: {{item[2]}}</text>
+                <text class="text-muted">Publication date: {{item[3]}}</text>
             </div>
             <div class="mr-3">
-                <text class="text-muted">Author: {{item[3] + ' ' + item[4]}}</text>
+                <text class="text-muted">Author: {{item[4] + ' ' + item[5]}}</text>
             </div>
         </div>
     </div>

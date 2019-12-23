@@ -50,8 +50,8 @@ def cart():
 
 @app.route('/news')
 def news():
-    data = news_.get_all(g.db)
-    return render_template("news.html", data=data)
+    all_news = news_.get_all(g.db)
+    return render_template("news.html", news=all_news)
 
 
 @app.route('/contacts')
@@ -170,22 +170,21 @@ def add_news():
 
 @app.route('/admin/edit_category/', methods=("GET", "POST"))
 def edit_category():
-    message = ""
+    new_name = category_id = ""
     all_categories = product_categories.get_all(g.db)
     if request.method == "POST":
-        category_id = request.form.get("category", "")
+        category_id = int(request.form.get("category", ""))
         new_name = request.form.get("new_name", "")
-        print(category_id, new_name)
         if category_validation.validator(new_name):
             try:
                 product_categories.update(g.db, category_id, new_name)
                 flash("Category updated")
                 return redirect(url_for('index_admin'))
             except errors.StoreError:
-                message = f"Category {new_name} already exist"
+                flash(f"Category {new_name} already exist")
         else:
-            message = "Something wrong, check form"
-    return render_template("edit_category.html", all_categories=all_categories, message=message)
+            flash("Something wrong, check form")
+    return render_template("edit_category.html", all_categories=all_categories, new_name=new_name, category_id=category_id)
 
 
 @app.route('/admin/delete_category', methods=("GET", "POST"))
@@ -204,13 +203,34 @@ def delete_category(category_id):
     return redirect(url_for('delete_category_list'))
 
 
-@app.route('/cart/<int:product_id>', methods=['POST'])
+@app.route('/admin/change_news', methods=("GET", "POST"))
+def change_news():
+    all_news = news_.get_all(g.db)
+    return render_template("change_news.html", news=all_news)
+
+
+@app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
+def delete_news(news_id):
+    news_.delete(g.db, news_id)
+    return redirect(url_for('change_news'))
+
+
+@app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
+def edit_news(news_id):
+    if request.method == "POST":
+        new_title = request.form.get("title", "")
+        new_post = request.form.get("post", "")
+        news_.edit_news(g.db, news_id, new_title, new_post)
+        return redirect(url_for("change_news"))
+
+
+"""@app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
-    product = products.get_product(g.db, product_id)
+    product = products.get_product(product_id)
     cart_item = CartItem(product=product)
     db.session.add(cart_item)
     db.session.commit()
-    return render_tempate('home.html', product=products)
+    return render_tempate('home.html', product=products)"""
 
 
 if __name__ == '__main__':

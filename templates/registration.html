@@ -1,7 +1,9 @@
 {% extends "index.html" %}
 {% block content %}
 <div class="container">
+{% if message %}
 <p class="alert alert-warning">{{ message }}</p>
+{% endif %}
 <h1 class="m-5">Registration</h1>
 <form method="post">
   <div class="form-group">

@@ -27,7 +27,7 @@ def close_db(error):
         db.close()
 
 
-@app.route('/')
+@app.route('/') 
 def index():
     return render_template("index.html")
 
@@ -126,10 +126,7 @@ def add_product():
 @app.route('/categories')
 def categories():
     all_categories = product_categories.get_all(g.db)
-    all_products = tuple(products.get_all(g.db))
-    # images = []
-    # for product in all_products:
-    #     images.append((products.get_product_image(g.db, product[4])))
+    all_products = products.get_all(g.db)
 
     return render_template("categories.html", categories=all_categories, products=all_products)
 
@@ -139,15 +136,43 @@ def add_news():
     if request.method == "POST":
         title = request.form.get("title", "")
         post = request.form.get("post", "")
-        # try:
-        #     id_user = session['user_id']
-        # except KeyError:
-        #     raise errors.StoreError
         id_user = 1
         if session['user_id']:
             id_user = session['user_id']
         news_.add(g.db, title, post, id_user, 'Admin')
     return render_template('add_news.html')
+
+
+@app.route('/admin/add_category', methods=("GET", "POST"))
+def add_category():
+    category_name = ''
+    if request.method == "POST":
+        category_name = request.form.get("category_name", "")
+        product_categories.create(g.db, category_name)
+    return render_template("add_category.html", category_name=category_name)
+
+
+@app.route('/admin/delete_category', methods=("GET", "POST"))
+def delete_category_list():
+    all_categories = product_categories.get_all(g.db)
+    return render_template("delete_category.html", all_categories=all_categories)
+
+
+@app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
+def delete_category(category_id):
+    product_categories.delete(g.db, category_id)
+    return redirect(url_for('delete_category_list'))
+
+
+# @app.route('/cart/<int:product_id>', methods=['POST'])
+# def add_to_cart(product_id):
+#
+#     product = Product.query.filter(Product.id == product_id)
+#     cart_item = CartItem(product=product)
+#     db.session.add(cart_item)
+#     db.session.commit()
+#
+#     return render_tempate('home.html', product=products)
 
 
 if __name__ == '__main__':

@@ -38,7 +38,7 @@ def catalogue():
     return render_template("catalogue.html")
 
 
-@app.route('/product/<id>', methods=("GET", "POST"))
+@app.route('/product', methods=("GET", "POST"))
 def product():
     comment = ""
     if request.method == "POST":

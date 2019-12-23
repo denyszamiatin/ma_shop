@@ -196,7 +196,11 @@ def delete_category_list():
 
 @app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
 def delete_category(category_id):
-    product_categories.delete(g.db, category_id)
+    try:
+        product_categories.delete(g.db, category_id)
+    except psycopg2.DatabaseError:
+        flash("smths wrong")
+        redirect(url_for(index_admin))
     return redirect(url_for('delete_category_list'))
 
 

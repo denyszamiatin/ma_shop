@@ -50,8 +50,8 @@ def cart():
 
 @app.route('/news')
 def news():
-    data = news_.get_all(g.db)
-    return render_template("news.html", data=data)
+    all_news = news_.get_all(g.db)
+    return render_template("news.html", news=all_news)
 
 
 @app.route('/contacts')
@@ -201,6 +201,27 @@ def delete_category(category_id):
         flash("smths wrong")
         redirect(url_for(index_admin))
     return redirect(url_for('delete_category_list'))
+
+
+@app.route('/admin/change_news', methods=("GET", "POST"))
+def change_news():
+    all_news = news_.get_all(g.db)
+    return render_template("change_news.html", news=all_news)
+
+
+@app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
+def delete_news(news_id):
+    news_.delete(g.db, news_id)
+    return redirect(url_for('change_news'))
+
+
+@app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
+def edit_news(news_id):
+    if request.method == "POST":
+        new_title = request.form.get("title", "")
+        new_post = request.form.get("post", "")
+        news_.edit_news(g.db, news_id, new_title, new_post)
+        return redirect(url_for("change_news"))
 
 
 """@app.route('/cart/<int:product_id>', methods=['POST'])

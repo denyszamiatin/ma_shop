@@ -1,7 +1,7 @@
 DATABASE = {
-    "database": "postgres",
+    "database": "ma_shop",
     "user": "postgres",
-    "password": "TheHope",
+    "password": "1",
     "host": "localhost",
     "port": 5432
 }

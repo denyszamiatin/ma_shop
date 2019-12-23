@@ -154,7 +154,6 @@ def add_product():
 def categories():
     all_categories = product_categories.get_all(g.db)
     all_products = products.get_all(g.db)
-
     return render_template("categories.html", categories=all_categories, products=all_products)
 
 
@@ -233,13 +232,21 @@ def edit_news(news_id):
 
 @app.route("/admin/delete_product", methods=("GET", "POST"))
 def delete_product():
-    if request.method == "POST":
-        product_id = request.form.get("product_id", "")
-        products.delete_product(g.db, product_id)
-        flash("Product deleted")
-    return render_template("delete_product.html")
+    all_products = products.get_all(g.db)
+    return render_template("delete_product.html", products=all_products)
 
 
+@app.route("/admin/delete_confirm/<product_id>", methods=("GET", "POST"))
+def delete_confirm(product_id):
+    product_ = products.get_product(g.db, product_id)
+    return render_template("delete_confirm.html", id=product_id, product=product_)
+
+
+@app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
+def delete(product_id):
+    products.delete_product(g.db, product_id)
+    flash("Deleted")
+    return redirect("/admin/delete_product")
 
 """@app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
@@ -248,6 +255,7 @@ def add_to_cart(product_id):
     db.session.add(cart_item)
     db.session.commit()
     return render_tempate('home.html', product=products)"""
+
 
 
 if __name__ == '__main__':

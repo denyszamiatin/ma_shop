@@ -97,7 +97,8 @@ def registration():
         else:
             message = "Something wrong, check form"
 
-    return render_template("registration.html", message=message, first_name=first_name, second_name=second_name, email=email)
+    return render_template("registration.html", message=message, first_name=first_name,
+                           second_name=second_name, email=email)
 
 
 @app.route('/admin/add_category', methods=("GET", "POST"))
@@ -174,15 +175,13 @@ def delete_category(category_id):
     return redirect(url_for('delete_category_list'))
 
 
-# @app.route('/cart/<int:product_id>', methods=['POST'])
-# def add_to_cart(product_id):
-#
-#     product = Product.query.filter(Product.id == product_id)
-#     cart_item = CartItem(product=product)
-#     db.session.add(cart_item)
-#     db.session.commit()
-#
-#     return render_tempate('home.html', product=products)
+@app.route('/cart/<int:product_id>', methods=['POST'])
+def add_to_cart(product_id):
+    product = Product.query.filter(Product.id == product_id)
+    cart_item = CartItem(product=product)
+    db.session.add(cart_item)
+    db.session.commit()
+    return render_tempate('home.html', product=products)
 
 
 if __name__ == '__main__':

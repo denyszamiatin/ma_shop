@@ -1,6 +1,6 @@
 import psycopg2
 
-from config_.config_ import DATABASE
+from .config_ import DATABASE
 from db_utils.db_utils_func import fill_tables
 
 if __name__ == "__main__":

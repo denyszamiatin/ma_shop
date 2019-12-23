@@ -9,7 +9,7 @@ from products import products
 from product_categories import product_categories, category_validation
 from errors import errors
 from comments import comments
-
+from products import products
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = "3123123123"
@@ -41,14 +41,18 @@ def catalogue():
 @app.route('/product', methods=("GET", "POST"))
 def product():
     comment = ""
+    all_products = ""
+    prod_id = ""
     if request.method == "POST":
         comment = request.form.get("comment", "")
+        prod_id = request.form.get("product_id")
         if 'user_id' not in session:
             flash("Please log in for leaving your comment")
             return redirect(url_for('login'))
         else:
-            comments.add(g.db, product.id, session['id_user'], comment)
-    return render_template("product.html", comment=comment)
+            comments.add(g.db, prod_id, session['id_user'], comment)
+    all_products = products.get_all(g.db)
+    return render_template("product.html", comment=comment, products=all_products)
 
 
 @app.route('/cart')

@@ -2,6 +2,7 @@
 import hashlib
 from errors import errors
 
+
 def add(con, first_name: str, second_name: str, email: str, password: str) -> None:
     """
     Add user to users table
@@ -35,6 +36,7 @@ def read(con, user_id: int) -> str:
             return cursor.fetchone()[0]
         except TypeError:
             raise errors.StoreError
+
 
 def login(con, email, password) -> int:
     """

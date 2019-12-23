@@ -6,7 +6,7 @@ from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
 from products import products
-from product_categories import product_categories
+from product_categories import product_categories, category_validation
 from errors import errors
 
 app = Flask(__name__)
@@ -100,6 +100,24 @@ def registration():
     return render_template("registration.html", message=message, first_name=first_name, second_name=second_name, email=email)
 
 
+@app.route('/admin/add_category', methods=("GET", "POST"))
+def add_category():
+    category_name = message = ''
+    if request.method == "POST":
+        category_name = request.form.get("category_name", "")
+        if category_validation.validator(category_name):
+            try:
+                product_categories.create(g.db, category_name)
+                flash("Category added")
+                return redirect(url_for('index_admin'))
+            except psycopg2.errors.UniqueViolation:
+                message = f"Category with name: {category_name} already exist"
+        else:
+            message = "Something wrong, check form"
+
+    return render_template("add_category.html", message=message, category_name=category_name)
+
+
 @app.route('/product_comments')
 def product_comments():
     return render_template("product_comments.html")
@@ -141,15 +159,6 @@ def add_news():
             id_user = session['user_id']
         news_.add(g.db, title, post, id_user, 'Admin')
     return render_template('add_news.html')
-
-
-@app.route('/admin/add_category', methods=("GET", "POST"))
-def add_category():
-    category_name = ''
-    if request.method == "POST":
-        category_name = request.form.get("category_name", "")
-        product_categories.create(g.db, category_name)
-    return render_template("add_category.html", category_name=category_name)
 
 
 @app.route('/admin/delete_category', methods=("GET", "POST"))

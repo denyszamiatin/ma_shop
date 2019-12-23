@@ -61,7 +61,7 @@ def contacts():
 
 @app.route('/login', methods=("GET", "POST"))
 def login():
-    message = ""
+    message = email = ""
     if request.method == "POST":
         email = request.form.get("email", "")
         password = request.form.get("password", "")
@@ -76,12 +76,12 @@ def login():
         else:
             message = "Something wrong, check form"
 
-    return render_template("login.html", message=message)
+    return render_template("login.html", message=message, email=email)
 
 
 @app.route('/registration', methods=("GET", "POST"))
 def registration():
-    message = ""
+    message = first_name = second_name = email = ""
     if request.method == "POST":
         first_name = request.form.get("first_name", "")
         second_name = request.form.get("second_name", "")
@@ -97,7 +97,7 @@ def registration():
         else:
             message = "Something wrong, check form"
 
-    return render_template("registration.html", message=message)
+    return render_template("registration.html", message=message, first_name=first_name, second_name=second_name, email=email)
 
 
 @app.route('/product_comments')

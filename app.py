@@ -131,15 +131,20 @@ def index_admin():
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
+    message = ''
     all_categories = product_categories.get_all(g.db)
     if request.method == "POST":
         product_name = request.form.get("product_name", "")
         price = request.form.get("price", "")
         img = request.files['img'].read()
         category = request.form.get("category")
-        products.add_product(g.db, product_name, price, img, category)
-
-    return render_template("add_product.html", all_categories=all_categories)
+        try:
+            products.add_product(g.db, product_name, price, img, category)
+            message = 'Product added'
+            redirect(url_for('add_product'))
+        except errors.StoreError:
+            message = "Smth wrong, pls check form"
+    return render_template("add_product.html", all_categories=all_categories, message=message)
 
 
 @app.route('/categories')

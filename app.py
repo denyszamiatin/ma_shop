@@ -131,15 +131,20 @@ def index_admin():
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
+    message = ''
     all_categories = product_categories.get_all(g.db)
     if request.method == "POST":
         product_name = request.form.get("product_name", "")
         price = request.form.get("price", "")
         img = request.files['img'].read()
         category = request.form.get("category")
-        products.add_product(g.db, product_name, price, img, category)
-
-    return render_template("add_product.html", all_categories=all_categories)
+        try:
+            products.add_product(g.db, product_name, price, img, category)
+            message = 'Product added'
+            redirect(url_for('add_product'))
+        except errors.StoreError:
+            message = "Smth wrong, pls check form"
+    return render_template("add_product.html", all_categories=all_categories, message=message)
 
 
 @app.route('/categories')
@@ -163,6 +168,26 @@ def add_news():
     return render_template('add_news.html', title=title, post=post)
 
 
+@app.route('/admin/edit_category/', methods=("GET", "POST"))
+def edit_category():
+    message = ""
+    all_categories = product_categories.get_all(g.db)
+    if request.method == "POST":
+        category_id = request.form.get("category", "")
+        new_name = request.form.get("new_name", "")
+        print(category_id, new_name)
+        if category_validation.validator(new_name):
+            try:
+                product_categories.update(g.db, category_id, new_name)
+                flash("Category updated")
+                return redirect(url_for('index_admin'))
+            except errors.StoreError:
+                message = f"Category {new_name} already exist"
+        else:
+            message = "Something wrong, check form"
+    return render_template("edit_category.html", all_categories=all_categories, message=message)
+
+
 @app.route('/admin/delete_category', methods=("GET", "POST"))
 def delete_category_list():
     all_categories = product_categories.get_all(g.db)
@@ -171,7 +196,11 @@ def delete_category_list():
 
 @app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
 def delete_category(category_id):
-    product_categories.delete(g.db, category_id)
+    try:
+        product_categories.delete(g.db, category_id)
+    except psycopg2.DatabaseError:
+        flash("smths wrong")
+        redirect(url_for(index_admin))
     return redirect(url_for('delete_category_list'))
 
 

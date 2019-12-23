@@ -1,0 +1,21 @@
+{% extends "index_admin.html" %}
+{% block title %}Delete category{% endblock %}
+{% block content %}
+<div class="container ">
+<p class="alert alert-warning">{{ message }}</p>
+<form action="" method="post">
+<div class="input-group my-3">
+    <select class="form-control" name="category" required>
+        <option value="" disabled selected>Choose category to rename</option>
+        {% for category in all_categories %}
+        <option value="{{category[0]}}">{{category[1]}}</option>
+        {% endfor %}
+    </select>
+
+    <input type="text" class="form-control" id="category_input" name="new_name" value="" placeholder="Category new name" required>
+
+</div>
+<input type="submit" value="SAVE CHANGES" class="btn-sm btn-danger btn-block">
+</form>
+</div>
+{% endblock %}

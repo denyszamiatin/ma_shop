@@ -23,7 +23,7 @@
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Category</a>
               <div class="dropdown-menu">
                 <a class="dropdown-item" href="/admin/add_category">Add</a>
-                <a class="dropdown-item" href="#">Edit</a>
+                <a class="dropdown-item" href="/admin/edit_category">Edit</a>
                 <a class="dropdown-item" href="/admin/delete_category">Delete</a>
               </div>
           </li>
@@ -41,6 +41,11 @@
 </nav>
 {% endblock %}
 {% block content %}
+    <div class="container">
+        {% for message in get_flashed_messages() %}
+      <p class="alert alert-success">{{ message }}</p>
+    {% endfor %}
+    </div>
     <div class="img-container">
         <img src="https://djfgy1h8qi1y7.cloudfront.net/fit-in/1920x760/2058885d63644432ad0a80ef5045ab98.jpg"
              width=100% alt="Mates" class="center">

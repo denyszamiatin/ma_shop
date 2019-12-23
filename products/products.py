@@ -27,7 +27,7 @@ def add_product(conn, product_name: str, price: int, img, category_id: int) -> N
 def get_product(conn, product_id: int) -> str:
     """
     Get product from db using index parameter.
-    :param con: str
+    :param conn: str
     :param product_id: int
     :return: str
     """

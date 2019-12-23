@@ -14,7 +14,7 @@ def create(conn, name: str) -> None:
         try:
             cursor.execute(f"insert into product_categories (name) values('{name}')")
             conn.commit()
-        except psycopg2.errors.UniqueViolation:
+        except TypeError:
             raise errors.StoreError
 
 

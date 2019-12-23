@@ -12,14 +12,13 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="/catalogue">Catalogue</a></li>
+        <li class="nav-item"><a class="nav-link" href="/categories">Catalogue</a></li>
         <li class="nav-item"><a class="nav-link" href="/product">Products</a></li>
         <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
         <li class="nav-item"><a class="nav-link" href="/news">News</a></li>
         <li class="nav-item"><a class="nav-link" href="/contacts">Contacts</a></li>
         <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
         <li class="nav-item"><a class="nav-link" href="/registration">Registration</a></li>
-        <li class="nav-item"><a class="nav-link" href="/product_comments">Product comments</a></li>
       </ul>
     </div>
   </div>
@@ -29,7 +28,7 @@
     <!-- Page Content -->
     <div class="container">
     {% for message in get_flashed_messages() %}
-      <p class="badge badge-success">{{ message }}</p>
+      <p class="alert alert-success">{{ message }}</p>
     {% endfor %}
       <h1 class="mt-4">Mate-academy shop</h1>
       <p>Free shipping allover the world!</p>

@@ -100,7 +100,7 @@ def delete_product(conn, product_id: int) -> None:
     with conn.cursor() as cursor:
         cursor.execute("""delete from products 
                         where id = {0}""".format(product_id))
-        if cursor.fetchone():
+        if cursor.rowcount:
             conn.commit()
         else:
             raise errors.StoreError

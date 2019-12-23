@@ -226,6 +226,16 @@ def edit_news(news_id):
         return redirect(url_for("change_news"))
 
 
+@app.route("/admin/delete_product", methods=("GET", "POST"))
+def delete_product():
+    if request.method == "POST":
+        product_id = request.form.get("product_id", "")
+        products.delete_product(g.db, product_id)
+        flash("Product deleted")
+    return render_template("delete_product.html")
+
+
+
 """@app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
     product = products.get_product(product_id)

@@ -38,23 +38,17 @@ def catalogue():
     return render_template("catalogue.html")
 
 
-@app.route('/product')
+@app.route('/product/<product.id>', methods=("GET", "POST"))
 def product():
-    message = comment = email = ""
+    comment = ""
     if request.method == "POST":
         comment = request.form.get("comment", "")
-        email = request.form.get("email", "")
-        if session['user_id'] == user.login(g.db, email):
-            try:
-                comments.add(g.db, session['id_product'], session['id_user'], comment)
-
-            except errors.StoreError:
-                message = "Wrong email"
-
-        else:
-            message = "Please log in for leaving your comment"
+        if 'user_id' not in session:
+            flash("Please log in for leaving your comment")
             return redirect(url_for('login'))
-    return render_template("product.html", message=message, comment=comment, email=email)
+        else:
+            comments.add(g.db, product.id, session['id_user'], comment)
+    return render_template("product.html", comment=comment)
 
 
 @app.route('/cart')
@@ -131,11 +125,6 @@ def add_category():
             message = "Something wrong, check form"
 
     return render_template("add_category.html", message=message, category_name=category_name)
-
-
-@app.route('/product_comments')
-def product_comments():
-    return render_template("product_comments.html")
 
 
 @app.route('/admin')

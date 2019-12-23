@@ -8,6 +8,7 @@ from users import validation, user
 from products import products
 from product_categories import product_categories, category_validation
 from errors import errors
+from comments import comments
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -34,13 +35,26 @@ def index():
 
 @app.route('/catalogue')
 def catalogue():
-
     return render_template("catalogue.html")
 
 
 @app.route('/product')
 def product():
-    return render_template("product.html")
+    message = comment = email = ""
+    if request.method == "POST":
+        comment = request.form.get("comment", "")
+        email = request.form.get("email", "")
+        if session['user_id'] == user.login(g.db, email):
+            try:
+                comments.add(g.db, session['id_product'], session['id_user'], comment)
+
+            except errors.StoreError:
+                message = "Wrong email"
+
+        else:
+            message = "Please log in for leaving your comment"
+            return redirect(url_for('login'))
+    return render_template("product.html", message=message, comment=comment, email=email)
 
 
 @app.route('/cart')

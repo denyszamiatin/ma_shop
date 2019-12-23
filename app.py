@@ -163,6 +163,26 @@ def add_news():
     return render_template('add_news.html', title=title, post=post)
 
 
+@app.route('/admin/edit_category/', methods=("GET", "POST"))
+def edit_category():
+    message = ""
+    all_categories = product_categories.get_all(g.db)
+    if request.method == "POST":
+        category_id = request.form.get("category", "")
+        new_name = request.form.get("new_name", "")
+        print(category_id, new_name)
+        if category_validation.validator(new_name):
+            try:
+                product_categories.update(g.db, category_id, new_name)
+                flash("Category updated")
+                return redirect(url_for('index_admin'))
+            except errors.StoreError:
+                message = f"Category {new_name} already exist"
+        else:
+            message = "Something wrong, check form"
+    return render_template("edit_category.html", all_categories=all_categories, message=message)
+
+
 @app.route('/admin/delete_category', methods=("GET", "POST"))
 def delete_category_list():
     all_categories = product_categories.get_all(g.db)

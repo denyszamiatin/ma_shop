@@ -3,11 +3,38 @@
 {% block content %}
 {% for category in categories %}
 <br>
-<h2 class = "text-center" style="margin-top:20px;"><strong>{{category[1]}}</strong></h2>
+<div class="container-fluid">
+    <h2 class = "text-center" style="margin-top:20px;"><strong>{{category[1]}}</strong></h2>
+</div>
+<div class="container-fluid">
+    <div class="row mt-3">
+         <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">ID</h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">IMAGE</h4>
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <h4 style="margin-top:20px;">NAME</a></h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">PRICE</h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">BUY</h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">ADD TO CART</h4>
+        </div>
+    </div>
+</div>
 {% for product in products %}
 {% if category[0] == product[4] %}
 <div class="container-fluid">
     <div class="row mt-3">
+         <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">{{product[0]}}</h4>
+        </div>
         <div class="col-sm text-center">
             <img class="img-responsive" src=" " alt="prewiew" width="120" height="70">
         </div>

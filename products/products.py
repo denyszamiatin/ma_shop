@@ -128,7 +128,7 @@ def get_for_cart(conn, product_id):
     """
 
     with conn.cursor() as cursor:
-        cursor.execute(f"""select name, price, image from products where deleted=false and id={product_id}""")
+        cursor.execute(f"""select name, price from products where deleted=false and id={product_id}""")
         try:
             return cursor.fetchone()
         except TypeError:

@@ -72,7 +72,7 @@ def cart_call():
             cart.delete(g.db, int(session["user_id"]), int(request.form.get("delete_item", "")))
         for product_id in cart.get_all(g.db, int(session["user_id"])):
             if product_id not in cart_items:
-                name, price, image = products.get_for_cart(g.db, product_id)
+                name, price = products.get_for_cart(g.db, product_id)
                 cart_items[product_id] = {
                     "product_id": product_id,
                     "name": name,

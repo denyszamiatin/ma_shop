@@ -32,7 +32,8 @@ def get_average(conn, id_product: int) -> float:
     """
     try:
         with conn.cursor() as cursor:
-            cursor.execute(f"""select avg(rating) FROM mark WHERE id_product = '{id_product}'""")
+            cursor.execute(f"""select to_char(avg(rating), 'FM999999999.00') 
+                            from mark where id_product = '{id_product}'""")
             avg = cursor.fetchone()[0]
         return avg
     except TypeError:

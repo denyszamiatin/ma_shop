@@ -11,6 +11,7 @@ from errors import errors
 from comments import comments
 from products import products
 from marks import mark
+from cart import cart
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = "3123123123"
@@ -39,34 +40,42 @@ def catalogue():
     return render_template("catalogue.html")
 
 
-@app.route('/product', methods=("GET", "POST"))
-def product():
-    comment = ""
-    all_products = ""
-    prod_id = ""
-    if request.method == "POST":
-        comment = request.form.get("comment", "")
-        prod_id = request.form.get("product_id")
-        if 'user_id' not in session:
-            flash("Please log in for leaving your comment")
-            return redirect(url_for('login'))
-        else:
-            comments.add(g.db, prod_id, session['id_user'], comment)
-    all_products = products.get_all(g.db)
-    return render_template("product.html", comment=comment, products=all_products)
-
-
-@app.route('/product/product_description/<product_id>')
+@app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
 def show_product(product_id):
+    avg_mark = mark.get_average(g.db, product_id)
     with g.db.cursor() as cursor:
         cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
         prod_data = cursor.fetchall()
-        return render_template("product_description.html", data=prod_data)
+        comment = ""
+        if request.method == "POST":
+            comment = request.form.get("comment", "")
+            if 'user_id' not in session:
+                flash("Please log in for leaving your comment")
+                return redirect(url_for('login'))
+            else:
+                comments.add(g.db, product_id, session['id_user'], comment)
+        return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark)
 
 
-@app.route('/cart')
-def cart():
-    return render_template("cart.html")
+@app.route('/cart', methods=("GET", "POST"))
+def cart_call():
+    cart_items = {}
+    if "user_id" in session:
+        if request.method == "POST":
+            cart.delete(g.db, int(session["user_id"]), int(request.form.get("delete_item", "")))
+        for product_id in cart.get_all(g.db, int(session["user_id"])):
+            if product_id not in cart_items:
+                name, price, image = products.get_for_cart(g.db, product_id)
+                cart_items[product_id] = {
+                    "product_id": product_id,
+                    "name": name,
+                    "price": price,
+                    "image": image,
+                    "pieces": 1
+                }
+            else:
+                cart_items[product_id]["pieces"] += 1
+    return render_template("cart.html", cart_items=cart_items)
 
 
 @app.route('/news')

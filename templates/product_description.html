@@ -4,7 +4,17 @@
 <div class="container">
     <br>
     <h2>{{data[0][1]}}</h2><br>
+    <h4>Product mark:
+        <span class="badge badge-primary">{{ avg_mark }}</span>
+    </h4>
     <img class="img-responsive" src={{data[3]}} alt="{{data[1]}}" width="480" height="280">
     <h2>Price: {{data[0][2]}}₴</h2>
+
+    <form action="" method="POST">
+        <textarea name="comment" value = "{{ comment }}" placeholder="Type your comment here"></textarea>
+        <div class="container">
+            <input type="submit" name="submit_comment" value="Send">
+        </div>
+    </form>
 </div>
 {% endblock %}

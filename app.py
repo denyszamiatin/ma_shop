@@ -55,6 +55,14 @@ def product():
     return render_template("product.html", comment=comment, products=all_products)
 
 
+@app.route('/product/product_description/<product_id>')
+def show_product(product_id):
+    with g.db.cursor() as cursor:
+        cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
+        prod_data = cursor.fetchall()
+        return render_template("product_description.html", data=prod_data)
+
+
 @app.route('/cart')
 def cart():
     return render_template("cart.html")

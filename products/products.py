@@ -113,10 +113,10 @@ def get_all(conn):
     """
 
     with conn.cursor() as cursor:
-    #    cursor.execute(f"""select category_id, name, price, image, id from products
-        cursor.execute(f"""SELECT 1, 'Chair', 180, 'https://secure.img1-ag.wfcdn.com/im/19556338/resize-h600-w600%5Ecompr-r85/3444/34441276/Kitchen+%26+Dining+Chairs.jpg', 1
-        union all select 1, 'Table', 1900, 'https://media.conforama.fr/Medias/600000/60000/9000/000/00/G_669002_A.jpg',2
-        union all select 1, 'Desk', 1200, 'https://www.ikea.com/ca/en/images/products/alex-desk-white__0735966_PE740300_S5.JPG', 3""")
+        cursor.execute(f"""select id, name, price, image, category_id from products""")
+    #     cursor.execute(f"""SELECT 1, 'Chair', 180, 'https://secure.img1-ag.wfcdn.com/im/19556338/resize-h600-w600%5Ecompr-r85/3444/34441276/Kitchen+%26+Dining+Chairs.jpg', 1
+    #     union all select 1, 'Table', 1900, 'https://media.conforama.fr/Medias/600000/60000/9000/000/00/G_669002_A.jpg',2
+    #     union all select 1, 'Desk', 1200, 'https://www.ikea.com/ca/en/images/products/alex-desk-white__0735966_PE740300_S5.JPG', 3""")
         try:
             return cursor.fetchall()
         except TypeError:

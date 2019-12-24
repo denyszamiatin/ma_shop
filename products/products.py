@@ -98,8 +98,7 @@ def delete_product(conn, product_id: int) -> None:
     :return: None
     """
     with conn.cursor() as cursor:
-        cursor.execute("""delete from products 
-                        where id = {0}""".format(product_id))
+        cursor.execute(f"""update products set deleted =  True where id = '{product_id}'""")
         if cursor.rowcount:
             conn.commit()
         else:
@@ -113,7 +112,7 @@ def get_all(conn):
     """
 
     with conn.cursor() as cursor:
-        cursor.execute(f"""select id, name, price, image, category_id from products""")
+        cursor.execute(f"""select id, name, price, image, category_id from products where deleted=false""")
     #     cursor.execute(f"""SELECT 1, 'Chair', 180, 'https://secure.img1-ag.wfcdn.com/im/19556338/resize-h600-w600%5Ecompr-r85/3444/34441276/Kitchen+%26+Dining+Chairs.jpg', 1
     #     union all select 1, 'Table', 1900, 'https://media.conforama.fr/Medias/600000/60000/9000/000/00/G_669002_A.jpg',2
     #     union all select 1, 'Desk', 1200, 'https://www.ikea.com/ca/en/images/products/alex-desk-white__0735966_PE740300_S5.JPG', 3""")

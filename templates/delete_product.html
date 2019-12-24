@@ -17,11 +17,11 @@
         <tbody>
         {% for product in products %}
             <tr>
-                <td>{{product[4]}}</td>
+                <td>{{product[0]}}</td>
                 <td>{{product[1]}}</td>
                 <td>{{product[2]}}</td>
                 <td>
-                    <form action="{{url_for('delete_confirm', product_id=product[4])}}" method="post">
+                    <form action="{{url_for('delete_confirm', product_id=product[0])}}" method="post">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="submit" value="Delete" class="btn-sm btn-danger">
                     </form>

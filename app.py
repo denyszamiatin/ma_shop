@@ -2,7 +2,10 @@ import psycopg2
 from flask import Flask, render_template, request, redirect, url_for, flash, g, session
 from flask_bootstrap import Bootstrap
 
+from cart import cart
+from comments import comments
 from db_utils.config import DATABASE
+from marks import mark
 from news import news_
 from users import validation, user
 from products import products
@@ -236,6 +239,22 @@ def list_products():
 def edit_product(product_id):
     product = products.get_product(g.db, product_id)
     return render_template("edit_product.html", product=product)
+
+
+@app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
+def set_product_mark(product_id):
+    if request.method == "POST":
+        product_mark = request.form.get("mark", "")
+        if 'user_id' not in session:
+            flash("Please log in for leaving your mark")
+            return redirect(url_for('login'))
+        else:
+            if int(product_mark) <= 0 or int(product_mark) > 5:
+                flash("Mark should be between 1 and 5")
+            else:
+                mark.add(g.db, session['id_user'], product_id, product_mark)
+                flash("Your mark has been added successfully")
+        return redirect(url_for('catalogue'))
 
 
 """@app.route('/cart/<int:product_id>', methods=['POST'])

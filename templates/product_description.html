@@ -2,19 +2,56 @@
 {% block title %} {{data[0][1]}} {% endblock %}
 {% block content %}
 <div class="container">
-    <br>
-    <h2>{{data[0][1]}}</h2><br>
-    <h4>Product mark:
-        <span class="badge badge-primary">{{ avg_mark }}</span>
-    </h4>
-    <img class="img-responsive" src={{data[3]}} alt="{{data[1]}}" width="480" height="280">
-    <h2>Price: {{data[0][2]}}₴</h2>
+    {% with messages = get_flashed_messages() %}
+    {% if messages%}
+    {% for message in messages %}
+    {% if message == "Your mark has been added successfully" %}
+    <div class="container">
+        <span class="badge badge-pill badge-success">{{message}}</span>
+    </div>
+    {% elif message == "Mark should be between 1 and 5"%}
+    <div class="container">
+        <span class="badge badge-pill badge-danger">{{message}}</span>
+    </div>
+    {%else%}
+    <div class="container">
+        <span class="badge badge-pill badge-primary">{{message}}</span>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
 
-    <form action="" method="POST">
-        <textarea name="comment" value = "{{ comment }}" placeholder="Type your comment here"></textarea>
-        <div class="container">
-            <input type="submit" name="submit_comment" value="Send">
+    <div class="container">
+        <br>
+        <h2>{{data[0][1]}}</h2><br>
+        <h4>Product mark:
+            <span class="badge badge-primary">{{ avg_mark }}</span>
+        </h4>
+        <img class="img-responsive" src={{data[3]}} alt="{{data[1]}}" width="480" height="280">
+        <h2>Price: {{data[0][2]}}₴</h2>
+
+
+        <form action="" method="POST">
+            <textarea name="comment" value="{{ comment }}" placeholder="Type your comment here"></textarea>
+            <div class="container">
+                <input type="submit" name="submit_comment" value="Send">
+            </div>
+        </form>
+
+
+        <!--MARKS-->
+
+        <div class="btn-group">
+            <form method="post" action="{{ url_for('set_product_mark', product_id=data[0][0])}}">
+                <label>
+                    <input name="mark" type="text" min="1" max="5" maxlength="25" placeholder="mark">
+                </label>
+                <button type="submit" class="btn btn-danger">Submit</button>
+            </form>
         </div>
-    </form>
+        <!--END MARKS-->
+    </div>
+
 </div>
 {% endblock %}

@@ -42,6 +42,7 @@ def catalogue():
 
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
 def show_product(product_id):
+    avg_mark = mark.get_average(g.db, product_id)
     with g.db.cursor() as cursor:
         cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
         prod_data = cursor.fetchall()
@@ -53,7 +54,7 @@ def show_product(product_id):
                 return redirect(url_for('login'))
             else:
                 comments.add(g.db, product_id, session['id_user'], comment)
-        return render_template("product_description.html", data=prod_data, comment=comment)
+        return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark)
 
 
 @app.route('/cart', methods=("GET", "POST"))

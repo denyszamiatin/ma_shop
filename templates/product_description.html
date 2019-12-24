@@ -24,12 +24,12 @@
 
     <div class="container">
         <br>
-        <h2>{{data[0][1]}}</h2><br>
+        <h2>{{data[1]}}</h2><br>
         <h4>Product mark:
             <span class="badge badge-primary">{{ avg_mark }}</span>
         </h4>
-        <img class="img-responsive" src={{data[3]}} alt="{{data[1]}}" width="480" height="280">
-        <h2>Price: {{data[0][2]}}₴</h2>
+        <img class="img-responsive" src="/image/{{data[0]}}" alt="{{data[1]}}" width="480" height="280">
+        <h2>Price: {{data[2]}}₴</h2>
 
 
         <form action="" method="POST">
@@ -43,7 +43,7 @@
         <!--MARKS-->
 
         <div class="btn-group">
-            <form method="post" action="{{ url_for('set_product_mark', product_id=data[0][0])}}">
+            <form method="post" action="{{ url_for('set_product_mark', product_id=data[0])}}">
                 <label>
                     <input name="mark" type="text" min="1" max="5" maxlength="25" placeholder="mark">
                 </label>

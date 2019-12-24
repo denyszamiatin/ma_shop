@@ -33,7 +33,6 @@ def close_db(error):
 @app.route('/image/<ln>')
 def image(ln):
     sn = products.get_product_image(g.db, ln)
-    print(sn)
     return send_file(io.BytesIO(sn), mimetype='image/jpeg')
 
 
@@ -189,8 +188,11 @@ def add_product():
     return render_template("add_product.html", all_categories=all_categories, message=message)
 
 
-@app.route('/categories')
+@app.route('/categories', methods=("GET", "POST"))
 def categories():
+    if request.method == "POST":
+        if session["user_id"]:
+            cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
     all_categories = product_categories.get_all(g.db)
     all_products = products.get_all(g.db)
     return render_template("categories.html", categories=all_categories, products=all_products)

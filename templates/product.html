@@ -4,27 +4,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src='https://kit.fontawesome.com/a076d05399.js'></script>
 <div class="container">
-
-    {% with messages = get_flashed_messages() %}
-    {% if messages%}
-    {% for message in messages %}
-    {% if message == "Your mark has been added successfully" %}
-    <div class="container">
-        <span class="badge badge-pill badge-success">{{message}}</span>
-    </div>
-    {% elif message == "Mark should be between 1 and 5"%}
-    <div class="container">
-        <span class="badge badge-pill badge-danger">{{message}}</span>
-    </div>
-    {%else%}
-    <div class="container">
-        <span class="badge badge-pill badge-primary">{{message}}</span>
-    </div>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-
     {% for product in products %}
     <div class="row mt-3">
         <div class="col-sm-auto text-center">
@@ -61,18 +40,6 @@
             </div>
         </div>
     </div>
-    <!--MARKS-->
-    <div class="container">
-        <div class="btn-group">
-            <form method="post" action="{{ url_for('set_product_mark', product_id=product[0]) }}">
-                <label>
-                    <input name="mark" type="text" min="1" max="5" maxlength="25" placeholder="mark">
-                </label>
-                <button type="submit" class="btn btn-danger">Submit</button>
-            </form>
-        </div>
-    </div>
-    <!--END MARKS-->
     <div class="col-6 text-center" style="margin-top:10px;">
 
     </div>

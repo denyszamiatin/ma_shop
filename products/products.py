@@ -3,8 +3,6 @@ CRUD properties implementation
 """
 import errors.errors as errors
 import psycopg2
-# from base64 import b64encode
-# import requests
 
 
 def add_product(conn, product_name: str, price: int, img, category_id: int) -> None:
@@ -19,8 +17,8 @@ def add_product(conn, product_name: str, price: int, img, category_id: int) -> N
     """
 
     with conn.cursor() as cursor:
-        cursor.execute("""insert into products(name, price, image, category_id)
-                            values ('{0}', '{1}', {2}, '{3}')""".format(product_name, price, psycopg2.Binary(img), category_id))
+        cursor.execute("insert into products(name, price, image, category_id) values (%s, %s, %s, %s)",
+                       (product_name, price, psycopg2.Binary(img), category_id))
     conn.commit()
 
 
@@ -67,7 +65,7 @@ def get_product_image(con, product_id: int) -> str:
         cursor.execute("""select image from products
                             where id = {0}""".format(product_id))
         try:
-            return cursor.fetchone()[0]
+            return cursor.fetchone()
         except TypeError:
             raise errors.StoreError
 
@@ -113,23 +111,7 @@ def get_all(conn):
 
     with conn.cursor() as cursor:
         cursor.execute(f"""select id, name, price, image, category_id from products where deleted=false""")
-    #     cursor.execute(f"""SELECT 1, 'Chair', 180, 'https://secure.img1-ag.wfcdn.com/im/19556338/resize-h600-w600%5Ecompr-r85/3444/34441276/Kitchen+%26+Dining+Chairs.jpg', 1
-    #     union all select 1, 'Table', 1900, 'https://media.conforama.fr/Medias/600000/60000/9000/000/00/G_669002_A.jpg',2
-    #     union all select 1, 'Desk', 1200, 'https://www.ikea.com/ca/en/images/products/alex-desk-white__0735966_PE740300_S5.JPG', 3""")
         try:
             return cursor.fetchall()
-        except TypeError:
-           raise errors.StoreError
-
-def get_for_cart(conn, product_id):
-    """
-    :param conn: connection, product_id
-    :return: name, price, image
-    """
-
-    with conn.cursor() as cursor:
-        cursor.execute(f"""select name, price, image from products where deleted=false and id={product_id}""")
-        try:
-            return cursor.fetchone()
         except TypeError:
            raise errors.StoreError

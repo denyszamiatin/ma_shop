@@ -20,7 +20,7 @@ def add_product(conn, product_name: str, price: int, img, category_id: int) -> N
 
     with conn.cursor() as cursor:
         cursor.execute("""insert into products(name, price, image, category_id)
-                            values ('{0}', '{1}', '{2}', '{3}')""".format(product_name, price, (psycopg2.Binary(img),), category_id))
+                            values ('{0}', '{1}', {2}, '{3}')""".format(product_name, price, psycopg2.Binary(img), category_id))
     conn.commit()
 
 
@@ -67,7 +67,7 @@ def get_product_image(con, product_id: int) -> str:
         cursor.execute("""select image from products
                             where id = {0}""".format(product_id))
         try:
-            return cursor.fetchone()
+            return cursor.fetchone()[0]
         except TypeError:
             raise errors.StoreError
 
@@ -118,5 +118,18 @@ def get_all(conn):
     #     union all select 1, 'Desk', 1200, 'https://www.ikea.com/ca/en/images/products/alex-desk-white__0735966_PE740300_S5.JPG', 3""")
         try:
             return cursor.fetchall()
+        except TypeError:
+           raise errors.StoreError
+
+def get_for_cart(conn, product_id):
+    """
+    :param conn: connection, product_id
+    :return: name, price, image
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(f"""select name, price, image from products where deleted=false and id={product_id}""")
+        try:
+            return cursor.fetchone()
         except TypeError:
            raise errors.StoreError

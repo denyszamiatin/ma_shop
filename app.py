@@ -1,11 +1,11 @@
 import psycopg2
-from flask import Flask, render_template, request, redirect, url_for, flash, g, session
+import io
+from flask import Flask, render_template, request, redirect, url_for, flash, g, session, send_file
 from flask_bootstrap import Bootstrap
 
 from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
-from products import products
 from product_categories import product_categories, category_validation
 from errors import errors
 from comments import comments
@@ -28,6 +28,13 @@ def close_db(error):
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
+
+
+@app.route('/image/<ln>')
+def image(ln):
+    sn = products.get_product_image(g.db, ln)
+    print(sn)
+    return send_file(io.BytesIO(sn), mimetype='image/jpeg')
 
 
 @app.route('/') 
@@ -69,7 +76,6 @@ def cart_call():
                     "product_id": product_id,
                     "name": name,
                     "price": price,
-                    "image": image,
                     "pieces": 1
                 }
             else:

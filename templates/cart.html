@@ -10,28 +10,29 @@
             <b>Shipping cart</b>
             <div class="clearfix"></div>
         </div>
-{% for car_item in cart_items.values() %}
+{% for cart_item in cart_items.values() %}
         <div class="card-body">
             <!-- PRODUCT -->
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-2 text-center">
-                    <img class="img-responsive" src="https://consumer-img.huawei.com/content/dam/huawei-cbg-site/common/campaign/matebook-series/img/Huawei-MateBook-Series-ipad.png" alt="prewiew" width="120" height="80">
+                    <img class="img-responsive" src="/image/{{cart_item["product_id"]}}" alt="prewiew" width="120" height="80">
                 </div>
                 <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
-                    <h4 class="product-name"><strong>{{car_item["name"]}}</strong></h4>
+                    <h4 class="product-name"><strong>{{cart_item["name"]}}</strong></h4>
                 </div>
                 <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
                     <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
-                        <h6><strong>{{car_item["price"]}} <span class="text-muted">&nbsp;x</span></strong></h6>
+                        <h6><strong>{{cart_item["price"]}} <span class="text-muted">&nbsp;x</span></strong></h6>
                     </div>
                     <div class="col-4 col-sm-4 col-md-4">
                         <div>
-                            <input type="number" step="1" max="99" min="1" value="{{car_item["pieces"]}}" title="Qty" class="qty" size="4">
+                            <input type="number" step="1" max="99" min="1" value="{{cart_item["pieces"]}}" title="Qty" class="qty" size="4">
                         </div>
                     </div>
                     <div class="col-2 col-sm-2 col-md-2 text-right">
                         <form method="post">
-                        <button type="button" class="btn btn-outline-danger btn-xs">
+                        <input type="hidden" name="delete_item" value="{{cart_item["product_id"] }}">
+                        <button class="btn btn-outline-danger btn-xs">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>
                         </form>

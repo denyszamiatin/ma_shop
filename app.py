@@ -79,6 +79,17 @@ def contacts():
     return render_template("contacts.html")
 
 
+@app.route('/logout')
+def logout():
+    if "user_id" in session:
+        session.pop("user_id")
+        flash("You logged out")
+        return redirect(url_for('index'))
+    else:
+        flash("You are not logged in")
+        return redirect(url_for('index'))
+
+
 @app.route('/login', methods=("GET", "POST"))
 def login():
     message = email = ""

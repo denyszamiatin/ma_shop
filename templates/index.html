@@ -12,14 +12,17 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="/catalogue">Catalogue</a></li>
+        <li class="nav-item"><a class="nav-link" href="/categories">Catalogue</a></li>
         <li class="nav-item"><a class="nav-link" href="/product">Products</a></li>
         <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
         <li class="nav-item"><a class="nav-link" href="/news">News</a></li>
         <li class="nav-item"><a class="nav-link" href="/contacts">Contacts</a></li>
+          {%  if "user_id" not in session %}
         <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
         <li class="nav-item"><a class="nav-link" href="/registration">Registration</a></li>
-        <li class="nav-item"><a class="nav-link" href="/product_comments">Product comments</a></li>
+          {% else %}
+        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+          {% endif %}
       </ul>
     </div>
   </div>

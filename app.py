@@ -6,9 +6,11 @@ from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
 from products import products
-from product_categories import product_categories
+from product_categories import product_categories, category_validation
 from errors import errors
-
+from comments import comments
+from products import products
+from marks import mark
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = "3123123123"
@@ -34,13 +36,32 @@ def index():
 
 @app.route('/catalogue')
 def catalogue():
-
     return render_template("catalogue.html")
 
 
-@app.route('/product')
+@app.route('/product', methods=("GET", "POST"))
 def product():
-    return render_template("product.html")
+    comment = ""
+    all_products = ""
+    prod_id = ""
+    if request.method == "POST":
+        comment = request.form.get("comment", "")
+        prod_id = request.form.get("product_id")
+        if 'user_id' not in session:
+            flash("Please log in for leaving your comment")
+            return redirect(url_for('login'))
+        else:
+            comments.add(g.db, prod_id, session['id_user'], comment)
+    all_products = products.get_all(g.db)
+    return render_template("product.html", comment=comment, products=all_products)
+
+
+@app.route('/product/product_description/<product_id>')
+def show_product(product_id):
+    with g.db.cursor() as cursor:
+        cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
+        prod_data = cursor.fetchall()
+        return render_template("product_description.html", data=prod_data)
 
 
 @app.route('/cart')
@@ -50,13 +71,24 @@ def cart():
 
 @app.route('/news')
 def news():
-    data = news_.get_all(g.db)
-    return render_template("news.html", data=data)
+    all_news = news_.get_all(g.db)
+    return render_template("news.html", news=all_news)
 
 
 @app.route('/contacts')
 def contacts():
     return render_template("contacts.html")
+
+
+@app.route('/logout')
+def logout():
+    if "user_id" in session:
+        session.pop("user_id")
+        flash("You logged out")
+        return redirect(url_for('index'))
+    else:
+        flash("You are not logged in")
+        return redirect(url_for('index'))
 
 
 @app.route('/login', methods=("GET", "POST"))
@@ -97,12 +129,26 @@ def registration():
         else:
             message = "Something wrong, check form"
 
-    return render_template("registration.html", message=message, first_name=first_name, second_name=second_name, email=email)
+    return render_template("registration.html", message=message, first_name=first_name,
+                           second_name=second_name, email=email)
 
 
-@app.route('/product_comments')
-def product_comments():
-    return render_template("product_comments.html")
+@app.route('/admin/add_category', methods=("GET", "POST"))
+def add_category():
+    category_name = message = ''
+    if request.method == "POST":
+        category_name = request.form.get("category_name", "")
+        if category_validation.validator(category_name):
+            try:
+                product_categories.create(g.db, category_name)
+                flash("Category added")
+                return redirect(url_for('index_admin'))
+            except errors.StoreError:
+                message = f"Category with name: {category_name} already exist"
+        else:
+            message = "Something wrong, check form"
+
+    return render_template("add_category.html", message=message, category_name=category_name)
 
 
 @app.route('/admin')
@@ -112,44 +158,63 @@ def index_admin():
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
+    message = ''
     all_categories = product_categories.get_all(g.db)
     if request.method == "POST":
         product_name = request.form.get("product_name", "")
         price = request.form.get("price", "")
         img = request.files['img'].read()
         category = request.form.get("category")
-        products.add_product(g.db, product_name, price, img, category)
-
-    return render_template("add_product.html", all_categories=all_categories)
+        try:
+            products.add_product(g.db, product_name, price, img, category)
+            message = 'Product added'
+            redirect(url_for('add_product'))
+        except errors.StoreError:
+            message = "Smth wrong, pls check form"
+    return render_template("add_product.html", all_categories=all_categories, message=message)
 
 
 @app.route('/categories')
 def categories():
     all_categories = product_categories.get_all(g.db)
     all_products = products.get_all(g.db)
-
     return render_template("categories.html", categories=all_categories, products=all_products)
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
 def add_news():
+    title, post = '', ''
     if request.method == "POST":
         title = request.form.get("title", "")
         post = request.form.get("post", "")
-        id_user = 1
-        if session['user_id']:
-            id_user = session['user_id']
-        news_.add(g.db, title, post, id_user, 'Admin')
-    return render_template('add_news.html')
+        id_user = session.get('user_id', 1)
+        if not title or not post:
+            flash('All fields must be filled in')
+            redirect(url_for('add_news'))
+        else:
+            news_.add(g.db, title, post, id_user)
+    return render_template('add_news.html', title=title, post=post)
 
 
-@app.route('/admin/add_category', methods=("GET", "POST"))
-def add_category():
-    category_name = ''
+@app.route('/admin/edit_category/', methods=("GET", "POST"))
+def edit_category():
+    new_name = category_id = ""
+    all_categories = product_categories.get_all(g.db)
     if request.method == "POST":
-        category_name = request.form.get("category_name", "")
-        product_categories.create(g.db, category_name)
-    return render_template("add_category.html", category_name=category_name)
+        category_id = int(request.form.get("category", ""))
+        new_name = request.form.get("new_name", "")
+        if category_validation.validator(new_name):
+            try:
+                product_categories.update(g.db, category_id, new_name)
+                flash("Category updated")
+                return redirect(url_for('index_admin'))
+            except psycopg2.errors.UniqueViolation:
+                flash(f"Category {new_name} already exist")
+            except errors.StoreError:
+                flash("Something wrong, check form")
+        else:
+            flash("Something wrong, check form")
+    return render_template("edit_category.html", all_categories=all_categories, new_name=new_name, category_id=category_id)
 
 
 @app.route('/admin/delete_category', methods=("GET", "POST"))
@@ -160,19 +225,78 @@ def delete_category_list():
 
 @app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
 def delete_category(category_id):
-    product_categories.delete(g.db, category_id)
+    try:
+        product_categories.delete(g.db, category_id)
+    except psycopg2.DatabaseError:
+        flash("smths wrong")
+        redirect(url_for(index_admin))
     return redirect(url_for('delete_category_list'))
 
 
-# @app.route('/cart/<int:product_id>', methods=['POST'])
-# def add_to_cart(product_id):
-#
-#     product = Product.query.filter(Product.id == product_id)
-#     cart_item = CartItem(product=product)
-#     db.session.add(cart_item)
-#     db.session.commit()
-#
-#     return render_tempate('home.html', product=products)
+@app.route('/admin/change_news', methods=("GET", "POST"))
+def change_news():
+    all_news = news_.get_all(g.db)
+    return render_template("change_news.html", news=all_news)
+
+
+@app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
+def delete_news(news_id):
+    news_.delete(g.db, news_id)
+    return redirect(url_for('change_news'))
+
+
+@app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
+def edit_news(news_id):
+    if request.method == "POST":
+        new_title = request.form.get("title", "")
+        new_post = request.form.get("post", "")
+        news_.edit_news(g.db, news_id, new_title, new_post)
+        return redirect(url_for("change_news"))
+
+
+@app.route("/admin/delete_product", methods=("GET", "POST"))
+def delete_product():
+    all_products = products.get_all(g.db)
+    return render_template("delete_product.html", products=all_products)
+
+
+@app.route("/admin/delete_confirm/<product_id>", methods=("GET", "POST"))
+def delete_confirm(product_id):
+    product_ = products.get_product(g.db, product_id)
+    return render_template("delete_confirm.html", id=product_id, product=product_)
+
+
+@app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
+def delete(product_id):
+    products.delete_product(g.db, product_id)
+    flash("Deleted")
+    return redirect("/admin/delete_product")
+
+
+@app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
+def set_product_mark(product_id):
+    if request.method == "POST":
+        product_mark = request.form.get("mark", "")
+        if 'user_id' not in session:
+            flash("Please log in for leaving your mark")
+            return redirect(url_for('login'))
+        else:
+            if int(product_mark) <= 0 or int(product_mark) > 5:
+                flash("Mark should be between 1 and 5")
+            else:
+                mark.add(g.db, session['id_user'], product_id, product_mark)
+                flash("Your mark has been added successfully")
+        return redirect(url_for('product'))
+
+
+"""@app.route('/cart/<int:product_id>', methods=['POST'])
+def add_to_cart(product_id):
+    product = products.get_product(product_id)
+    cart_item = CartItem(product=product)
+    db.session.add(cart_item)
+    db.session.commit()
+    return render_tempate('home.html', product=products)"""
+
 
 
 if __name__ == '__main__':

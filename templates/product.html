@@ -4,27 +4,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src='https://kit.fontawesome.com/a076d05399.js'></script>
 <div class="container">
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages%}
+    {% for message in messages %}
+    {% if message == "Your mark has been added successfully" %}
+    <div class="container">
+        <span class="badge badge-pill badge-success">{{message}}</span>
+    </div>
+    {% elif message == "Mark should be between 1 and 5"%}
+    <div class="container">
+        <span class="badge badge-pill badge-danger">{{message}}</span>
+    </div>
+    {%else%}
+    <div class="container">
+        <span class="badge badge-pill badge-primary">{{message}}</span>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% for product in products %}
     <div class="row mt-3">
         <div class="col-sm-auto text-center">
-            <h5 style="margin-top:20px;">1</h5>
+            <h5 style="margin-top:20px;">{{product[0]}}</h5>
         </div>
         <div class="col-sm text-center">
-                    <img class="img-responsive" src="https://consumer-img.huawei.com/content/dam/huawei-cbg-site/common/campaign/matebook-series/img/Huawei-MateBook-Series-ipad.png" alt="prewiew" width="120" height="70">
+            <img class="img-responsive" src={{product[3]}} alt="{{product[1]}}" width="120" height="70">
         </div>
         <div class="col-6 col-md-4 text-center">
-            <h4 style="margin-top:20px;"><a style="text-decoration: none;" href=" "><strong>HUAWEI MateBook 13</strong></a></h4>
+            <h4 style="margin-top:20px;"><a style="text-decoration: none;"
+                                            href="/product/product_description/{{product[0]}}"><strong>{{product[1]}}</strong></a>
+            </h4>
         </div>
         <div class="col-sm text-center">
-            <h4 style="margin-top:20px;">25₴</h4>
+            <h4 style="margin-top:20px;">{{product[2]}}₴</h4>
         </div>
         <div class="col-sm text-center" style="margin-top:10px;">
             <button type="button" class="btn btn-success btn-lg"></i>Buy <i class='fas fa-cart-arrow-down'></i></button>
         </div>
-        <div class="col-sm text-center" style="margin-top:10px;">
-            <form action="/cart" method="get">
-                <button type="submit" class="btn btn-success btn-lg">Add to cart <i class='fas fa-cart-plus'></i></button>
+        <div class="col-sm text-center" style="n-top:10px;display: inline-block">
+            <div>
+                <form action="/cart" method="get">
+                    <button type="submit" class="btn btn-success btn-lg">Add to cart <i class='fas fa-cart-plus'></i>
+                    </button>
+                </form>
+            </div>
+            <div>
+                <form action="" method="POST">
+                    <textarea name="comment" rows="2" value="{{ comment }}"
+                              placeholder="Type your comment here"></textarea>
+                    <input type="hidden" name="product_id" value={{product[4]}}>
+                    <input type="submit" name="submit_comment" value="Send">
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--MARKS-->
+    <div class="container">
+        <div class="btn-group">
+            <form method="post" action="{{ url_for('set_product_mark', product_id=product[0]) }}">
+                <label>
+                    <input name="mark" type="text" min="1" max="5" maxlength="25" placeholder="mark">
+                </label>
+                <button type="submit" class="btn btn-danger">Submit</button>
             </form>
         </div>
     </div>
+    <!--END MARKS-->
+    <div class="col-6 text-center" style="margin-top:10px;">
+
+    </div>
+    <hr>
+    {% endfor %}
 </div>
+
 {% endblock %}

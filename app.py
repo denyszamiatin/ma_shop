@@ -52,7 +52,7 @@ def show_product(product_id):
     avg_mark = mark.get_average(g.db, product_id)
     with g.db.cursor() as cursor:
         cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
-        prod_data = cursor.fetchall()
+        prod_data = cursor.fetchone()
         comment = ""
         if request.method == "POST":
             comment = request.form.get("comment", "")

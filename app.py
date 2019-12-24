@@ -10,6 +10,7 @@ from product_categories import product_categories, category_validation
 from errors import errors
 from comments import comments
 from products import products
+from marks import mark
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = "3123123123"
@@ -270,6 +271,23 @@ def delete(product_id):
     products.delete_product(g.db, product_id)
     flash("Deleted")
     return redirect("/admin/delete_product")
+
+
+@app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
+def set_product_mark(product_id):
+    if request.method == "POST":
+        product_mark = request.form.get("mark", "")
+        if 'user_id' not in session:
+            flash("Please log in for leaving your mark")
+            return redirect(url_for('login'))
+        else:
+            if int(product_mark) <= 0 or int(product_mark) > 5:
+                flash("Mark should be between 1 and 5")
+            else:
+                mark.add(g.db, session['id_user'], product_id, product_mark)
+                flash("Your mark has been added successfully")
+        return redirect(url_for('product'))
+
 
 """@app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):

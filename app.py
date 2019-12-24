@@ -238,18 +238,6 @@ def edit_product(product_id):
     return render_template("edit_product.html", product=product)
 
 
-@app.route('/admin/list_products', methods=("GET", "POST"))
-def list_products():
-    all_products = products.get_all(g.db)
-    return render_template("list_products.html", all_products=all_products)
-
-
-@app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
-def edit_product(product_id):
-    product = products.get_product(g.db, product_id)
-    return render_template("edit_product.html", product=product)
-
-
 """@app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
     product = products.get_product(product_id)

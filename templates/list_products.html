@@ -1,11 +1,11 @@
 {% extends "index_admin.html" %}
-{% block title %}Delete category{% endblock %}
+{% block title %}All products{% endblock %}
 {% block content %}
 <div class="container">
     <table class="table table-striped w-auto table-bordered">
         <thead>
         <tr>
-            <th>id</th>
+            <th>Product id</th>
             <th>Product name</th>
             <th>Price</th>
             <th>Image</th>
@@ -15,15 +15,14 @@
         <tbody>
         {% for product in all_products %}
             <tr>
-                <td>{{product[4]}}</td>
+                <td>{{product[0]}}</td>
                 <td>{{product[1]}}</td>
                 <td>{{product[2]}}</td>
-                <td>Image</td>
                 <td>
-                    <form action="{{url_for('delete_category', product_id=product[4])}}" method="post">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <input type="submit" value="Delete" class="btn-sm btn-danger">
-                    </form>
+                    Image
+                </td>
+                <td>
+                    <a href="{{ url_for('edit_product', product_id=product[0]) }}"><button>Edit</button></a>
                 </td>
             </tr>
         {% endfor %}

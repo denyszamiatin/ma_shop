@@ -39,25 +39,34 @@ def catalogue():
     return render_template("catalogue.html")
 
 
-@app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
+@app.route('/product', methods=("GET", "POST"))
+def product():
+    comment = ""
+    all_products = ""
+    prod_id = ""
+    if request.method == "POST":
+        comment = request.form.get("comment", "")
+        prod_id = request.form.get("product_id")
+        if 'user_id' not in session:
+            flash("Please log in for leaving your comment")
+            return redirect(url_for('login'))
+        else:
+            comments.add(g.db, prod_id, session['id_user'], comment)
+    all_products = products.get_all(g.db)
+    return render_template("product.html", comment=comment, products=all_products)
+
+
+@app.route('/product/product_description/<product_id>')
 def show_product(product_id):
+    avg_mark = mark.get_average(g.db, product_id)
     with g.db.cursor() as cursor:
         cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
         prod_data = cursor.fetchall()
-        comment = ""
-        if request.method == "POST":
-            comment = request.form.get("comment", "")
-            if 'user_id' not in session:
-                flash("Please log in for leaving your comment")
-                return redirect(url_for('login'))
-            else:
-                comments.add(g.db, product_id, session['id_user'], comment)
-        return render_template("product_description.html", data=prod_data, comment=comment)
+        return render_template("product_description.html", data=prod_data, avg_mark=avg_mark)
 
 
 @app.route('/cart')
 def cart():
-
     return render_template("cart.html")
 
 

@@ -111,7 +111,7 @@ def add_category():
                 product_categories.create(g.db, category_name)
                 flash("Category added")
                 return redirect(url_for('index_admin'))
-            except psycopg2.errors.UniqueViolation:
+            except errors.StoreError:
                 message = f"Category with name: {category_name} already exist"
         else:
             message = "Something wrong, check form"

@@ -113,7 +113,7 @@ def get_all(conn):
     """
 
     with conn.cursor() as cursor:
-        cursor.execute(f"""select id, name, price, image, category_id from products where deleted=false""")
+        cursor.execute(f"""select id, name, price, image, category_id from products where deleted=false order by id""")
         try:
             return cursor.fetchall()
         except TypeError:
@@ -132,3 +132,60 @@ def get_for_cart(conn, product_id):
             return cursor.fetchone()
         except TypeError:
             raise errors.StoreError
+
+
+def get_product_2(conn, product_id: int) -> str:
+    """
+    Get product from db using index parameter.
+    :param conn: str
+    :param product_id: int
+    :return: str
+    """
+    with conn.cursor() as cursor:
+        cursor.execute("""select id, name, price, image, category_id from products
+                                where id = {0}""".format(product_id))
+        try:
+            return cursor.fetchone()
+        except TypeError:
+            raise errors.StoreError
+
+
+def get_all_2(conn) -> str:
+    """
+    Get product from db using index parameter.
+    :param conn: str
+    :param product_id: int
+    :return: str
+    """
+    with conn.cursor() as cursor:
+        cursor.execute("""select products.id, 
+                                products.name, 
+                                products.price, 
+                                products.image, 
+                                products.category_id, 
+                                product_categories.name
+                            from products
+                            inner join product_categories
+                            on products.category_id=product_categories.id
+                            where products.deleted=false order by id""")
+        try:
+            return cursor.fetchall()
+        except TypeError:
+            raise errors.StoreError
+
+
+def edit_product_2(conn, product_id: int, product_name: str, price: int, category: int) -> None:
+    """
+    Update task in db.
+    :param conn: str
+    :param price: int
+    :param product_id: int
+    :return: None
+    """
+    with conn.cursor() as cursor:
+        cursor.execute("""update products
+                        set name = '{1}',
+                        price = '{2}',
+                        category_id = '{3}'
+                        where id = '{0}'""".format(product_id, product_name, price, category))
+        conn.commit()

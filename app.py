@@ -250,8 +250,6 @@ def delete_category(category_id):
         redirect(url_for(index_admin))
     return redirect(url_for('delete_category_list'))
 
-#---------------------------------------------------------
-
 
 @app.route('/admin/list_products', methods=("GET", "POST"))
 def list_products():
@@ -275,8 +273,6 @@ def edit_product(product_id):
         except errors.StoreError:
             flash("Smth wrong, pls try again")
     return render_template("edit_product.html", product=product)
-
-#---------------------------------------------------------
 
 
 @app.route('/admin/change_news', methods=("GET", "POST"))

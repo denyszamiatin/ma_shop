@@ -262,13 +262,25 @@ def delete_category(category_id):
 
 @app.route('/admin/list_products', methods=("GET", "POST"))
 def list_products():
-    all_products = products.get_all(g.db)
+    all_products = products.get_all_2(g.db)
     return render_template("list_products.html", all_products=all_products)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
 def edit_product(product_id):
-    product = products.get_product(g.db, product_id)
+    product = products.get_product_2(g.db, product_id)
+    if request.method == "POST":
+        id = request.form.get("product_id", "")
+        name = request.form.get("product_name", "")
+        price = request.form.get("price", "")
+        # img = request.files['img'].read()
+        category = request.form.get("category", "")
+        try:
+            products.edit_product_2(g.db, id, name, price, category)
+            flash("Product edited")
+            return redirect(url_for('list_products'))
+        except errors.StoreError:
+            flash("Smth wrong, pls try again")
     return render_template("edit_product.html", product=product)
 
 

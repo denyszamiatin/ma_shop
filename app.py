@@ -37,7 +37,7 @@ def image(ln):
 
 
 
-@app.route('/') 
+@app.route('/')
 def index():
     return render_template("index.html")
 
@@ -249,6 +249,18 @@ def delete_category(category_id):
         flash("smths wrong")
         redirect(url_for(index_admin))
     return redirect(url_for('delete_category_list'))
+
+
+@app.route('/admin/list_products', methods=("GET", "POST"))
+def list_products():
+    all_products = products.get_all(g.db)
+    return render_template("list_products.html", all_products=all_products)
+
+
+@app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
+def edit_product(product_id):
+    product = products.get_product(g.db, product_id)
+    return render_template("edit_product.html", product=product)
 
 
 @app.route('/admin/change_news', methods=("GET", "POST"))

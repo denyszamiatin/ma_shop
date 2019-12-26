@@ -15,11 +15,14 @@ class OrderArchive(db.Model):
 
 
 class ProductCategories(db.Model):
+    __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(255))
+    products = relationship("products")
 
 
 class Cart(db.Model):
+    __tablename__ = "cart"
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
@@ -27,6 +30,7 @@ class Cart(db.Model):
 
 
 class Users(db.Model):
+    __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     second_name = db.Column(db.String(50))
@@ -35,3 +39,12 @@ class Users(db.Model):
 
     def __repr__(self):
         return f"<User id: {self.id}>"
+
+
+class News(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(350))
+    post = db.Column(db.String(2000))
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    news_date = db.Column(db.Date, default=datetime.utcnow())
+

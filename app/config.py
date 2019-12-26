@@ -4,8 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     # ...
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
+    SQLALCHEMY_DATABASE_URI = 'postgres://ma_admin:Gfhjkm123@localhost/ma_shop'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "3123123123"
 

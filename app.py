@@ -99,6 +99,12 @@ def news():
     return render_template("news.html", news=all_news)
 
 
+@app.route('/comments_list/<product_id>', methods=("GET", "POST"))
+def comments_list(product_id):
+    all_comments = comments.get(g.db, product_id)
+    return render_template("comments_list.html", comments=all_comments)
+
+
 @app.route('/contacts')
 def contacts():
     return render_template("contacts.html")

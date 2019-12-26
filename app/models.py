@@ -3,15 +3,16 @@ from . import db
 
 
 class OrderArchive(db.Model):
+    __tablename__ = "order_archive"
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
-    price = db.Column(db.Float)
-    date_archive = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    price = db.Column(db.Numeric)
+    date_archive = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        return '<User {}>'.format(self.id)
+    def __str__(self):
+        return f'<User {self.id}>'
 
 
 class ProductCategories(db.Model):

@@ -61,7 +61,16 @@ def show_product(product_id):
                 return redirect(url_for('login'))
             else:
                 comments.add(g.db, product_id, session['id_user'], comment)
+
         return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark)
+
+
+@app.route('/product/add_to_cart/<product_id>', methods=("GET", "POST"))
+def add_to_cart(product_id):
+    if request.method == "POST":
+        if session["user_id"]:
+            cart.add(g.db, session["user_id"], product_id)
+    return redirect(url_for("categories"))
 
 
 @app.route('/cart', methods=("GET", "POST"))
@@ -329,9 +338,9 @@ def set_product_mark(product_id):
             if int(product_mark) <= 0 or int(product_mark) > 5:
                 flash("Mark should be between 1 and 5")
             else:
-                mark.add(g.db, session['id_user'], product_id, product_mark)
+                mark.add(g.db, session['user_id'], product_id, product_mark)
                 flash("Your mark has been added successfully")
-        return redirect(url_for('product'))
+        return redirect(url_for("product"))
 
 
 """@app.route('/cart/<int:product_id>', methods=['POST'])

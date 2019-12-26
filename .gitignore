@@ -9,6 +9,7 @@ __pycache__/
 
 # Distribution / packaging
 *.flaskenv
+app/db_utils/config.py
 app/config.py
 .Python
 app/db_utils/config_.py

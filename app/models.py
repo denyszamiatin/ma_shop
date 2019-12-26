@@ -43,5 +43,5 @@ class Mark (db.Model):
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     mark_date = db.Column(db.Date, default=datetime.today().date())
     rating = db.Column(db.Integer)
-    users_who_marked = db.relationship("User")
+    users_who_marked = db.relationship("Users")
     products_marked = db.relationship("Product")

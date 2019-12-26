@@ -54,7 +54,7 @@ class Comments(db.Model):
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     comment_date = db.Column(db.Date, default=datetime.today().date())
-    body = db.Column(db.String(255))
+    body = db.Column(db.Text)
 
 
 class Users(db.Model):

@@ -1,5 +1,4 @@
 from datetime import datetime
-from sqlalchemy.orm import relationship
 from . import db
 
 
@@ -19,7 +18,7 @@ class ProductCategories(db.Model):
     __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
-    products = relationship("products")
+    products = db.relationship("products")
 
 
 class Cart(db.Model):

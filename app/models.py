@@ -76,3 +76,9 @@ class Products(db.Model):
     image = db.Column(db.LargeBinary)
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
     deleted = db.Column(db.Boolean, default=False)
+
+
+class Orders(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
+    order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)

@@ -15,11 +15,14 @@ class OrderArchive(db.Model):
 
 
 class ProductCategories(db.Model):
+    __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(255))
+    products = relationship("products")
 
 
 class Cart(db.Model):
+    __tablename__ = "cart"
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))

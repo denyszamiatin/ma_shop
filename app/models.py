@@ -1,25 +1,25 @@
 from datetime import datetime
-from sqlalchemy.orm import relationship
 from . import db
 
 
 class OrderArchive(db.Model):
+    __tablename__ = "order_archive"
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
-    price = db.Column(db.Float)
-    date_archive = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    price = db.Column(db.Numeric)
+    date_archive = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        return '<User {}>'.format(self.id)
+    def __str__(self):
+        return f'<User {self.id}>'
 
 
 class ProductCategories(db.Model):
     __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
-    products = relationship("products")
+    name = db.Column(db.String(1000), unique=True)
+    products = db.relationship("products")
 
 
 class Cart(db.Model):
@@ -28,12 +28,14 @@ class Cart(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     addition_date = db.Column(db.Date, default=datetime.today().date())
+    user = db.relationship("users")
+    product = db.relationship("products")
 
 
 class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(350))
-    post = db.Column(db.String(2000))
+    post = db.Column(db.Text)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     news_date = db.Column(db.Date, default=datetime.utcnow())
 
@@ -53,7 +55,7 @@ class Comments(db.Model):
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     comment_date = db.Column(db.Date, default=datetime.today().date())
-    body = db.Column(db.String(255))
+    body = db.Column(db.Text)
 
 
 class Users(db.Model):
@@ -84,3 +86,24 @@ class Users(db.Model):
 
     def __str__(self):
         return f"<User id: {self.id}>"
+
+
+class Products(db.Model):
+    __tablename__ = "products"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(300))
+    price = db.Column(db.Float)
+    image = db.Column(db.LargeBinary)
+    category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
+    deleted = db.Column(db.Boolean, default=False)
+
+
+class OrderProduct(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
+
+class Orders(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
+    order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)

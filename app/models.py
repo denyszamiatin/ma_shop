@@ -104,7 +104,7 @@ class Products(db.Model):
     marked = db.relationship("mark")
 
     def __str__(self):
-        return f"<Id: {self.id}, name: {self.name}, price: {self.price}"
+        return f"<Id: {self.id}, name: {self.name}, price: {self.price}>"
 
 class OrderProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,0 +1,9 @@
+class Config:
+    SECRET_KEY = "3123123123"
+
+
+"""App config variables"""
+NAME_MAX_LENGTH = 50
+PASSWORD_MAX_LENGTH = 50
+CATEGORY_MAX_LENGTH = 50
+PRODUCT_MAX_LENGTH = 50

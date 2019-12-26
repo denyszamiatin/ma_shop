@@ -1,4 +1,4 @@
-from app_config import PRODUCT_MAX_LENGTH
+from app.config import PRODUCT_MAX_LENGTH
 
 
 def valid(product_name, price):

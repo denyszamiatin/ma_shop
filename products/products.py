@@ -174,7 +174,7 @@ def get_all_2(conn) -> str:
             raise errors.StoreError
 
 
-def edit_product_2(conn, product_id: int, product_name: str, price: int, category: int) -> None:
+def edit_product_2(conn, product_id: int, product_name: str, price: int, category: int, img) -> None:
     """
     Update task in db.
     :param conn: str
@@ -186,6 +186,7 @@ def edit_product_2(conn, product_id: int, product_name: str, price: int, categor
         cursor.execute("""update products
                         set name = '{1}',
                         price = '{2}',
-                        category_id = '{3}'
-                        where id = '{0}'""".format(product_id, product_name, price, category))
+                        category_id = '{3}',
+                        image = {4}
+                        where id = '{0}'""".format(product_id, product_name, price, category, psycopg2.Binary(img)))
         conn.commit()

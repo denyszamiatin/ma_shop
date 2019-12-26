@@ -1,5 +1,5 @@
 """data validation module"""
-from app_config import CATEGORY_MAX_LENGTH
+from app.config import CATEGORY_MAX_LENGTH
 
 
 def validator(category_name):

@@ -1,0 +1,50 @@
+{% extends "index.html" %}
+{% block title %}Product name page{% endblock %}
+{% block content %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+<div class="container">
+    {% for product in products %}
+    <div class="row mt-3">
+        <div class="col-sm-auto text-center">
+            <h5 style="margin-top:20px;">{{product[0]}}</h5>
+        </div>
+        <div class="col-sm text-center">
+            <img class="img-responsive" src={{product[3]}} alt="{{product[1]}}" width="120" height="70">
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <h4 style="margin-top:20px;"><a style="text-decoration: none;"
+                                            href="/product/product_description/{{product[0]}}"><strong>{{product[1]}}</strong></a>
+            </h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">{{product[2]}}₴</h4>
+        </div>
+        <div class="col-sm text-center" style="margin-top:10px;">
+            <button type="button" class="btn btn-success btn-lg"></i>Buy <i class='fas fa-cart-arrow-down'></i></button>
+        </div>
+        <div class="col-sm text-center" style="n-top:10px;display: inline-block">
+            <div>
+                <form action="/cart" method="get">
+                    <button type="submit" class="btn btn-success btn-lg">Add to cart <i class='fas fa-cart-plus'></i>
+                    </button>
+                </form>
+            </div>
+            <div>
+                <form action="" method="POST">
+                    <textarea name="comment" rows="2" value="{{ comment }}"
+                              placeholder="Type your comment here"></textarea>
+                    <input type="hidden" name="product_id" value={{product[4]}}>
+                    <input type="submit" name="submit_comment" value="Send">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 text-center" style="margin-top:10px;">
+
+    </div>
+    <hr>
+    {% endfor %}
+</div>
+
+{% endblock %}

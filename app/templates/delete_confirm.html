@@ -1,0 +1,11 @@
+{% extends "index_admin.html" %}
+{% block title %}Delete product {% endblock %}
+{% block content %}
+<div class="container text-center" >
+    <p><h4 style="margin-top:20px;">Do you want to delete product {{product}} with id {{id}}</h4></p>
+    <form action="{{url_for('delete', product_id = id)}}" method="post">
+    <input type="submit" value="Delete" class="btn-sm btn-danger">
+    </form>
+    <button class="btn-sm btn-danger"><a style="text-decoration: none;" href="/admin/delete_product">Go back</a></button>
+</div>
+{% endblock %}

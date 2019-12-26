@@ -1,0 +1,24 @@
+{% extends "index_admin.html" %}
+{% block title %}Add news{% endblock %}
+
+{% block content %}
+{% for message in get_flashed_messages()%}
+<div class="alert alert-success" role="alert">{{ message }}</div>
+{% endfor %}
+<div class="container">
+    <h1 class="m-5">Add news</h1>
+    <form method="post">
+         <div class="form-group">
+            <label class="col-form-label">Title</label>
+            <textarea class="form-control" name="title" rows="1">{{ title }}</textarea>
+        </div>
+        <div class="form-group">
+            <label class="col-form-label">Text</label>
+            <textarea class="form-control" name="post" rows="5">{{ post }}</textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submite</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

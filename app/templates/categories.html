@@ -1,0 +1,75 @@
+{% extends "index.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<div class="container">
+{% for message in get_flashed_messages() %}
+<p class="alert alert-success">{{ message }}</p>
+{% endfor %}
+
+{% for category in categories %}
+<br>
+<div class="container-fluid">
+    <h2 class = "text-center" style="margin-top:20px;"><strong>{{category[1]}}</strong></h2>
+</div>
+<div class="container-fluid">
+    <div class="row mt-3">
+         <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">ID</h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">IMAGE</h4>
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <h4 style="margin-top:20px;">NAME</a></h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">PRICE</h4>
+        </div>
+        {% if "user_id" in session %}
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">ADD TO CART</h4>
+        </div>
+        {% else %}
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">BUY</h4>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% for product in products %}
+{% if category[0] == product[4] %}
+<div class="container-fluid">
+    <div class="row mt-3">
+         <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">{{product[0]}}</h4>
+        </div>
+        <div class="col-sm text-center">
+            <img class="img-responsive" src="/image/{{product[0]}}" alt="prewiew" width="120" height="70">
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{product[0]}}"><strong>{{product[1]}}</strong></a></h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">{{product[2]}}₴</h4>
+        </div>
+        {% if "user_id" in session %}
+            <div class="col-sm text-center" style="margin-top:10px;">
+            <form method="post">
+            <input type="hidden" name="add_to_cart" value="{{ product[0] }}">
+            <button type="submit" class="btn btn-success btn-lg">Add to cart <i class='fas fa-cart-plus'></i></button>
+            </form>
+            </div>
+        {% else %}
+            <div class="col-sm text-center" style="margin-top:10px;">
+            <button type="button" class="btn btn-success btn-lg"></i>Buy <i class='fas fa-cart-arrow-down'></i></button>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endfor %}
+</div>
+{% endblock %}

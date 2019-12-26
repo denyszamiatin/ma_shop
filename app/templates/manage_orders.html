@@ -1,0 +1,41 @@
+{% extends "index_admin.html" %}
+{% block title %}Manage_orders{% endblock %}
+{% block content %}
+<script src="https://use.fontawesome.com/c560c025cf.js"></script>
+<div class="container">
+    <div class="clearfix"></div>
+</div>
+<div class="container">
+    <table class="table table-striped w-auto table-bordered">
+        <thead>
+        <tr>
+            <th>Order id</th>
+            <th>User id</th>
+            <th>Product id</th>
+            <th>Price</th>
+            <th>Order date</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in all_orders %}
+            <tr>
+                <td>{{order[0]}}</td>
+                <td>{{order[1]}}</td>
+                <td>{{order[2]}}</td>
+                <td>{{order[3]}}</td>
+                <td>{{order[4]}}</td>
+                <td>
+                    <form method="post">
+                        <input type="hidden" name="delete_item" value="{{order[0]}}">
+                        <button class="btn btn-outline-danger btn-xs">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

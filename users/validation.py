@@ -2,7 +2,7 @@
 from string import punctuation
 import re
 
-from app_config import NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH
+from app.config import NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH
 
 
 def email_validator(email):

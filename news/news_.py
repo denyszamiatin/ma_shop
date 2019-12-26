@@ -1,7 +1,6 @@
 """This module provides model of news creation, reading and update"""
 import psycopg2
 
-from db_utils.config_ import DATABASE
 from errors import errors
 
 

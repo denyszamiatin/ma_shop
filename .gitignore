@@ -8,8 +8,9 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.flaskenv
 .Python
-db_utils/config_.py
+app/db_utils/config_.py
 build/
 develop-eggs/
 dist/

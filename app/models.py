@@ -82,3 +82,8 @@ class OrderProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
+
+class Orders(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
+    order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)

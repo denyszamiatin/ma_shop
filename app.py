@@ -254,7 +254,14 @@ def delete_category_list():
 
 
 @app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
+def confirm_delete_category(category_id):
+    category = product_categories.read(g.db, category_id)
+    return render_template('confirm_delete_category.html', category_id=category_id, category=category)
+
+
+@app.route('/admin/delete_confirm/delete_category/<string:category_id>', methods=("GET", "POST"))
 def delete_category(category_id):
+    print(category_id)
     try:
         product_categories.delete(g.db, category_id)
     except psycopg2.DatabaseError:

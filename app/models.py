@@ -78,7 +78,7 @@ class Products(db.Model):
     deleted = db.Column(db.Boolean, default=False)
 
 
-class Orders(db.Model):
+class OrderProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
-    order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    id_product = db.Column(db.Integer, db.ForeignKey('products.id'))

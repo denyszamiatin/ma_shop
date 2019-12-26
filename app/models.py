@@ -38,3 +38,12 @@ class News(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     news_date = db.Column(db.Date, default=datetime.utcnow())
 
+
+class Mark (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
+    mark_date = db.Column(db.Date, default=datetime.today().date())
+    rating = db.Column(db.Integer)
+    users_who_marked = db.relationship("User")
+    products_marked = db.relationship("Product")

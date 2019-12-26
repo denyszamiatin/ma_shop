@@ -7,7 +7,7 @@ class OrderArchive(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
-    price = db.Column(db.Decimal)
+    price = db.Column(db.Float)
     date_archive = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):

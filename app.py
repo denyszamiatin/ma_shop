@@ -9,7 +9,7 @@ from users import validation, user
 from product_categories import product_categories, category_validation
 from errors import errors
 from comments import comments
-from products import products
+from products import products, product_validation
 from marks import mark
 from cart import cart
 app = Flask(__name__)
@@ -180,12 +180,15 @@ def add_product():
         price = request.form.get("price", "")
         img = request.files['img'].read()
         category = request.form.get("category")
-        try:
-            products.add_product(g.db, product_name, price, img, category)
-            message = 'Product added'
-            redirect(url_for('add_product'))
-        except errors.StoreError:
-            message = "Smth wrong, pls check form"
+        if product_validation.valid(product_name, price) == 'Ok':
+            try:
+                products.add_product(g.db, product_name, price, img, category)
+                flash('product_added')
+                return redirect(url_for('index_admin'))
+            except errors.StoreError:
+                message = "Smth wrong, pls check form"
+        else:
+            message = product_validation.valid(product_name, price)
     return render_template("add_product.html", all_categories=all_categories, message=message)
 
 

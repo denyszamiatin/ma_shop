@@ -45,3 +45,11 @@ class Mark (db.Model):
     rating = db.Column(db.Integer)
     users_who_marked = db.relationship("Users")
     products_marked = db.relationship("Product")
+
+
+class Comments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    comment_date = db.Column(db.Date, default=datetime.today().date())
+    body = db.Column(db.String(255))

@@ -89,14 +89,22 @@ class Users(db.Model):
 
 
 class Products(db.Model):
+    """
+    Class to create products table in database.
+    """
     __tablename__ = "products"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(300))
-    price = db.Column(db.Float)
-    image = db.Column(db.LargeBinary)
+    name = db.Column(db.String(500))
+    price = db.Column(db.Numeric)
+    image = db.Column(db.String(500))
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
     deleted = db.Column(db.Boolean, default=False)
+    added_to_cart = db.relationship("cart")
+    ordered = db.relationship("order_products")
+    marked = db.relationship("mark")
 
+    def __str__(self):
+        return f"<Id: {self.id}, name: {self.name}, price: {self.price}"
 
 class OrderProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)

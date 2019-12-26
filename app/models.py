@@ -76,3 +76,9 @@ class Products(db.Model):
     image = db.Column(db.LargeBinary)
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
     deleted = db.Column(db.Boolean, default=False)
+
+
+class OrderProduct(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    id_product = db.Column(db.Integer, db.ForeignKey('products.id'))

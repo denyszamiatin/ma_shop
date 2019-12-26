@@ -33,7 +33,7 @@ class Cart(db.Model):
 class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(350))
-    post = db.Column(db.String(2000))
+    post = db.Column(db.Text)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     news_date = db.Column(db.Date, default=datetime.utcnow())
 

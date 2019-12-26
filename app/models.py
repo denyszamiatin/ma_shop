@@ -17,7 +17,7 @@ class OrderArchive(db.Model):
 class ProductCategories(db.Model):
     __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(1000))
     products = db.relationship("products")
 
 
@@ -27,6 +27,8 @@ class Cart(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     addition_date = db.Column(db.Date, default=datetime.today().date())
+    user = db.relationship("users")
+    product = db.relationship("products")
 
 
 class News(db.Model):

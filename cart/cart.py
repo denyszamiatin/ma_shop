@@ -25,12 +25,11 @@ def get_all(conn, user_id: int) -> list:
     :param user_id: int
     :return: list
     """
-    cursor = conn.cursor()
-    cursor.execute(f"""select product_id from cart
-                    where id_user = {user_id}""")
-    result = cursor.fetchall()
-    cursor.close()
-    return [''.join(i) for i in result]
+    with conn.cursor() as cursor:
+        cursor.execute(f"""select id_product from cart
+                        where id_user = {user_id}""")
+        result = cursor.fetchall()
+    return [i[0] for i in result]
 
 
 def delete(conn, user_id, product_id) -> None:
@@ -43,7 +42,7 @@ def delete(conn, user_id, product_id) -> None:
     """
     with conn.cursor() as cursor:
         cursor.execute(f"""delete from cart 
-                        where (id_user, id_product) VALUES ({user_id}, {product_id})""")
+                        where id_user = {user_id} and id_product = {product_id}""")
     conn.commit()
 
 

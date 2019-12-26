@@ -1,15 +1,15 @@
 import psycopg2
-from flask import Flask, render_template, request, redirect, url_for, flash, g, session
+import io
+from flask import Flask, render_template, request, redirect, url_for, flash, g, session, send_file
 from flask_bootstrap import Bootstrap
 
 from db_utils.config import DATABASE
 from news import news_
 from users import validation, user
-from products import products
 from product_categories import product_categories, category_validation
 from errors import errors
 from comments import comments
-from products import products
+from products import products, product_validation
 from marks import mark
 from cart import cart
 app = Flask(__name__)
@@ -30,7 +30,14 @@ def close_db(error):
         db.close()
 
 
-@app.route('/') 
+@app.route('/image/<ln>')
+def image(ln):
+    sn = products.get_product_image(g.db, ln)
+    return send_file(io.BytesIO(sn), mimetype='image/jpeg')
+
+
+
+@app.route('/')
 def index():
     return render_template("index.html")
 
@@ -45,7 +52,7 @@ def show_product(product_id):
     avg_mark = mark.get_average(g.db, product_id)
     with g.db.cursor() as cursor:
         cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
-        prod_data = cursor.fetchall()
+        prod_data = cursor.fetchone()
         comment = ""
         if request.method == "POST":
             comment = request.form.get("comment", "")
@@ -54,7 +61,16 @@ def show_product(product_id):
                 return redirect(url_for('login'))
             else:
                 comments.add(g.db, product_id, session['id_user'], comment)
+
         return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark)
+
+
+@app.route('/product/add_to_cart/<product_id>', methods=("GET", "POST"))
+def add_to_cart(product_id):
+    if request.method == "POST":
+        if session["user_id"]:
+            cart.add(g.db, session["user_id"], product_id)
+    return redirect(url_for("categories"))
 
 
 @app.route('/cart', methods=("GET", "POST"))
@@ -65,12 +81,11 @@ def cart_call():
             cart.delete(g.db, int(session["user_id"]), int(request.form.get("delete_item", "")))
         for product_id in cart.get_all(g.db, int(session["user_id"])):
             if product_id not in cart_items:
-                name, price, image = products.get_for_cart(g.db, product_id)
+                name, price = products.get_for_cart(g.db, product_id)
                 cart_items[product_id] = {
                     "product_id": product_id,
                     "name": name,
                     "price": price,
-                    "image": image,
                     "pieces": 1
                 }
             else:
@@ -174,17 +189,23 @@ def add_product():
         price = request.form.get("price", "")
         img = request.files['img'].read()
         category = request.form.get("category")
-        try:
-            products.add_product(g.db, product_name, price, img, category)
-            message = 'Product added'
-            redirect(url_for('add_product'))
-        except errors.StoreError:
-            message = "Smth wrong, pls check form"
+        if product_validation.valid(product_name, price) == 'Ok':
+            try:
+                products.add_product(g.db, product_name, price, img, category)
+                flash('product_added')
+                return redirect(url_for('index_admin'))
+            except errors.StoreError:
+                message = "Smth wrong, pls check form"
+        else:
+            message = product_validation.valid(product_name, price)
     return render_template("add_product.html", all_categories=all_categories, message=message)
 
 
-@app.route('/categories')
+@app.route('/categories', methods=("GET", "POST"))
 def categories():
+    if request.method == "POST":
+        if session["user_id"]:
+            cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
     all_categories = product_categories.get_all(g.db)
     all_products = products.get_all(g.db)
     return render_template("categories.html", categories=all_categories, products=all_products)
@@ -233,13 +254,44 @@ def delete_category_list():
 
 
 @app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
+def confirm_delete_category(category_id):
+    category = product_categories.read(g.db, category_id)
+    return render_template('confirm_delete_category.html', category_id=category_id, category=category)
+
+
+@app.route('/admin/delete_confirm/delete_category/<string:category_id>', methods=("GET", "POST"))
 def delete_category(category_id):
+    print(category_id)
     try:
         product_categories.delete(g.db, category_id)
     except psycopg2.DatabaseError:
         flash("smths wrong")
         redirect(url_for(index_admin))
     return redirect(url_for('delete_category_list'))
+
+
+@app.route('/admin/list_products', methods=("GET", "POST"))
+def list_products():
+    all_products = products.get_all_2(g.db)
+    return render_template("list_products.html", all_products=all_products)
+
+
+@app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
+def edit_product(product_id):
+    product = products.get_product_2(g.db, product_id)
+    if request.method == "POST":
+        id = request.form.get("product_id", "")
+        name = request.form.get("product_name", "")
+        price = request.form.get("price", "")
+        # img = request.files['img'].read()
+        category = request.form.get("category", "")
+        try:
+            products.edit_product_2(g.db, id, name, price, category)
+            flash("Product edited")
+            return redirect(url_for('list_products'))
+        except errors.StoreError:
+            flash("Smth wrong, pls try again")
+    return render_template("edit_product.html", product=product)
 
 
 @app.route('/admin/change_news', methods=("GET", "POST"))
@@ -293,9 +345,9 @@ def set_product_mark(product_id):
             if int(product_mark) <= 0 or int(product_mark) > 5:
                 flash("Mark should be between 1 and 5")
             else:
-                mark.add(g.db, session['id_user'], product_id, product_mark)
+                mark.add(g.db, session['user_id'], product_id, product_mark)
                 flash("Your mark has been added successfully")
-        return redirect(url_for('product'))
+        return redirect(url_for("product"))
 
 
 """@app.route('/cart/<int:product_id>', methods=['POST'])

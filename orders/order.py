@@ -37,6 +37,21 @@ def get(conn, id_order):
             raise errors.StoreError
 
 
+def get_all(conn):
+    """
+    Get order from orders table
+    :param conn:
+    :param id_order:
+    :return:
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(f"""select * from orders""")
+        try:
+            return cursor.fetchall()
+        except TypeError:
+            raise errors.StoreError
+
+
 def cancel(conn, id_order):
     """
     Cancel order

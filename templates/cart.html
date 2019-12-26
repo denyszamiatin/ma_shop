@@ -46,7 +46,9 @@
         <!-- END PRODUCT -->
         <div class="card-footer">
             <div class="pull-right" style="margin: 10px">
-                <a href="" class="btn btn-danger pull-right">Checkout</a>
+                <form action="/cart/create_order"  method="post">
+                    <button formmethod="post" class="btn btn-danger pull-right" name="Checkout">Checkout</button>
+                </form>
             </div>
         </div>
     </div>

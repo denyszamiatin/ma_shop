@@ -12,6 +12,7 @@ from comments import comments
 from products import products, product_validation
 from marks import mark
 from cart import cart
+from orders import order
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = "3123123123"
@@ -350,14 +351,24 @@ def set_product_mark(product_id):
         return redirect(url_for("product"))
 
 
-"""@app.route('/cart/<int:product_id>', methods=['POST'])
-def add_to_cart(product_id):
-    product = products.get_product(product_id)
-    cart_item = CartItem(product=product)
-    db.session.add(cart_item)
-    db.session.commit()
-    return render_tempate('home.html', product=products)"""
+@app.route('/cart/create_order', methods=("GET", "POST"))
+def create_order():
+    new_order = []
+    if 'user_id' in session:
+        if request.method == "POST":
+            new_order = cart.get_all(g.db, int(session['user_id']))
+            for id_product in new_order:
+                order.create(g.db, id_product, int(session['user_id']))
+            cart.delete_all(g.db, int(session['user_id']))
+    return render_template("create_order.html", new_order=new_order)
 
+
+@app.route('/admin/manage_orders', methods=("GET", "POST"))
+def manage_orders():
+    all_orders = order.get_all(g.db)
+    if request.method == "POST":
+        order.cancel(g.db, request.form.get("delete_item", ""))
+    return render_template("manage_orders.html", all_orders=all_orders)
 
 
 if __name__ == '__main__':

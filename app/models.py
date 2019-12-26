@@ -66,3 +66,13 @@ class Users(db.Model):
 
     def __repr__(self):
         return f"<User id: {self.id}>"
+
+
+class Products(db.Model):
+    __tablename__ = "products"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(300))
+    price = db.Column(db.Float)
+    image = db.Column(db.LargeBinary)
+    category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
+    deleted = db.Column(db.Boolean, default=False)

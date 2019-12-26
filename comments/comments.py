@@ -32,7 +32,9 @@ def get(con, id_product: int) -> list:
     :return: list
     """
     with con.cursor() as cursor:
-        cursor.execute(f"""select id_user, body, date from Comments where id_product={id_product}""")
+        cursor.execute(f'select n.id, body, comment_date, first_name, second_name '
+                       f'from comments n inner join users u on n.id_user = u.id '
+                       f'where id_product={id_product};')
         try:
             result = cursor.fetchall()
         except TypeError:

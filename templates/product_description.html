@@ -64,5 +64,12 @@
         </div>
     {% endif %}
         <!-- END ADD TO CART-->
+    <!-- ADD COMMENT_LIST-->
+    <div class="col-sm text-center" style="margin-top:10px;">
+            <form method="post" action="{{ url_for('comments_list', product_id=data[0]) }}">
+                <button type="submit" class="btn btn-success btn-lg" style="float:left">All comments <i class='fas fa-cart-plus'></i></button>
+            </form>
+    </div>
+    <!-- END COMMENT_LIST-->
 </div>
 {% endblock %}

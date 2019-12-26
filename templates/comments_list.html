@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+{% block title %}MA SHOP | COMMENTS{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-3 mb-5">MA shop comments</h1>
+    {% for item in comments %}
+    <div class="border-top">
+        <p>{{item[1]}}</p>
+        <div class="d-flex flex-row-reverse mb-3">
+            <div class="">
+                <text class="text-muted">Publication date: {{item[2]}}</text>
+            </div>
+            <div class="mr-3">
+                <text class="text-muted">Author: {{item[3] + ' ' + item[4]}}</text>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

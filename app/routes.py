@@ -12,6 +12,7 @@ from comments import comments
 from products import products
 from marks import mark
 from cart import cart
+from .models import Products, ProductCategories
 
 
 @app.before_request
@@ -186,14 +187,17 @@ def add_product():
     return render_template("add_product.html", all_categories=all_categories, message=message)
 
 
-@app.route('/categories', methods=("GET", "POST"))
-def categories():
+@app.route('/categories/<string:category_id>', methods=("GET", "POST"))
+def categories(category_id):
+    all_categories = ProductCategories.query.all()
     if request.method == "POST":
         if session["user_id"]:
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
-    all_categories = product_categories.get_all(g.db)
-    all_products = products.get_all(g.db)
-    return render_template("categories.html", categories=all_categories, products=all_products)
+    if category_id == "all":
+        all_products = Products.query.all()
+    else:
+        all_products = Products.query.filter_by(category_id=category_id).all()
+    return render_template("catalogue.html", categories=all_categories, products=all_products)
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))

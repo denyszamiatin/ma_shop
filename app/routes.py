@@ -194,21 +194,6 @@ def add_product():
     return render_template("add_product.html", form=form)
 
 
-    """message = ''
-    all_categories = product_categories.get_all(g.db)
-    if request.method == "POST":
-        product_name = request.form.get("product_name", "")
-        price = request.form.get("price", "")
-        img = request.files['img'].read()
-        category = request.form.get("category")
-        try:
-            products.add_product(g.db, product_name, price, img, category)
-            message = 'Product added'
-            return redirect(url_for('products_list'))
-        except errors.StoreError:
-            message = "Smth wrong, pls check form"
-    return render_template("add_product.html", all_categories=all_categories, message=message)"""
-
 
 @app.route('/categories/<string:category_id>', methods=("GET", "POST"))
 def categories(category_id):

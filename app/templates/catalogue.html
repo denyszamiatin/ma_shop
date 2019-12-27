@@ -1,27 +1,50 @@
 {% extends "index.html" %}
-{% block title %}Catalogue{% endblock %}
-
+{% block title %}Categories{% endblock %}
 {% block content %}
-    <div class="container">
-      <h1 class="mt-4">Catalogue</h1>
-      <p>New arrivals!</p>
-        <body>
-            <main>
-              <div class="app-container">
-                <nav>
-                  <div class="nav-container">
-                    <img src="https://46ba123xc93a357lc11tqhds-wpengine.netdna-ssl.com/wp-content/uploads/2019/09/amazon-alexa-event-sept-2019.jpg" />
-                      <ul>
-                        <li><a href="/product" data-nav>Products</a></li>
-                        <li><a href="/categories" data-nav>Categories</a></li>
-                        <li><a href="/product_comments" data-nav>Feedbacks</a></li>
-                      </ul>
-                  </div>
-                </nav>
-                <div id="content" class="content-container">
-                </div>
-              </div>
-            </main>
-        </body>
+<div class="container">
+{% for message in get_flashed_messages() %}
+<p class="alert alert-success">{{ message }}</p>
+{% endfor %}
+
+<div class="row my-3">
+
+<div class="col-md-3">
+    <h3>Categories:</h3>
+    {% for category in categories %}
+        <h4 class="my-2"><a style="text-decoration: none;" href="{{ category.id }}">{{ category.name }}</a></h4>
+    {% endfor %}
+
+</div>
+
+<div class="col-md-9">
+{% for product in products %}
+    <div class="row">
+        <div class="col-sm text-center">
+            <img class="img-responsive" src="{{product.image}}" alt="prewiew" width="120" height="70">
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{product.id}}">{{product.name}}</a></h4>
+        </div>
+        <div class="col-sm text-center">
+            <h4 style="margin-top:20px;">{{product.price}}₴</h4>
+        </div>
+        {% if "user_id" in session %}
+            <div class="col-sm text-center" style="margin-top:10px;">
+            <form method="post">
+            <input type="hidden" name="add_to_cart" value="{{ product.id }}">
+            <button type="submit" class="btn btn-success btn-lg">Add to cart<i class='fas fa-cart-plus'></i></button>
+            </form>
+            </div>
+        {% else %}
+            <div class="col-sm text-center" style="margin-top:10px;">
+            <button type="button" class="btn btn-success btn-lg">Buy<i class='fas fa-cart-arrow-down'></i></button>
+            </div>
+        {% endif %}
+
     </div>
+
+{% endfor %}
+</div>
+</div>
+</div>
 {% endblock %}

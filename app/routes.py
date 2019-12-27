@@ -336,3 +336,9 @@ def add_to_cart(product_id):
     db.session.add(cart_item)
     db.session.commit()
     return render_tempate('home.html', product=products)"""
+
+
+@app.route('/admin/categories_list', methods=("GET", "POST"))
+def categories_list():
+    all_categories = product_categories.get_all(g.db)
+    return render_template("categories_list.html", all_categories=all_categories)

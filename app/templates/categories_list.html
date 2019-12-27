@@ -1,0 +1,39 @@
+{% extends "index_admin.html" %}
+{% block title %}Admin: categories{% endblock %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+<p class="alert alert-warning">{{ message }}</p>
+{% endfor %}
+
+<br>
+<div class="container">
+    <a href="#"><button type="button" class="btn btn-success">Add new category</button></a>
+</div>
+<br>
+
+<div class="container">
+    <table class="table table-striped w-auto table-bordered">
+        <thead>
+        <tr>
+            <th>Category id</th>
+            <th>Category name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for category in all_categories %}
+            <tr>
+                <td>{{category[0]}}</td>
+                <td>{{category[1]}}</td>
+                <td>
+                    <a href="#">
+                        <button type="button" class="btn btn-primary">Update</button></a>
+                    <a href="#"><button type="button" class="btn btn-danger">Delete</button></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

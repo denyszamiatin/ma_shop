@@ -3,7 +3,7 @@ import io
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file
 from . import app
 
-from .db_utils.config import DATABASE
+from .config import DATABASE
 from news import news_
 from users import validation, user
 from product_categories import product_categories, category_validation

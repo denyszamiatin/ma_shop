@@ -61,6 +61,14 @@ def show_product(product_id):
         return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark)
 
 
+@app.route('/product/add_to_cart/<product_id>', methods=("GET", "POST"))
+def add_to_cart(product_id):
+    if request.method == "POST":
+        if session["user_id"]:
+            cart.add(g.db, session["user_id"], product_id)
+    return redirect(url_for("categories"))
+
+
 @app.route('/cart', methods=("GET", "POST"))
 def cart_call():
     cart_items = {}
@@ -85,6 +93,12 @@ def cart_call():
 def news():
     all_news = news_.get_all(g.db)
     return render_template("news.html", news=all_news)
+
+
+@app.route('/comments_list/<product_id>', methods=("GET", "POST"))
+def comments_list(product_id):
+    all_comments = comments.get(g.db, product_id)
+    return render_template("comments_list.html", comments=all_comments)
 
 
 @app.route('/contacts')

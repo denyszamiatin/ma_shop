@@ -10,23 +10,38 @@
   <div class="form-group">
     {{ form.name.label }}
     {{ form.name(class="form-control", placeholder="Toilet paper") }}
+    {% for error in form.name.errors %}
+    <small style="color: red">{{ error }}</small>
+    {% endfor %}
   </div>
   <div class="form-group">
     {{ form.description.label }}
     {{ form.description(class="form-control", placeholder="Some description here") }}
+    {% for error in form.description.errors %}
+    <small style="color: red">{{ error }}</small>
+    {% endfor %}
   </div>
   <div class="form-group">
     {{ form.price.label }}
     {{ form.price(class="form-control", placeholder="777.77") }}
+    {% for error in form.price.errors %}
+    <small style="color: red">{{ error }}</small>
+    {% endfor %}
   </div>
   <div class="form-group mb-3">
     {{ form.category_id.label }}
     {{ form.category_id(class="form-control") }}
+    {% for error in form.category_id.errors %}
+    <small style="color: red">{{ error }}</small>
+    {% endfor %}
    </div>
     {{ form.image.label }}
   <div class="custom-file">
     {{ form.image.label(class="custom-file-label") }}
     {{ form.image(class="custom-file-input") }}
+    {% for error in form.image.errors %}
+    <small style="color: red">{{ error }}</small>
+    {% endfor %}
   </div>
   <div class="form-group">
         <p> </p>

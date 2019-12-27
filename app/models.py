@@ -5,7 +5,7 @@ from . import db
 class OrderArchive(db.Model):
     __tablename__ = "order_archive"
     id = db.Column(db.Integer, primary_key=True)
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     price = db.Column(db.Numeric)
@@ -16,13 +16,35 @@ class OrderArchive(db.Model):
 
 
 class ProductCategories(db.Model):
+    """
+    Class to create table "product_categories" in database.
+    Variables
+    ----------
+    id - category id
+    name - category name
+    products - products relationship
+    """
     __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=True)
     products = db.relationship("products")
 
+    def __str__(self):
+        return self.name
+
 
 class Cart(db.Model):
+    """
+    Class to create table "cart" in database.
+    Variables
+    ----------
+    id - cart id
+    id_user - ForeignKey users.id
+    id_product - ForeignKey products.id
+    addition_date - cart create date
+    user - users relationship
+    product - products relationship
+    """
     __tablename__ = "cart"
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -30,6 +52,9 @@ class Cart(db.Model):
     addition_date = db.Column(db.Date, default=datetime.today().date())
     user = db.relationship("users")
     product = db.relationship("products")
+
+    def __str__(self):
+        return f"cart {self.id}"
 
 
 class News(db.Model):
@@ -50,7 +75,7 @@ class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000))
     post = db.Column(db.Text)
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     news_date = db.Column(db.Date, default=datetime.utcnow())
 
     def __str__(self):
@@ -77,7 +102,7 @@ class Mark (db.Model):
     """
     __tablename__ = "marks"
     id = db.Column(db.Integer, primary_key=True)
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     mark_date = db.Column(db.Date, default=datetime.today().date())
     rating = db.Column(db.Integer)
@@ -92,7 +117,7 @@ class Mark (db.Model):
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     comment_date = db.Column(db.Date, default=datetime.today().date())
     body = db.Column(db.Text)
 

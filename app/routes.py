@@ -1,19 +1,20 @@
-import psycopg2
 import io
+
+import psycopg2
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file
-from . import app
 
 from app.db_utils.config import DATABASE
-from news import news_
-from users import validation, user
-from product_categories import product_categories, category_validation
-from errors import errors
-from comments import comments
-from products import products
-from marks import mark
 from cart import cart
+from comments import comments
+from errors import errors
+from marks import mark
+from news import news_
+from product_categories import product_categories, category_validation
+from products import products
+from users import validation, user
+from . import app
+from .forms import *
 from .models import *
-from .forms import AddProductForm
 
 
 @app.before_request
@@ -33,7 +34,6 @@ def close_db(error):
 def image(ln):
     sn = products.get_product_image(g.db, ln)
     return send_file(io.BytesIO(sn), mimetype='image/jpeg')
-
 
 
 @app.route('/')
@@ -196,7 +196,6 @@ def add_product():
     return render_template("add_product.html", form=form)
 
 
-
 @app.route('/categories/<string:category_id>', methods=("GET", "POST"))
 def categories(category_id):
     all_categories = ProductCategories.query.all()
@@ -243,7 +242,8 @@ def edit_category():
                 flash("Something wrong, check form")
         else:
             flash("Something wrong, check form")
-    return render_template("edit_category.html", all_categories=all_categories, new_name=new_name, category_id=category_id)
+    return render_template("edit_category.html", all_categories=all_categories, new_name=new_name,
+                           category_id=category_id)
 
 
 @app.route('/admin/delete_category', methods=("GET", "POST"))
@@ -287,25 +287,30 @@ def edit_product(product_id):
     return render_template("edit_product.html", product=product, categories=categories)
 
 
-@app.route('/admin/change_news', methods=("GET", "POST"))
-def change_news():
-    all_news = news_.get_all(g.db)
-    return render_template("change_news.html", news=all_news)
-
-
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
 def delete_news(news_id):
     news_.delete(g.db, news_id)
     return redirect(url_for('change_news'))
 
 
-@app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
-def edit_news(news_id):
-    if request.method == "POST":
-        new_title = request.form.get("title", "")
-        new_post = request.form.get("post", "")
-        news_.edit_news(g.db, news_id, new_title, new_post)
-        return redirect(url_for("change_news"))
+@app.route('/admin/edit_news', methods=("GET", "POST"))
+def edit_news():
+    all_news = News.query.all()
+    users = Users.query.filter(Users.id == News.id_user).all()
+    return render_template("edit_news.html", news=all_news, users=users)
+
+
+@app.route('/admin/edit_news/<news_id>', methods=("GET", "POST"))
+def edit_news_id(news_id):
+    post = News.query.filter(News.id == news_id).first()
+    if request.method == 'POST':
+        form = NewsForm(formdata=request.form, obj=post)
+        form.populate_obj(post)
+        db.session.commit()
+        return redirect(url_for('edit_news'))
+
+    form = NewsForm(obj=post)
+    return render_template('edit_news_id.html', post=post, form=form)
 
 
 @app.route("/admin/delete_product", methods=("GET", "POST"))

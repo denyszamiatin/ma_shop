@@ -14,3 +14,8 @@ class AddProductForm(FlaskForm):
     category_id = SelectField("Category", choices=[], coerce=int, validators=[DataRequired()])
     submit = SubmitField("Submit")
 
+
+
+class NewsForm(FlaskForm):
+    title = StringField("Title")
+    post = TextAreaField("Post")

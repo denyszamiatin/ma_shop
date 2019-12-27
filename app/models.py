@@ -161,6 +161,8 @@ class Products(db.Model):
     name = db.Column(db.String(500))
     price = db.Column(db.Numeric)
     image = db.Column(db.String(500))
+    thumbnail = db.Column(db.String(500))
+    description = db.Column(db.Text)
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
     deleted = db.Column(db.Boolean, default=False)
     added_to_cart = db.relationship("Cart")

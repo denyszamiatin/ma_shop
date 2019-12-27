@@ -180,7 +180,7 @@ def add_product():
         try:
             products.add_product(g.db, product_name, price, img, category)
             message = 'Product added'
-            redirect(url_for('add_product'))
+            return redirect(url_for('products_list'))
         except errors.StoreError:
             message = "Smth wrong, pls check form"
     return render_template("add_product.html", all_categories=all_categories, message=message)
@@ -248,10 +248,10 @@ def delete_category(category_id):
     return redirect(url_for('delete_category_list'))
 
 
-@app.route('/admin/list_products', methods=("GET", "POST"))
-def list_products():
+@app.route('/admin/products_list', methods=("GET", "POST"))
+def products_list():
     all_products = products.get_all_2(g.db)
-    return render_template("list_products.html", all_products=all_products)
+    return render_template("products_list.html", all_products=all_products)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
@@ -267,7 +267,7 @@ def edit_product(product_id):
         try:
             products.edit_product_2(g.db, id, name, price, category, img)
             flash("Product edited")
-            return redirect(url_for('list_products'))
+            return redirect(url_for('products_list'))
         except errors.StoreError:
             flash("Smth wrong, pls try again")
     return render_template("edit_product.html", product=product, categories=categories)
@@ -310,7 +310,7 @@ def delete_confirm(product_id):
 def delete(product_id):
     products.delete_product(g.db, product_id)
     flash("Deleted")
-    return redirect("/admin/delete_product")
+    return redirect(url_for('products_list'))
 
 
 @app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))

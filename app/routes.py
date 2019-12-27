@@ -258,7 +258,6 @@ def list_products():
 def edit_product(product_id):
     product = products.get_product_2(g.db, product_id)
     categories = product_categories.get_all(g.db)
-    print(categories)
     if request.method == "POST":
         id = request.form.get("product_id", "")
         name = request.form.get("product_name", "")

@@ -1,6 +1,7 @@
 {% extends "index_admin.html" %}
 {% block content %}
 <div class="container">
+
     {% for message in get_flashed_messages() %}
       <p class="alert alert-warning">{{ message }}</p>
     {% endfor %}
@@ -9,33 +10,31 @@
 
     <form method="POST" enctype="multipart/form-data">
 
-        <label>Category</label>
+    <label>Category</label>
 
-        {% for category in categories %}
+    {% for category in categories %}
 
-        <div class="form-check">
-        <input class="form-check-input" type="radio" name="category" id="exampleRadios2" value="{{ category[0] }}">
-        <label class="form-check-label" for="exampleRadios2">
-            {{ category[1] }}
-        </label>
+    {% if category[0] == product[4] %}
 
-        {% endfor %}
-
- <fieldset class="form-group">
-    <div class="row">
-      <legend class="col-form-label col-sm-2 pt-0">Categories</legend>
-
-    <div class="col-sm-10">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
-          <label class="form-check-label" for="gridRadios1">
-            First radio
-          </label>
-        </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="category" id="exampleRadios1" value="{{ category[0] }}" checked>
+      <label class="form-check-label" for="exampleRadios1">
+        {{ category[1] }}
+      </label>
     </div>
-        
+
+    {% else %}
+
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="category" id="radios2" value="{{ category[0] }}">
+      <label class="form-check-label" for="radios2">
+          {{ category[1] }}
+      </label>
     </div>
-  </fieldset>
+    {% endif %}
+    {% endfor %}
+
+    <p></p>
 
     <div class="form-group">
         <label for="product_name">Name</label>
@@ -65,4 +64,5 @@
     </div>
 </form>
 </div>
+
 {% endblock %}

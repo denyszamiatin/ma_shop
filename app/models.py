@@ -27,7 +27,7 @@ class ProductCategories(db.Model):
     __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=True)
-    products = db.relationship("products")
+    products = db.relationship("Products")
 
     def __str__(self):
         return self.name
@@ -50,8 +50,8 @@ class Cart(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     addition_date = db.Column(db.Date, default=datetime.today().date())
-    user = db.relationship("users")
-    product = db.relationship("products")
+    user = db.relationship("Users")
+    product = db.relationship("Products")
 
     def __str__(self):
         return f"cart {self.id}"
@@ -106,8 +106,8 @@ class Mark (db.Model):
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     mark_date = db.Column(db.Date, default=datetime.today().date())
     rating = db.Column(db.Integer)
-    users_who_marked = db.relationship("users")
-    products_marked = db.relationship("product")
+    users_who_marked = db.relationship("Users")
+    products_marked = db.relationship("Products")
 
     def __str__(self):
         return f'<Mark id {self.id} is rating {self.rating} provided ' \
@@ -163,9 +163,9 @@ class Products(db.Model):
     image = db.Column(db.String(500))
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
     deleted = db.Column(db.Boolean, default=False)
-    added_to_cart = db.relationship("cart")
-    ordered = db.relationship("order_products")
-    marked = db.relationship("mark")
+    added_to_cart = db.relationship("Cart")
+    ordered = db.relationship("OrderProduct")
+    marked = db.relationship("Mark")
 
     def __str__(self):
         return f"<Id: {self.id}, name: {self.name}, price: {self.price}>"

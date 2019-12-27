@@ -189,7 +189,9 @@ def index_admin():
 def add_product():
     form = AddProductForm(request.form)
     all_categories = ProductCategories.query.all()
-    form.category_id.choices = [(category.id, category.name) for category in all_categories]
+    form.category_id.choices = [(int(category.id), category.name) for category in all_categories]
+    if request.method == "POST" and form.validate():
+        print("yah")
 
     return render_template("add_product.html", form=form)
 

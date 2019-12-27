@@ -11,5 +11,6 @@ class AddProductForm(FlaskForm):
     price = DecimalField("Price", validators=[DataRequired()])
     image = FileField("Image")
     description = TextAreaField("Description", validators=[DataRequired()])
-    category_id = SelectField("Category")
+    category_id = SelectField("Category", choices=[], coerce=int, validators=[DataRequired()])
+    submit = SubmitField("Submit")
 

@@ -12,6 +12,7 @@ from comments import comments
 from products import products
 from marks import mark
 from cart import cart
+from .models import *
 
 
 @app.before_request
@@ -83,8 +84,9 @@ def cart_call():
 
 @app.route('/news')
 def news():
-    all_news = news_.get_all(g.db)
-    return render_template("news.html", news=all_news)
+    all_news = News.query.all()
+    users = Users.query.filter(Users.id == News.id_user).all()
+    return render_template("news.html", news=all_news, users=users)
 
 
 @app.route('/contacts')

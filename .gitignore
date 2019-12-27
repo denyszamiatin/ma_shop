@@ -12,7 +12,6 @@ __pycache__/
 app/db_utils/config.py
 app/config.py
 .Python
-app/config_.py
 build/
 develop-eggs/
 dist/

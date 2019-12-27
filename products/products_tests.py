@@ -2,7 +2,7 @@ import psycopg2
 import pytest
 
 import products.products as products
-from app.config_ import DATABASE
+from app.config import DATABASE
 from errors.errors import StoreError
 
 

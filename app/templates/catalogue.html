@@ -17,33 +17,48 @@
 </div>
 
 <div class="col-md-9">
-{% for product in products %}
+
     <div class="row">
-        <div class="col-sm text-center">
-            <img class="img-responsive" src="{{product.image}}" alt="prewiew" width="120" height="70">
-        </div>
-        <div class="col-6 col-md-4 text-center">
-            <h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{product.id}}">{{product.name}}</a></h4>
-        </div>
-        <div class="col-sm text-center">
-            <h4 style="margin-top:20px;">{{product.price}}₴</h4>
-        </div>
-        {% if "user_id" in session %}
-            <div class="col-sm text-center" style="margin-top:10px;">
-            <form method="post">
-            <input type="hidden" name="add_to_cart" value="{{ product.id }}">
-            <button type="submit" class="btn btn-success btn-lg">Add to cart<i class='fas fa-cart-plus'></i></button>
-            </form>
-            </div>
-        {% else %}
-            <div class="col-sm text-center" style="margin-top:10px;">
-            <button type="button" class="btn btn-success btn-lg">Buy<i class='fas fa-cart-arrow-down'></i></button>
-            </div>
-        {% endif %}
+
+         <table class="table table-striped w-auto table-bordered">
+        <thead>
+        <tr>
+            <th>Image</th>
+            <th>Product name</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td class="text-center">
+                <img class="img-responsive" src="{{product.thumbnail}}" alt="prewiew" width="120" height="70">
+                </td>
+                <td><h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{product.id}}">{{product.name}}</a></h4></td>
+                <td><h4 style="margin-top:20px;">{{product.price}}₴</h4></td>
+
+                <td>
+                {% if "user_id" in session %}
+                    <div class="col-sm text-center" style="margin-top:10px;">
+                    <form method="post">
+                    <input type="hidden" name="add_to_cart" value="{{ product.id }}">
+                    <button type="submit" class="btn btn-success btn-lg">Add to cart<i class='fas fa-cart-plus'></i></button>
+                    </form>
+                    </div>
+                {% else %}
+                    <div class="col-sm text-center" style="margin-top:10px;">
+                    <button type="button" class="btn btn-success btn-lg">Buy<i class='fas fa-cart-arrow-down'></i></button>
+                    </div>
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
     </div>
 
-{% endfor %}
 </div>
 </div>
 </div>

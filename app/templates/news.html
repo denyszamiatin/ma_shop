@@ -2,18 +2,22 @@
 {% block title %}MA SHOP | NEWS{% endblock %}
 {% block content %}
 <div class="container">
-    <h1 class="text-center mt-3 mb-5">MA shop news</h1>
+    <h1 class="text-center mt-3 mb-5"><b>MA SHOP NEWS</b></h1>
     {% for item in news %}
     <div class="border-top">
-        <h3 class="text-center m-3">{{item[1]}}</h3>
-        <p>{{item[2]}}</p>
+        <p class="text-center m-3" style="color: #007bff; font-size: 1.5rem;"><b>{{item.title}}</b></p>
+        <p>{{item.post}}</p>
         <div class="d-flex flex-row-reverse mb-3">
             <div class="">
-                <text class="text-muted">Publication date: {{item[3]}}</text>
+                <text class="badge badge-primary">Publication date: {{item.news_date}}</text>
             </div>
+            {% for user in users %}
+               {% if user.id == item.id_user %}
             <div class="mr-3">
-                <text class="text-muted">Author: {{item[4] + ' ' + item[5]}}</text>
+                <text class="badge badge-success">Author: {{user.first_name + ' ' + user.second_name}}</text>
             </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
     {% endfor %}

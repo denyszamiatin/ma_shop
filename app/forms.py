@@ -9,6 +9,7 @@ class AddProductForm(FlaskForm):
     """
     name = StringField("Name", validators=[DataRequired()])
     price = DecimalField("Price", validators=[DataRequired()])
-    image = FileField("Image", validators=[DataRequired()])
+    image = FileField("Image")
     description = TextAreaField("Description", validators=[DataRequired()])
-    category = SelectField("Category", coerce=int)
+    category_id = SelectField("Category")
+

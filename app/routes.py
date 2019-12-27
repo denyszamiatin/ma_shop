@@ -13,6 +13,7 @@ from products import products
 from marks import mark
 from cart import cart
 from .models import *
+from .forms import AddProductForm
 
 
 @app.before_request
@@ -186,7 +187,14 @@ def index_admin():
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
-    message = ''
+    form = AddProductForm(request.form)
+    all_categories = ProductCategories.query.all()
+    form.category_id.choices = [(category.id, category.name) for category in all_categories]
+
+    return render_template("add_product.html", form=form)
+
+
+    """message = ''
     all_categories = product_categories.get_all(g.db)
     if request.method == "POST":
         product_name = request.form.get("product_name", "")
@@ -199,7 +207,7 @@ def add_product():
             return redirect(url_for('products_list'))
         except errors.StoreError:
             message = "Smth wrong, pls check form"
-    return render_template("add_product.html", all_categories=all_categories, message=message)
+    return render_template("add_product.html", all_categories=all_categories, message=message)"""
 
 
 @app.route('/categories/<string:category_id>', methods=("GET", "POST"))

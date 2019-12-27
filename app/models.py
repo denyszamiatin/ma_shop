@@ -33,12 +33,29 @@ class Cart(db.Model):
 
 
 class News(db.Model):
+    """
+    Class to create table "news" in database.
+    Variables
+    ----------
+    id
+    title
+    post
+    id_user
+    news_date
+    Methods
+    -------
+    __str__
+    """
     __tablename__= "news"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000))
     post = db.Column(db.Text)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'))
     news_date = db.Column(db.Date, default=datetime.utcnow())
+
+    def __str__(self):
+        return f'id: {self.id}, user id: {self.id_user} on date:' \
+               f' {self.news_dta}, title: {self.title}and all post:{self.post} '
 
 
 class Mark (db.Model):

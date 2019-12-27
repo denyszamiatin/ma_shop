@@ -12,6 +12,7 @@ from comments import comments
 from products import products
 from marks import mark
 from cart import cart
+from .models import *
 
 
 @app.before_request
@@ -91,8 +92,9 @@ def cart_call():
 
 @app.route('/news')
 def news():
-    all_news = news_.get_all(g.db)
-    return render_template("news.html", news=all_news)
+    all_news = News.query.all()
+    users = Users.query.filter(Users.id == News.id_user).all()
+    return render_template("news.html", news=all_news, users=users)
 
 
 @app.route('/comments_list/<product_id>', methods=("GET", "POST"))
@@ -200,14 +202,17 @@ def add_product():
     return render_template("add_product.html", all_categories=all_categories, message=message)
 
 
-@app.route('/categories', methods=("GET", "POST"))
-def categories():
+@app.route('/categories/<string:category_id>', methods=("GET", "POST"))
+def categories(category_id):
+    all_categories = ProductCategories.query.all()
     if request.method == "POST":
         if session["user_id"]:
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
-    all_categories = product_categories.get_all(g.db)
-    all_products = products.get_all(g.db)
-    return render_template("categories.html", categories=all_categories, products=all_products)
+    if category_id == "all":
+        all_products = Products.query.all()
+    else:
+        all_products = Products.query.filter_by(category_id=category_id).all()
+    return render_template("catalogue.html", categories=all_categories, products=all_products)
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
@@ -350,3 +355,9 @@ def add_to_cart(product_id):
     db.session.add(cart_item)
     db.session.commit()
     return render_tempate('home.html', product=products)"""
+
+
+@app.route('/admin/categories_list', methods=("GET", "POST"))
+def categories_list():
+    all_categories = product_categories.get_all(g.db)
+    return render_template("categories_list.html", all_categories=all_categories)

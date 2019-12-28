@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, FileField, SelectField
+from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, FileField, SelectField, IntegerField
 from wtforms.validators import DataRequired
 
 
@@ -15,7 +15,7 @@ class AddProductForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-
 class NewsForm(FlaskForm):
-    title = StringField("Title")
-    post = TextAreaField("Post")
+    title = StringField("Title", validators=[DataRequired()])
+    post = TextAreaField("Post", validators=[DataRequired()])
+    id_user = IntegerField("Id_user", validators=[DataRequired()])

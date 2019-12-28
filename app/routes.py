@@ -1,7 +1,9 @@
 import io
 
 import psycopg2
+
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file
+from sqlalchemy.exc import IntegrityError
 
 from app.db_utils.config import DATABASE
 from cart import cart
@@ -160,7 +162,7 @@ def registration():
                 db.session.commit()
                 flash("Registration was successful")
                 return redirect(url_for('index'))
-            except psycopg2.errors.UniqueViolation:
+            except IntegrityError:
                 message = f"User with email: {email} already exist"
         else:
             message = "Something wrong, check form"

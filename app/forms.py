@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, FileField, SelectField, IntegerField
+from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, FileField, SelectField, PasswordField
 from wtforms.validators import DataRequired
 
 
@@ -19,3 +20,19 @@ class NewsForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     post = TextAreaField("Post", validators=[DataRequired()])
     id_user = IntegerField("Id_user", validators=[DataRequired()])
+
+
+class UserRegistrationForm(FlaskForm):
+    """User registration form"""
+    first_name = StringField("First name",  validators=[DataRequired()])
+    second_name = StringField("Second name",  validators=[DataRequired()])
+    email = StringField("Email",  validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class UserLoginForm(FlaskForm):
+    """User login form"""
+    email = StringField("Email",  validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Submit")

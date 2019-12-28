@@ -1,8 +1,10 @@
 import io
 
 import psycopg2
+
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file
 from sqlalchemy import orm
+from sqlalchemy.exc import IntegrityError
 
 from app.db_utils.config import DATABASE
 from cart import cart
@@ -122,44 +124,50 @@ def logout():
 
 @app.route('/login', methods=("GET", "POST"))
 def login():
-    message = email = ""
+    message = ""
+    form = UserLoginForm()
     if request.method == "POST":
-        email = request.form.get("email", "")
-        password = request.form.get("password", "")
+        email = form.email.data
+        password = form.password.data
         if validation.login_form_validation(email, password):
             try:
-                session['user_id'] = user.login(g.db, email, password)
-                flash("You are logged")
-                return redirect(url_for('index'))
-            except errors.StoreError:
-                message = "Wrong password or email"
-
+                user_ = Users.query.filter_by(email=email).first()
+                if check_password_hash(user_.password, password):
+                    session['user_id'] = user_.id
+                    flash("You are logged")
+                    return redirect(url_for('index'))
+                else:
+                    message = "Wrong password"
+            except AttributeError:
+                message = "Wrong email"
         else:
             message = "Something wrong, check form"
 
-    return render_template("login.html", message=message, email=email)
+    return render_template("login.html", form=form, message=message)
 
 
 @app.route('/registration', methods=("GET", "POST"))
 def registration():
-    message = first_name = second_name = email = ""
+    message = ""
+    form = UserRegistrationForm()
     if request.method == "POST":
-        first_name = request.form.get("first_name", "")
-        second_name = request.form.get("second_name", "")
-        email = request.form.get("email", "")
-        password = request.form.get("password", "")
+        first_name = form.first_name.data
+        second_name = form.second_name.data
+        email = form.email.data
+        password = form.password.data
         if validation.register_form_validation(first_name, second_name, email, password):
             try:
-                user.add(g.db, first_name, second_name, email, password)
+                user_ = Users(first_name, second_name, email, password)
+                db.session.add(user_)
+                db.session.commit()
                 flash("Registration was successful")
                 return redirect(url_for('index'))
-            except psycopg2.errors.UniqueViolation:
+            except IntegrityError:
                 message = f"User with email: {email} already exist"
         else:
             message = "Something wrong, check form"
 
-    return render_template("registration.html", message=message, first_name=first_name,
-                           second_name=second_name, email=email)
+    return render_template("registration.html", message=message, form=form)
 
 
 @app.route('/admin/add_category', methods=("GET", "POST"))

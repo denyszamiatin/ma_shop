@@ -143,7 +143,7 @@ def login():
 @app.route('/registration', methods=("GET", "POST"))
 def registration():
     message = ""
-    form = UserRegistration()
+    form = UserRegistrationForm()
     if request.method == "POST":
         first_name = form.first_name.data
         second_name = form.second_name.data

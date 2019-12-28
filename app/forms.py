@@ -20,7 +20,7 @@ class NewsForm(FlaskForm):
     post = TextAreaField("Post")
 
 
-class UserRegistration(FlaskForm):
+class UserRegistrationForm(FlaskForm):
     first_name = StringField("First name",  validators=[DataRequired()])
     second_name = StringField("Second name",  validators=[DataRequired()])
     email = StringField("Email",  validators=[DataRequired()])

@@ -7,13 +7,28 @@
 {% endfor %}
 <div class="container">
     <h1 class="m-5">Add news</h1>
-    <form method="post">
-         <div class="form-group">
+    <form method="post" action="{{url_for('add_news')}}">
+        {% with messages = get_flashed_messages() %}
+        {% if messages%}
+        {% for message in messages %}
+        {% if message == "News was successfully added to db" %}
+        <div class="container">
+            <span class="badge badge-pill badge-success">{{message}}</span>
+        </div>
+        {% elif message == "News wasn\'t added to db"%}
+        <div class="container">
+            <span class="badge badge-pill badge-danger">{{message}}</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="form-group">
             <label class="col-form-label">Title</label>
             <textarea class="form-control" name="title" rows="1">{{ title }}</textarea>
         </div>
         <div class="form-group">
-            <label class="col-form-label">Text</label>
+            <label class="col-form-label">Post</label>
             <textarea class="form-control" name="post" rows="5">{{ post }}</textarea>
         </div>
         <div class="form-group">

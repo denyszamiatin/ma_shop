@@ -33,7 +33,7 @@
         {% for product in products %}
             <tr>
                 <td class="text-center">
-                <img class="img-responsive" src="/static/img/{{ product.id }}_thumbnail.jpeg" alt="{{ product.name }}" width="120" height="70">
+                <img class="img-responsive" src="/{{ product.thumbnail }}" alt="{{ product.name }}" width="120" height="70">
                 </td>
                 <td><h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{product.id}}">{{product.name}}</a></h4></td>
                 <td><h4 style="margin-top:20px;">{{product.price}}₴</h4></td>

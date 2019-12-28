@@ -1,9 +1,11 @@
 import io
-
+import os
 import psycopg2
+from PIL import Image
 
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file
 from sqlalchemy.exc import IntegrityError
+from werkzeug.utils import secure_filename
 
 from app.db_utils.config import DATABASE
 from cart import cart
@@ -15,6 +17,7 @@ from product_categories import product_categories, category_validation
 from products import products
 from users import validation, user
 from . import app
+from .config import basedir
 from .forms import *
 from .models import *
 
@@ -195,11 +198,36 @@ def index_admin():
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
-    form = AddProductForm(request.form)
+    """function for add product in database"""
+    form = AddProductForm()
     all_categories = ProductCategories.query.all()
     form.category_id.choices = [(int(category.id), category.name) for category in all_categories]
     if request.method == "POST" and form.validate():
-        print("yah")
+        product = Products(name=form.name.data,
+                           price=form.price.data,
+                           description=form.description.data,
+                           category_id=form.category_id.data)
+        db.session.add(product)
+        db.session.commit()
+
+        def save_image_and_thumbnail():
+            """getting image from form and save with name = product.id
+            :return (url image, url thumbnail)"""
+            image = form.image.data
+            imagename = f"{product.id}.{secure_filename(image.filename).split('.')[-1]}"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], imagename)
+            image.save(os.path.join(basedir, image_path))
+            image = Image.open(image)
+            image.thumbnail(app.config['THUMBNAIL_SIZE'])
+            thumbnail_name = imagename.split('.')
+            thumbnail_name = f"{''.join(thumbnail_name[:-1])}_thumbnail.{thumbnail_name[-1]}"
+            thumbnail_path = os.path.join(app.config['UPLOAD_FOLDER'], thumbnail_name)
+            image.save(os.path.join(basedir, thumbnail_path))
+            return (image_path, thumbnail_path)
+
+        images_path = save_image_and_thumbnail()
+        product.image, product.thumbnail = images_path
+        db.session.commit()
 
     return render_template("add_product.html", form=form)
 

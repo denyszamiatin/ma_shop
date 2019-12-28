@@ -21,8 +21,16 @@ class NewsForm(FlaskForm):
 
 
 class UserRegistrationForm(FlaskForm):
+    """User registration form"""
     first_name = StringField("First name",  validators=[DataRequired()])
     second_name = StringField("Second name",  validators=[DataRequired()])
+    email = StringField("Email",  validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class UserLoginForm(FlaskForm):
+    """User login form"""
     email = StringField("Email",  validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Submit")

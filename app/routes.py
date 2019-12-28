@@ -122,22 +122,26 @@ def logout():
 
 @app.route('/login', methods=("GET", "POST"))
 def login():
-    message = email = ""
+    message = ""
+    form = UserLoginForm()
     if request.method == "POST":
-        email = request.form.get("email", "")
-        password = request.form.get("password", "")
+        email = form.email.data
+        password = form.password.data
         if validation.login_form_validation(email, password):
             try:
-                session['user_id'] = user.login(g.db, email, password)
-                flash("You are logged")
-                return redirect(url_for('index'))
-            except errors.StoreError:
-                message = "Wrong password or email"
-
+                user_ = Users.query.filter_by(email=email).first()
+                if check_password_hash(user_.password, password):
+                    session['user_id'] = user_.id
+                    flash("You are logged")
+                    return redirect(url_for('index'))
+                else:
+                    message = "Wrong password"
+            except AttributeError:
+                message = "Wrong email"
         else:
             message = "Something wrong, check form"
 
-    return render_template("login.html", message=message, email=email)
+    return render_template("login.html", form=form, message=message)
 
 
 @app.route('/registration', methods=("GET", "POST"))

@@ -1,4 +1,4 @@
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from . import db
 
@@ -157,6 +157,7 @@ class Users(db.Model):
         self.second_name = second_name
         self.email = email
         self.password = generate_password_hash(password)
+
 
 class Products(db.Model):
     """

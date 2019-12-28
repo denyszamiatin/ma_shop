@@ -7,22 +7,22 @@
 <h1 class="m-5">Registration</h1>
 <form method="post">
   <div class="form-group">
-    <label for="first_name">First name</label>
-    <input required type="text" class="form-control" id="first_name_input" name="first_name" value="{{ first_name }}" placeholder="John">
+      {{form.first_name.label}}
+      {{form.first_name(class="form-control", placeholder="John")}}
   </div>
     <div class="form-group">
-        <label for="second_name">Second name</label>
-        <input required type="text" class="form-control" id="second_name_input" name="second_name" value="{{ second_name }}" placeholder="Smith">
+        {{form.second_name.label}}
+        {{form.second_name(class="form-control", placeholder="Smith1")}}
     </div>
     <div class="form-group">
-        <label for="email">Email</label>
-        <input required type="email" class="form-control" id="email_input" name="email" value="{{ email }}" placeholder="JohnSmith@mail.com">
+        {{form.email.label}}
+        {{form.email(class="form-control", placeholder="JohnSmith@mail.com1")}}
     </div>
   <div class="form-group">
-    <label for="password">Password</label>
-    <input required type="password" class="form-control" id="eInputPassword" name="password" value="" placeholder="Some password">
+      {{form.password.label}}
+      {{form.password(class="form-control", placeholder="Your password")}}
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+    <p>{{form.submit(class="btn btn-primary")}}</p>
 </form>
 </div>
 {% endblock %}

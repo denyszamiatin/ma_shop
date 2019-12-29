@@ -43,7 +43,11 @@ def image(ln):
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    email = ''
+    if 'user_id' in session:
+        user_ = Users.query.filter_by(id=session['user_id']).first()
+        email = user_.email
+    return render_template("index.html", email=email)
 
 
 @app.route('/catalogue')

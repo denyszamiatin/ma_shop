@@ -242,19 +242,18 @@ def add_product():
 @app.route('/categories/<string:category_id>', methods=("GET", "POST"))
 def categories(category_id):
     all_categories = ProductCategories.query.all()
+    check_categories = [str(category.id) for category in all_categories]
+    print(all_categories)
     if request.method == "POST":
         if session["user_id"]:
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
     if category_id == "all":
         all_products = Products.query.all()
+    elif category_id not in check_categories:
+        raise abort(404)
     else:
-        try:
-            how_much_category = int(category_id)
-            if how_much_category > len(all_categories):
-                raise abort(404)
-        except ValueError:
-            abort(404)
         all_products = Products.query.filter_by(category_id=category_id).all()
+
     return render_template("catalogue.html", categories=all_categories, products=all_products)
 
 

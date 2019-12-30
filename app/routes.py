@@ -8,7 +8,7 @@ from sqlalchemy import orm
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
-from app.db_utils.config import DATABASE
+from app.config import DATABASE, basedir
 from cart import cart
 from comments import comments
 from errors import errors
@@ -17,7 +17,6 @@ from product_categories import product_categories, category_validation
 from products import products
 from users import validation
 from . import app
-from app.config import basedir
 from .forms import *
 from .models import *
 

@@ -9,14 +9,12 @@ __pycache__/
 
 # Distribution / packaging
 *.flaskenv
-app/db_utils/config.py
-app/db_utils/config_.py
-app/config_.py
 .Python
 build/
 develop-eggs/
 dist/
 downloads/
+static/
 eggs/
 .eggs/
 lib/

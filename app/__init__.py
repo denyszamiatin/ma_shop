@@ -2,7 +2,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from . import config
+from app import config
 
 app = Flask(__name__)
 Bootstrap(app)

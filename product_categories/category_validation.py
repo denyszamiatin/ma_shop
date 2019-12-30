@@ -1,6 +1,5 @@
 """data validation module"""
-from app.db_utils.config import CATEGORY_MAX_LENGTH
 
 
 def validator(category_name):
-    return category_name.isalpha() and len(category_name) <= CATEGORY_MAX_LENGTH
+    return category_name.isalpha() and len(category_name) <= 3000

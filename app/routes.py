@@ -240,21 +240,20 @@ def add_product():
 
 
 @app.route('/categories/<string:category_id>', methods=("GET", "POST"))
-def categories(category_id):
+@app.route('/categories', methods=("GET", "POST"))
+def categories(category_id="all"):
     all_categories = ProductCategories.query.all()
     check_categories = [str(category.id) for category in all_categories]
-    print(all_categories)
     if request.method == "POST":
         if session["user_id"]:
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
-    if category_id == "all":
-        all_products = Products.query.all()
-    elif category_id not in check_categories:
+    if category_id not in check_categories and category_id != "all":
         raise abort(404)
     else:
-        all_products = Products.query.filter_by(category_id=category_id).all()
-
-    return render_template("catalogue.html", categories=all_categories, products=all_products)
+        products_array = Products.query
+        if category_id != "all":
+            products_array = products_array.filter_by(category_id=category_id)
+    return render_template("catalogue.html", categories=all_categories, products=products_array.all())
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))

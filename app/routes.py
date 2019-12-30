@@ -202,12 +202,21 @@ def index_admin():
     return render_template("index_admin.html")
 
 
+def save_image_and_thumbnail(image_data, product_id):
+    """save image and image_thumbnail"""
+    image = Image.open(image_data)
+    rgb_im = image.convert('RGB')
+    imagename = f"{product_id}.jpg"
+    rgb_im.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], imagename))
+    rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
+    thumbnail_name = f"{product_id}_thumbnail.jpg"
+    rgb_im.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
+
 @app.route('/admin/add_product', methods=("GET", "POST"))
 def add_product():
     """function for add product in database"""
     form = AddProductForm()
-    all_categories = ProductCategories.query.all()
-    form.category_id.choices = [(int(category.id), category.name) for category in all_categories]
+    form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
     if request.method == "POST" and form.validate():
         product = Products(name=form.name.data,
                            price=form.price.data,
@@ -215,25 +224,7 @@ def add_product():
                            category_id=form.category_id.data)
         db.session.add(product)
         db.session.commit()
-
-        def save_image_and_thumbnail():
-            """getting image from form and save with name = product.id
-            :return (url image, url thumbnail)"""
-            image = form.image.data
-            imagename = f"{product.id}.{secure_filename(image.filename).split('.')[-1]}"
-            image_path = os.path.join(app.config['UPLOAD_FOLDER'], imagename)
-            image.save(os.path.join(basedir, image_path))
-            image = Image.open(image)
-            image.thumbnail(app.config['THUMBNAIL_SIZE'])
-            thumbnail_name = imagename.split('.')
-            thumbnail_name = f"{''.join(thumbnail_name[:-1])}_thumbnail.{thumbnail_name[-1]}"
-            thumbnail_path = os.path.join(app.config['UPLOAD_FOLDER'], thumbnail_name)
-            image.save(os.path.join(basedir, thumbnail_path))
-            return (image_path, thumbnail_path)
-
-        images_path = save_image_and_thumbnail()
-        product.image, product.thumbnail = images_path
-        db.session.commit()
+        save_image_and_thumbnail(form.image.data, product.id)
         flash("Product added")
 
     return render_template("add_product.html", form=form)

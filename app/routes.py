@@ -15,9 +15,9 @@ from errors import errors
 from marks import mark
 from product_categories import product_categories, category_validation
 from products import products
-from users import validation, user
+from users import validation
 from . import app
-from .config import basedir
+from app.db_utils.config import basedir
 from .forms import *
 from .models import *
 
@@ -267,26 +267,20 @@ def add_news():
     return render_template('add_news.html', form=form)
 
 
-@app.route('/admin/edit_category/', methods=("GET", "POST"))
-def edit_category():
-    new_name = category_id = ""
-    all_categories = product_categories.get_all(g.db)
+@app.route('/admin/edit_category/<string:category_id>', methods=("GET", "POST"))
+def edit_category(category_id):
+    category = product_categories.read(g.db, category_id)
     if request.method == "POST":
-        category_id = int(request.form.get("category", ""))
         new_name = request.form.get("new_name", "")
-        if category_validation.validator(new_name):
-            try:
-                product_categories.update(g.db, category_id, new_name)
-                flash("Category updated")
-                return redirect(url_for('index_admin'))
-            except psycopg2.errors.UniqueViolation:
-                flash(f"Category {new_name} already exist")
-            except errors.StoreError:
-                flash("Something wrong, check form")
-        else:
+        try:
+            product_categories.update(g.db, category_id, new_name)
+            flash("Category updated")
+            return redirect(url_for('index_admin'))
+        except psycopg2.errors.UniqueViolation:
+            flash(f"Category {new_name} already exist")
+        except errors.StoreError:
             flash("Something wrong, check form")
-    return render_template("edit_category.html", all_categories=all_categories, new_name=new_name,
-                           category_id=category_id)
+    return render_template("edit_category.html", category=category)
 
 
 @app.route('/admin/delete_category', methods=("GET", "POST"))

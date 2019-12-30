@@ -1,5 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+
+from app import app
 from . import db
 
 
@@ -165,10 +167,10 @@ class Products(db.Model):
     """
     __tablename__ = "products"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(500))
+    name = db.Column(db.String(app.config['PRODUCT_NAME_MAX_LENGTH']))
     price = db.Column(db.Numeric)
-    image = db.Column(db.String(500))
-    thumbnail = db.Column(db.String(500))
+    image = db.Column(db.String(app.config['PRODUCT_IMAGE_MAX_LENGTH']))
+    thumbnail = db.Column(db.String(app.config['PRODUCT_THUMBNAIL_MAX_LENGTH']))
     description = db.Column(db.Text)
     category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
     deleted = db.Column(db.Boolean, default=False)

@@ -97,6 +97,8 @@ def cart_call():
                 }
             else:
                 cart_items[product_id]["pieces"] += 1
+    else:
+        return redirect(url_for("login"))
     return render_template("cart.html", cart_items=cart_items)
 
 

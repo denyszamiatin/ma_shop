@@ -240,9 +240,9 @@ def categories(category_id="all"):
     if category_id not in check_categories and category_id != "all":
         raise abort(404)
     else:
-        products_array = Products.query
+        products_array = Products.query.filter_by(deleted=False)
         if category_id != "all":
-            products_array = products_array.filter_by(category_id=category_id)
+            products_array = products_array.filter_by(category_id=category_id, deleted=False)
     return render_template("catalogue.html", categories=all_categories, products=products_array.all())
 
 

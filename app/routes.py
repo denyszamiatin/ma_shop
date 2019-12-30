@@ -283,20 +283,17 @@ def edit_category(category_id):
     return render_template("edit_category.html", category=category)
 
 
-@app.route('/admin/delete_category', methods=("GET", "POST"))
-def delete_category_list():
-    all_categories = product_categories.get_all(g.db)
-    return render_template("delete_category.html", all_categories=all_categories)
+@app.route("/admin/confirm_delete_category/<category_id>", methods=("GET", "POST"))
+def confirm_delete_category(category_id):
+    category_ = product_categories.read(g.db, category_id)
+    return render_template("confirm_delete_category.html", id=category_id, category=category_)
 
 
-@app.route('/admin/delete_category/<string:category_id>', methods=("GET", "POST"))
+@app.route("/admin/confirm_delete_category/delete/<category_id>", methods=("GET", "POST"))
 def delete_category(category_id):
-    try:
-        product_categories.delete(g.db, category_id)
-    except psycopg2.DatabaseError:
-        flash("smths wrong")
-        redirect(url_for(index_admin))
-    return redirect(url_for('delete_category_list'))
+    product_categories.delete(g.db, category_id)
+    flash("Deleted")
+    return redirect(url_for('categories_list'))
 
 
 @app.route('/admin/products_list', methods=("GET", "POST"))

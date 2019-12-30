@@ -28,7 +28,7 @@ class ProductCategories(db.Model):
     __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=True)
-    products = db.relationship("Products")
+    products = db.relationship("Products", cascade="delete")
 
     def __str__(self):
         return self.name

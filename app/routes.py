@@ -3,7 +3,7 @@ import os
 import psycopg2
 from PIL import Image
 
-from flask import render_template, request, redirect, url_for, flash, g, session, send_file
+from flask import render_template, request, redirect, url_for, flash, g, session, send_file, abort
 from sqlalchemy import orm
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
@@ -17,7 +17,7 @@ from product_categories import product_categories, category_validation
 from products import products
 from users import validation
 from . import app
-from app.db_utils.config import basedir
+from app.config import basedir
 from .forms import *
 from .models import *
 
@@ -234,6 +234,7 @@ def add_product():
         images_path = save_image_and_thumbnail()
         product.image, product.thumbnail = images_path
         db.session.commit()
+        flash("Product added")
 
     return render_template("add_product.html", form=form)
 
@@ -247,6 +248,12 @@ def categories(category_id):
     if category_id == "all":
         all_products = Products.query.all()
     else:
+        try:
+            how_much_category = int(category_id)
+            if how_much_category > len(all_categories):
+                raise abort(404)
+        except ValueError:
+            abort(404)
         all_products = Products.query.filter_by(category_id=category_id).all()
     return render_template("catalogue.html", categories=all_categories, products=all_products)
 

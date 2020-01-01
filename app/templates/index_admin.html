@@ -52,6 +52,9 @@
                 <a class="dropdown-item" href="/admin/manage_orders">Inspect</a>
               </div>
           </li>
+           {% if "user_id" in session %}
+          <li class="nav-item"><a class="nav-link" href="/logout">{{user_email}}</a></li>
+          {% endif %}
       </ul>
     </div>
   </div>

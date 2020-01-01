@@ -42,11 +42,7 @@ def image(ln):
 
 @app.route('/')
 def index():
-    email = ''
-    if 'user_id' in session:
-        user_ = Users.query.filter_by(id=session['user_id']).first()
-        email = user_.email
-    return render_template("index.html", email=email)
+    return render_template("index.html")
 
 
 @app.route('/catalogue')
@@ -139,15 +135,15 @@ def login():
         password = form.password.data
         if validation.login_form_validation(email, password):
             try:
-                user_ = Users.query.filter_by(email=email).first()
-                if check_password_hash(user_.password, password):
-                    session['user_id'] = user_.id
+                user = Users.query.filter_by(email=email).first()
+                if check_password_hash(user.password, password):
+                    session['user_id'] = user.id
                     flash("You are logged")
                     return redirect(url_for('index'))
                 else:
-                    message = "Wrong password"
+                    message = "Wrong email or password"
             except AttributeError:
-                message = "Wrong email"
+                message = "Wrong email or password"
         else:
             message = "Something wrong, check form"
 
@@ -165,8 +161,8 @@ def registration():
         password = form.password.data
         if validation.register_form_validation(first_name, second_name, email, password):
             try:
-                user_ = Users(first_name, second_name, email, password)
-                db.session.add(user_)
+                user = Users(first_name, second_name, email, password)
+                db.session.add(user)
                 db.session.commit()
                 flash("Registration was successful")
                 return redirect(url_for('index'))
@@ -401,3 +397,11 @@ def add_to_cart(product_id):
 def categories_list():
     all_categories = product_categories.get_all(g.db)
     return render_template("categories_list.html", all_categories=all_categories)
+
+@app.context_processor
+def inject_email():
+    user_email = ''
+    if 'user_id' in session:
+        user = Users.query.filter_by(id=session['user_id']).first()
+        user_email = user.email
+    return {'user_email': user_email}

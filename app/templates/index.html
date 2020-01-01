@@ -20,8 +20,7 @@
         <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
         <li class="nav-item"><a class="nav-link" href="/registration">Registration</a></li>
           {% else %}
-          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">{{email}}</a></li>
+          <li class="nav-item"><a class="nav-link" href="/logout">{{user_email}}</a></li>
           {% endif %}
       </ul>
     </div>

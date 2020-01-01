@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired, FileAllowed, FileField
 from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, SelectField, PasswordField, IntegerField
 from wtforms.validators import DataRequired
+from wtforms.fields.html5 import EmailField
 
 
 class AddProductForm(FlaskForm):
@@ -26,7 +27,7 @@ class UserRegistrationForm(FlaskForm):
     """User registration form"""
     first_name = StringField("First name",  validators=[DataRequired()])
     second_name = StringField("Second name",  validators=[DataRequired()])
-    email = StringField("Email",  validators=[DataRequired()])
+    email = EmailField("Email",  validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Submit")
 

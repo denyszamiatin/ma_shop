@@ -106,11 +106,11 @@ def cart_call():
 
 @app.route('/news')
 def news():
-    all_news = db.session.query(News) \
+    news = db.session.query(News) \
         .join(Users) \
         .add_columns(News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
-    return render_template("news.html", news=all_news)
+    return render_template("news.html", news=news)
 
 
 @app.route('/comments_list/<product_id>', methods=("GET", "POST"))
@@ -251,7 +251,7 @@ def categories(category_id="all"):
 @login_required
 def add_news():
     form = NewsForm()
-    if request.method == 'POST' and 'user_id' in session:
+    if request.method == 'POST':
         try:
             new_news = News(title=form.title.data, post=form.post.data, id_user=session['user_id'])
             db.session.add(new_news)
@@ -260,9 +260,6 @@ def add_news():
         except IntegrityError:
             flash('News wasn\'t added to db.')
         return redirect(url_for('news'))
-    elif 'user_id' not in session:
-        flash('News wasn\'t added to db. Please login.')
-        return redirect(url_for('login'))
 
     return render_template('add_news.html', form=form)
 
@@ -329,11 +326,11 @@ def edit_product(product_id):
 @app.route('/admin/delete_news', methods=("GET", "POST"))
 @login_required
 def delete_news():
-    all_news = db.session.query(News) \
+    news = db.session.query(News) \
         .join(Users) \
         .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
-    return render_template("delete_news.html", news=all_news)
+    return render_template("delete_news.html", news=news)
 
 
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
@@ -348,11 +345,11 @@ def delete_news_id(news_id):
 @app.route('/admin/edit_news', methods=("GET", "POST"))
 @login_required
 def edit_news():
-    all_news = db.session.query(News) \
+    news = db.session.query(News) \
         .join(Users) \
         .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
-    return render_template("edit_news.html", news=all_news)
+    return render_template("edit_news.html", news=news)
 
 
 @app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
@@ -424,10 +421,10 @@ def categories_list():
                            next_url=next_url, prev_url=prev_url)
 
 
-@app.context_processor
-def inject_email():
-    user_email = ''
-    if 'user_id' in session:
-        user = Users.query.filter_by(id=session['user_id']).first()
-        user_email = user.email
-    return {'user_email': user_email}
+# @app.context_processor
+# def inject_email():
+#     user_email = ''
+#     if 'user_id' in session:
+#         user = Users.query.filter_by(id=session['user_id']).first()
+#         user_email = user.email
+#     return {'user_email': user_email}

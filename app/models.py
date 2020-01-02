@@ -181,6 +181,14 @@ class Products(db.Model):
 
 
 class OrderProduct(db.Model):
+    """
+    Class to create table "order_product" in database.
+    Variables
+    ----------
+    id - order_product id
+    name - order id
+    products - product id
+    """
     id = db.Column(db.Integer, primary_key=True)
     id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))

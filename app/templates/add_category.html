@@ -1,16 +1,22 @@
 {% extends "index_admin.html" %}
 {% block content %}
 <div class="container">
-  {% if message %}
+  {% for message in get_flashed_messages() %}
   <p class="alert alert-warning">{{ message }}</p>
-  {% endif %}
+  {% endfor %}
     <h1 class="m-5">Add category</h1>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
+      {{ form.csrf_token }}
       <div class="form-group">
-        <label for="category_name">Name</label>
-        <input type="text" class="form-control" id="category_input" name="category_name" value="{{category_name}}" placeholder="Category">
+        {{ form.name.label }}
+        {{ form.name(class="form-control", placeholder="Office") }}
+        {% for error in form.name.errors %}
+        <small style="color: red">{{ error }}</small>
+        {% endfor %}
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <div id="form-group mt-3">
+        {{ form.submit(class="btn btn-primary btn-lg") }}
+      </div>
     </form>
-    </div>
+</div>
 {% endblock %}

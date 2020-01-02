@@ -421,13 +421,15 @@ def add_to_cart(product_id):
 @login_required
 def categories_list():
     page = request.args.get('page', 1, type=int)
-    all_categories = ProductCategories.query.all().paginate(page, app.config['CATEGORIES_PER_PAGE'], False)
-    next_url = url_for('categories', page=all_categories.next_num) \
+    all_categories = ProductCategories.query.paginate(page, 3, False)
+    next_url = url_for('categories_list', page=all_categories.next_num) \
         if all_categories.has_next else None
-    prev_url = url_for('categories', page=all_categories.prev_num)\
+    prev_url = url_for('categories_list', page=all_categories.prev_num)\
         if all_categories.has_prev else None
+    print(all_categories.items)
+    print(all_categories.items[0])
 
-    return render_template("categories_list.html", all_categories=all_categories,
+    return render_template("categories_list.html", all_categories=all_categories.items,
                            next_url=next_url, prev_url=prev_url)
 
 

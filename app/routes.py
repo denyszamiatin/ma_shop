@@ -184,12 +184,14 @@ def registration():
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required
 def add_category():
+    """Admin: add category"""
     form = AddCategoryForm()
     if request.method == "POST":
         category = ProductCategories(name=form.name.data)
         db.session.add(category)
         db.session.commit()
         flash("Category added")
+        return redirect(url_for('categories_list'))
     return render_template("add_category.html", form=form)
 
 
@@ -414,15 +416,15 @@ def set_product_mark(product_id):
 @login_required
 def categories_list():
     page = request.args.get('page', 1, type=int)
-    all_categories = ProductCategories.query.paginate(page, 3, False)
-    next_url = url_for('categories_list', page=all_categories.next_num) \
-        if all_categories.has_next else None
-    prev_url = url_for('categories_list', page=all_categories.prev_num) \
-        if all_categories.has_prev else None
-    print(all_categories.items)
-    print(all_categories.items[0])
+    categories = ProductCategories.query.paginate(page, 3, False)
+    next_url = url_for('categories_list', page=categories.next_num) \
+        if categories.has_next else None
+    prev_url = url_for('categories_list', page=categories.prev_num) \
+        if categories.has_prev else None
+    print(categories.items)
+    print(categories.items[0])
 
-    return render_template("categories_list.html", all_categories=all_categories.items,
+    return render_template("categories_list.html", categories=categories.items,
                            next_url=next_url, prev_url=prev_url)
 
 

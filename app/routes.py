@@ -302,7 +302,10 @@ def delete_category(category_id):
 @app.route('/admin/products_list', methods=("GET", "POST"))
 @login_required
 def products_list():
-    all_products = products.get_all_2(g.db)
+    all_products = db.session.query(Products) \
+            .join(ProductCategories) \
+            .add_columns(Products.id, Products.name, Products.price, ProductCategories.id, ProductCategories.name) \
+            .filter(ProductCategories.id == Products.category_id).order_by(Products.id).all()
     return render_template("products_list.html", all_products=all_products)
 
 

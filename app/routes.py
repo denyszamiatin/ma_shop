@@ -1,4 +1,5 @@
 import io
+import collections
 from functools import wraps
 from pathlib import Path
 
@@ -301,11 +302,11 @@ def delete_category(category_id):
 @app.route('/admin/products_list', methods=("GET", "POST"))
 @login_required
 def products_list():
-    all_products = db.session.query(Products) \
-            .join(ProductCategories) \
-            .add_columns(Products.id, Products.name, Products.price, ProductCategories.id, ProductCategories.name) \
-            .filter(ProductCategories.id == Products.category_id).order_by(Products.id).all()
-    return render_template("products_list.html", all_products=all_products)
+    products = db.session.query(Products).order_by(Products.id).all()
+    categories = {}
+    for product in products:
+        categories[product.category_id] = db.session.query(ProductCategories).filter_by(id=product.category_id).first().name
+    return render_template("products_list.html", products=products, categories=categories)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))

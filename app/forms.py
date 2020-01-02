@@ -20,7 +20,6 @@ class AddProductForm(FlaskForm):
 class NewsForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     post = TextAreaField("Post", validators=[DataRequired()])
-    id_user = IntegerField("Id_user", validators=[DataRequired()])
 
 
 class UserRegistrationForm(FlaskForm):

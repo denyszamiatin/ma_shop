@@ -2,7 +2,25 @@
 {% block title %}MA SHOP | NEWS{% endblock %}
 {% block content %}
 <div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages%}
+            {% for message in messages %}
+                {% if message == "News was successfully added to db." %}
+                <div class="container">
+                    <span class="badge badge-pill badge-success">{{message}}</span>
+                </div>
+                {% elif message.find("News wasn\'t added to db.") %}
+                <div class="container">
+                    <span class="badge badge-pill badge-danger">{{message}}</span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <h1 class="text-center mt-3 mb-5"><b>MA SHOP NEWS</b></h1>
+
     {% for item in news %}
     <div class="border-top">
         <p class="text-center m-3" style="color: #007bff; font-size: 1.5rem;"><b>{{item.title}}</b></p>

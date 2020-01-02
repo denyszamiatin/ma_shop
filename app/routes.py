@@ -248,19 +248,20 @@ def categories(category_id="all"):
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
 def add_news():
-    if request.method == 'POST':
-        title = request.form.get('title', '')
-        post = request.form.get('post', '')
-        id_user = session.get('user_id', 1)
+    form = NewsForm()
+    if request.method == 'POST' and 'user_id' in session:
         try:
-            new_news = News(title=title, post=post, id_user=id_user)
+            new_news = News(title=form.title.data, post=form.post.data, id_user=session['user_id'])
             db.session.add(new_news)
             db.session.commit()
-            flash('News was successfully added to db')
-        except orm.exc.NoResultFound:
-            flash('News wasn\'t added to db')
+            flash('News was successfully added to db.')
+        except IntegrityError:
+            flash('News wasn\'t added to db.')
         return redirect(url_for('news'))
-    form = NewsForm()
+    elif 'user_id' not in session:
+        flash('News wasn\'t added to db. Please login.')
+        return redirect(url_for('login'))
+
     return render_template('add_news.html', form=form)
 
 
@@ -320,16 +321,18 @@ def edit_product(product_id):
 
 @app.route('/admin/delete_news', methods=("GET", "POST"))
 def delete_news():
-    all_news = News.query.all()
-    users = Users.query.filter(Users.id == News.id_user).all()
-    return render_template("delete_news.html", news=all_news, users=users)
+    all_news = db.session.query(News) \
+        .join(Users) \
+        .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
+        .filter(Users.id == News.id_user).all()
+    return render_template("delete_news.html", news=all_news)
 
 
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
 def delete_news_id(news_id):
     News.query.filter(News.id == news_id).delete()
     db.session.commit()
-    flash('News was successfully deleted from db')
+    flash('News was successfully deleted from db.')
     return redirect(url_for('delete_news'))
 
 
@@ -403,10 +406,10 @@ def categories_list():
     return render_template("categories_list.html", all_categories=all_categories)
 
 
-@app.context_processor
-def inject_email():
-    user_email = ''
-    if 'user_id' in session:
-        user = Users.query.filter_by(id=session['user_id']).first()
-        user_email = user.email
-    return {'user_email': user_email}
+# @app.context_processor
+# def inject_email():
+#     user_email = ''
+#     if 'user_id' in session:
+#         user = Users.query.filter_by(id=session['user_id']).first()
+#         user_email = user.email
+#     return {'user_email': user_email}

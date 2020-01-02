@@ -408,15 +408,6 @@ def set_product_mark(product_id):
         return redirect(url_for('product'))
 
 
-"""@app.route('/cart/<int:product_id>', methods=['POST'])
-def add_to_cart(product_id):
-    product = products.get_product(product_id)
-    cart_item = CartItem(product=product)
-    db.session.add(cart_item)
-    db.session.commit()
-    return render_tempate('home.html', product=products)"""
-
-
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():

@@ -1,11 +1,13 @@
 import io
 import os
-
+from pathlib import Path
 import psycopg2
 from PIL import Image
+
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file, abort
 from sqlalchemy import orm
 from sqlalchemy.exc import IntegrityError
+from werkzeug.utils import secure_filename
 
 from app.config import DATABASE, basedir
 from cart import cart
@@ -15,6 +17,7 @@ from marks import mark
 from product_categories import product_categories, category_validation
 from products import products
 from users import validation
+from . import app
 from .forms import *
 from .models import *
 
@@ -202,10 +205,10 @@ def save_image_and_thumbnail(image_data, product_id):
     image = Image.open(image_data)
     rgb_im = image.convert('RGB')
     imagename = f"{product_id}.jpg"
-    rgb_im.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], imagename))
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], imagename))
     rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
     thumbnail_name = f"{product_id}_thumbnail.jpg"
-    rgb_im.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
 
 
 @app.route('/admin/add_product', methods=("GET", "POST"))

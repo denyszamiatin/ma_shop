@@ -1,24 +1,20 @@
 import io
-import os
+from functools import wraps
 from pathlib import Path
+
 import psycopg2
 from PIL import Image
-
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file, abort
-from sqlalchemy import orm
 from sqlalchemy.exc import IntegrityError
-from werkzeug.utils import secure_filename
-from functools import wraps
 
 from app.config import DATABASE, basedir
 from cart import cart
 from comments import comments
 from errors import errors
 from marks import mark
-from product_categories import product_categories, category_validation
+from product_categories import product_categories
 from products import products
 from users import validation
-from . import app
 from .forms import *
 from .models import *
 

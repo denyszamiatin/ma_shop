@@ -40,6 +40,7 @@ def login_required(function):
         else:
             flash("You need to login first")
             return redirect(url_for('login'))
+
     return wrap
 
 
@@ -94,10 +95,10 @@ def cart_call():
         if product_id not in cart_items:
             name, price = products.get_for_cart(g.db, product_id)
             cart_items[product_id] = {
-                    "product_id": product_id,
-                    "name": name,
-                    "price": price,
-                    "pieces": 1
+                "product_id": product_id,
+                "name": name,
+                "price": price,
+                "pieces": 1
             }
         else:
             cart_items[product_id]["pieces"] += 1
@@ -130,7 +131,6 @@ def logout():
     session.pop("user_id")
     flash("You logged out")
     return redirect(url_for('index'))
-
 
 
 @app.route('/login', methods=("GET", "POST"))
@@ -328,7 +328,8 @@ def edit_product(product_id):
 def delete_news():
     news = db.session.query(News) \
         .join(Users) \
-        .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
+        .add_columns(News.id, News.title, News.post, News.news_date,
+                     Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
     return render_template("delete_news.html", news=news)
 
@@ -347,7 +348,8 @@ def delete_news_id(news_id):
 def edit_news():
     news = db.session.query(News) \
         .join(Users) \
-        .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
+        .add_columns(News.id, News.title, News.post, News.news_date,
+                     Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
     return render_template("edit_news.html", news=news)
 
@@ -412,7 +414,7 @@ def categories_list():
     all_categories = ProductCategories.query.paginate(page, 3, False)
     next_url = url_for('categories_list', page=all_categories.next_num) \
         if all_categories.has_next else None
-    prev_url = url_for('categories_list', page=all_categories.prev_num)\
+    prev_url = url_for('categories_list', page=all_categories.prev_num) \
         if all_categories.has_prev else None
     print(all_categories.items)
     print(all_categories.items[0])
@@ -421,10 +423,10 @@ def categories_list():
                            next_url=next_url, prev_url=prev_url)
 
 
-# @app.context_processor
-# def inject_email():
-#     user_email = ''
-#     if 'user_id' in session:
-#         user = Users.query.filter_by(id=session['user_id']).first()
-#         user_email = user.email
-#     return {'user_email': user_email}
+@app.context_processor
+def inject_email():
+    user_email = ''
+    if 'user_id' in session:
+        user = Users.query.filter_by(id=session['user_id']).first()
+        user_email = user.email
+    return {'user_email': user_email}

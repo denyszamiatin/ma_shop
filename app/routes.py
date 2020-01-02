@@ -1,5 +1,6 @@
 import io
 import os
+from pathlib import Path
 import psycopg2
 from PIL import Image
 
@@ -109,9 +110,11 @@ def cart_call():
 
 @app.route('/news')
 def news():
-    all_news = News.query.all()
-    users = Users.query.filter(Users.id == News.id_user).all()
-    return render_template("news.html", news=all_news, users=users)
+    all_news = db.session.query(News) \
+        .join(Users) \
+        .add_columns(News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
+        .filter(Users.id == News.id_user).all()
+    return render_template("news.html", news=all_news)
 
 
 @app.route('/comments_list/<product_id>', methods=("GET", "POST"))
@@ -212,10 +215,11 @@ def save_image_and_thumbnail(image_data, product_id):
     image = Image.open(image_data)
     rgb_im = image.convert('RGB')
     imagename = f"{product_id}.jpg"
-    rgb_im.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], imagename))
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], imagename))
     rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
     thumbnail_name = f"{product_id}_thumbnail.jpg"
-    rgb_im.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
+
 
 
 @app.route('/admin/add_product', methods=("GET", "POST"))

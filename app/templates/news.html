@@ -11,13 +11,9 @@
             <div class="">
                 <text class="badge badge-primary">Publication date: {{item.news_date}}</text>
             </div>
-            {% for user in users %}
-               {% if user.id == item.id_user %}
             <div class="mr-3">
-                <text class="badge badge-success">Author: {{user.first_name + ' ' + user.second_name}}</text>
+                <text class="badge badge-success">Author: {{item.first_name + ' ' + item.second_name}}</text>
             </div>
-                {% endif %}
-            {% endfor %}
         </div>
     </div>
     {% endfor %}

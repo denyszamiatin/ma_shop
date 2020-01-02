@@ -5,44 +5,53 @@
 <script src="https://use.fontawesome.com/c560c025cf.js"></script>
 <div class="container">
     <div class="card my-3">
-        <div class="card-header bg-dark text-light">
-            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-            <b>Shipping cart</b>
-            <div class="clearfix"></div>
-        </div>
-{% for cart_item in cart_items.values() %}
-        <div class="card-body">
-            <!-- PRODUCT -->
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-2 text-center">
-                    <img class="img-responsive" src="/image/{{cart_item["product_id"]}}" alt="preview" width="120" height="80">
-                </div>
-                <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
-                    <h4 class="product-name"><strong>{{cart_item["name"]}}</strong></h4>
-                </div>
-                <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
-                    <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
-                        <h6><strong>{{cart_item["price"]}} <span class="text-muted">&nbsp;x</span></strong></h6>
-                    </div>
-                    <div class="col-4 col-sm-4 col-md-4">
-                        <div>
-                            <input type="number" step="1" max="99" min="1" value="{{cart_item["pieces"]}}" title="Qty" class="qty" size="4">
-                        </div>
-                    </div>
-                    <div class="col-2 col-sm-2 col-md-2 text-right">
-                        <form method="post">
-                             <input type="hidden" name="delete_item" value="{{cart_item["product_id"] }}">
+        <table class="table table-striped w-auto table-bordered">
+        <thead>
+        <tr>
+            <th>Image</th>
+            <th>Product name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Amount</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for cart_item in cart_items.values() %}
+                <tr>
+                <td class="text-center">
+                    <img class="img-responsive" src="/static/img/{{cart_item['product_id']}}_thumbnail.jpg" alt="preview" width="120" height="80">
+                </td>
+                    <td><h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{cart_item['product_id']}}">{{cart_item["name"]}}</h4>
+                </td>
+                    <td><h4 style="margin-top:20px;">₴{{cart_item["price"]}} </h4>
+                </td>
+                <td>
+                    <h4 style="margin-top:20px;"><input type="number" step="1" max="99" min="1" value="{{cart_item['pieces']}}" title="Qty" class="qty" size="4"></h4>
+                </td>
+                <td>
+                    <h4 style="margin-top:20px;">₴{{cart_item["price"] * cart_item['pieces']}}</h4>
+                </td>
+                <td>
+                    <h4 style="margin-top:20px;">
+                    <form method="post">
                         <input type="hidden" name="delete_item" value="{{cart_item["product_id"] }}">
-                        <button class="btn btn-outline-danger btn-xs">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <hr>
-        </div>
-{% endfor %}
+                        <input type="hidden" name="delete_item" value="{{cart_item["product_id"] }}">
+                    <button class="btn btn-outline-danger btn-xs">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                    </form>
+                    </h4>
+                </td>
+        {% endfor %}
+            </tr>
+        </tbody>
+            <tfoot>
+                <td colspan="6" class="text-center">
+                    <h5>You have ordered XX items for ₴YY. Please proceed to checkout</h5>
+                </td>
+            </tfoot>
+    </table>
         <!-- END PRODUCT -->
         <div class="card-footer">
             <div class="pull-right" style="margin: 10px">

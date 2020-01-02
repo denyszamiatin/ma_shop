@@ -40,6 +40,7 @@ def login_required(function):
         else:
             flash("You need to login first")
             return redirect(url_for('login'))
+
     return wrap
 
 
@@ -94,10 +95,10 @@ def cart_call():
         if product_id not in cart_items:
             name, price = products.get_for_cart(g.db, product_id)
             cart_items[product_id] = {
-                    "product_id": product_id,
-                    "name": name,
-                    "price": price,
-                    "pieces": 1
+                "product_id": product_id,
+                "name": name,
+                "price": price,
+                "pieces": 1
             }
         else:
             cart_items[product_id]["pieces"] += 1
@@ -106,11 +107,11 @@ def cart_call():
 
 @app.route('/news')
 def news():
-    all_news = db.session.query(News) \
+    news = db.session.query(News) \
         .join(Users) \
         .add_columns(News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
-    return render_template("news.html", news=all_news)
+    return render_template("news.html", news=news)
 
 
 @app.route('/comments_list/<product_id>', methods=("GET", "POST"))
@@ -130,7 +131,6 @@ def logout():
     session.pop("user_id")
     flash("You logged out")
     return redirect(url_for('index'))
-
 
 
 @app.route('/login', methods=("GET", "POST"))
@@ -251,7 +251,7 @@ def categories(category_id="all"):
 @login_required
 def add_news():
     form = NewsForm()
-    if request.method == 'POST' and 'user_id' in session:
+    if request.method == 'POST':
         try:
             new_news = News(title=form.title.data, post=form.post.data, id_user=session['user_id'])
             db.session.add(new_news)
@@ -260,9 +260,6 @@ def add_news():
         except IntegrityError:
             flash('News wasn\'t added to db.')
         return redirect(url_for('news'))
-    elif 'user_id' not in session:
-        flash('News wasn\'t added to db. Please login.')
-        return redirect(url_for('login'))
 
     return render_template('add_news.html', form=form)
 
@@ -332,11 +329,12 @@ def edit_product(product_id):
 @app.route('/admin/delete_news', methods=("GET", "POST"))
 @login_required
 def delete_news():
-    all_news = db.session.query(News) \
+    news = db.session.query(News) \
         .join(Users) \
-        .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
+        .add_columns(News.id, News.title, News.post, News.news_date,
+                     Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
-    return render_template("delete_news.html", news=all_news)
+    return render_template("delete_news.html", news=news)
 
 
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
@@ -351,11 +349,12 @@ def delete_news_id(news_id):
 @app.route('/admin/edit_news', methods=("GET", "POST"))
 @login_required
 def edit_news():
-    all_news = db.session.query(News) \
+    news = db.session.query(News) \
         .join(Users) \
-        .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
+        .add_columns(News.id, News.title, News.post, News.news_date,
+                     Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
-    return render_template("edit_news.html", news=all_news)
+    return render_template("edit_news.html", news=news)
 
 
 @app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
@@ -411,15 +410,6 @@ def set_product_mark(product_id):
         return redirect(url_for('product'))
 
 
-"""@app.route('/cart/<int:product_id>', methods=['POST'])
-def add_to_cart(product_id):
-    product = products.get_product(product_id)
-    cart_item = CartItem(product=product)
-    db.session.add(cart_item)
-    db.session.commit()
-    return render_tempate('home.html', product=products)"""
-
-
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():
@@ -427,7 +417,7 @@ def categories_list():
     all_categories = ProductCategories.query.paginate(page, 3, False)
     next_url = url_for('categories_list', page=all_categories.next_num) \
         if all_categories.has_next else None
-    prev_url = url_for('categories_list', page=all_categories.prev_num)\
+    prev_url = url_for('categories_list', page=all_categories.prev_num) \
         if all_categories.has_prev else None
     print(all_categories.items)
     print(all_categories.items[0])

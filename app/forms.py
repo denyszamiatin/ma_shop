@@ -18,6 +18,7 @@ class AddProductForm(FlaskForm):
 
 
 class NewsForm(FlaskForm):
+    """Form for adding news"""
     title = StringField("Title", validators=[DataRequired()])
     post = TextAreaField("Post", validators=[DataRequired()])
 

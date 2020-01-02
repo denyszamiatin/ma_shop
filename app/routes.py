@@ -188,20 +188,13 @@ def registration():
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required
 def add_category():
-    category_name = message = ''
+    form = AddCategoryForm()
     if request.method == "POST":
-        category_name = request.form.get("category_name", "")
-        if category_validation.validator(category_name):
-            try:
-                product_categories.create(g.db, category_name)
-                flash("Category added")
-                return redirect(url_for('index_admin'))
-            except errors.StoreError:
-                message = f"Category with name: {category_name} already exist"
-        else:
-            message = "Something wrong, check form"
-
-    return render_template("add_category.html", message=message, category_name=category_name)
+        category = ProductCategories(name=form.name.data)
+        db.session.add(category)
+        db.session.commit()
+        flash("Category added")
+    return render_template("add_category.html", form=form)
 
 
 @app.route('/admin')

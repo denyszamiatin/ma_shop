@@ -358,9 +358,11 @@ def delete_news_id(news_id):
 @app.route('/admin/edit_news', methods=("GET", "POST"))
 @login_required
 def edit_news():
-    all_news = News.query.all()
-    users = Users.query.filter(Users.id == News.id_user).all()
-    return render_template("edit_news.html", news=all_news, users=users)
+    all_news = db.session.query(News) \
+        .join(Users) \
+        .add_columns(News.id, News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
+        .filter(Users.id == News.id_user).all()
+    return render_template("edit_news.html", news=all_news)
 
 
 @app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
@@ -371,7 +373,7 @@ def edit_news_id(news_id):
         form = NewsForm(formdata=request.form, obj=post)
         form.populate_obj(post)
         db.session.commit()
-        flash('News was successfully updated in db')
+        flash('News was successfully updated in db.')
         return redirect(url_for('edit_news'))
     form = NewsForm(obj=post)
     return render_template('edit_news_id.html', post=post, form=form)

@@ -2,6 +2,19 @@
 {% block title %}MA SHOP | NEWS{% endblock %}
 {% block content %}
 <div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages%}
+            {% for message in messages %}
+                {% if message == "News was successfully updated in db." %}
+                <div class="container">
+                    <span class="badge badge-pill badge-success">{{message}}</span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <h1 class="m-5">Edit news</h1>
 
     {% for item in news %}
@@ -11,13 +24,9 @@
             <div class="">
                 <text class="text-muted">Publication date: {{ item.news_date }}</text>
             </div>
-            {% for user in users %}
-            {% if user.id == item.id_user %}
             <div class="mr-3">
-                <text class="text-muted">Author: {{ user.first_name + ' ' + user.second_name }}</text>
+                <text class="text-muted">Author: {{ item.first_name + ' ' + item.second_name }}</text>
             </div>
-            {% endif %}
-            {% endfor %}
         </div>
         <p>{{ item.post }}</p>
         <div class="d-flex flex-row-reverse mb-3">

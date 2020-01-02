@@ -3,9 +3,12 @@
 
 {% block content %}
 <div class="container">
-{% if message %}
-<p class="alert alert-warning">{{ message }}</p>
-{% endif %}
+  {% if message %}
+  <p class="alert alert-warning">{{ message }}</p>
+  {% endif %}
+  {% for message in get_flashed_messages() %}
+      <p class="alert alert-warning">{{ message }}</p>
+  {% endfor %}
 <h1 class="m-5">Login</h1>
 <form method="post">
   <div class="form-group">

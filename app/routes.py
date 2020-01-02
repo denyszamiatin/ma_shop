@@ -7,6 +7,7 @@ from flask import render_template, request, redirect, url_for, flash, g, session
 from sqlalchemy import orm
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
+from functools import wraps
 
 from app.config import DATABASE, basedir
 from cart import cart
@@ -32,6 +33,17 @@ def close_db(error):
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
+
+
+def login_required(function):
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        if 'user_id' in session:
+            return function(*args, **kwargs)
+        else:
+            flash("You need to login first")
+            return redirect(url_for('login'))
+    return wrap
 
 
 @app.route('/image/<ln>')
@@ -68,32 +80,30 @@ def show_product(product_id):
 
 
 @app.route('/product/add_to_cart/<product_id>', methods=("GET", "POST"))
+@login_required
 def add_to_cart(product_id):
     if request.method == "POST":
-        if session["user_id"]:
-            cart.add(g.db, session["user_id"], product_id)
+        cart.add(g.db, session["user_id"], product_id)
     return redirect(url_for("categories"))
 
 
 @app.route('/cart', methods=("GET", "POST"))
+@login_required
 def cart_call():
     cart_items = {}
-    if "user_id" in session:
-        if request.method == "POST":
-            cart.delete(g.db, int(session["user_id"]), int(request.form.get("delete_item", "")))
-        for product_id in cart.get_all(g.db, int(session["user_id"])):
-            if product_id not in cart_items:
-                name, price = products.get_for_cart(g.db, product_id)
-                cart_items[product_id] = {
+    if request.method == "POST":
+        cart.delete(g.db, int(session["user_id"]), int(request.form.get("delete_item", "")))
+    for product_id in cart.get_all(g.db, int(session["user_id"])):
+        if product_id not in cart_items:
+            name, price = products.get_for_cart(g.db, product_id)
+            cart_items[product_id] = {
                     "product_id": product_id,
                     "name": name,
                     "price": price,
                     "pieces": 1
-                }
-            else:
-                cart_items[product_id]["pieces"] += 1
-    else:
-        return redirect(url_for("login"))
+            }
+        else:
+            cart_items[product_id]["pieces"] += 1
     return render_template("cart.html", cart_items=cart_items)
 
 
@@ -116,14 +126,12 @@ def contacts():
 
 
 @app.route('/logout')
+@login_required
 def logout():
-    if "user_id" in session:
-        session.pop("user_id")
-        flash("You logged out")
-        return redirect(url_for('index'))
-    else:
-        flash("You are not logged in")
-        return redirect(url_for('index'))
+    session.pop("user_id")
+    flash("You logged out")
+    return redirect(url_for('index'))
+
 
 
 @app.route('/login', methods=("GET", "POST"))
@@ -175,6 +183,7 @@ def registration():
 
 
 @app.route('/admin/add_category', methods=("GET", "POST"))
+@login_required
 def add_category():
     category_name = message = ''
     if request.method == "POST":
@@ -193,6 +202,7 @@ def add_category():
 
 
 @app.route('/admin')
+@login_required
 def index_admin():
     return render_template("index_admin.html")
 
@@ -207,7 +217,9 @@ def save_image_and_thumbnail(image_data, product_id):
     thumbnail_name = f"{product_id}_thumbnail.jpg"
     rgb_im.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
 
+
 @app.route('/admin/add_product', methods=("GET", "POST"))
+@login_required
 def add_product():
     """function for add product in database"""
     form = AddProductForm()
@@ -243,6 +255,7 @@ def categories(category_id="all"):
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
+@login_required
 def add_news():
     if request.method == 'POST':
         title = request.form.get('title', '')
@@ -261,6 +274,7 @@ def add_news():
 
 
 @app.route('/admin/edit_category/<string:category_id>', methods=("GET", "POST"))
+@login_required
 def edit_category(category_id):
     category = product_categories.read(g.db, category_id)
     if request.method == "POST":
@@ -277,12 +291,14 @@ def edit_category(category_id):
 
 
 @app.route("/admin/confirm_delete_category/<category_id>", methods=("GET", "POST"))
+@login_required
 def confirm_delete_category(category_id):
     category_ = product_categories.read(g.db, category_id)
     return render_template("confirm_delete_category.html", id=category_id, category=category_)
 
 
 @app.route("/admin/confirm_delete_category/delete/<category_id>", methods=("GET", "POST"))
+@login_required
 def delete_category(category_id):
     product_categories.delete(g.db, category_id)
     flash("Deleted")
@@ -290,12 +306,14 @@ def delete_category(category_id):
 
 
 @app.route('/admin/products_list', methods=("GET", "POST"))
+@login_required
 def products_list():
     all_products = products.get_all_2(g.db)
     return render_template("products_list.html", all_products=all_products)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
+@login_required
 def edit_product(product_id):
     product = products.get_product_2(g.db, product_id)
     categories = product_categories.get_all(g.db)
@@ -315,6 +333,7 @@ def edit_product(product_id):
 
 
 @app.route('/admin/delete_news', methods=("GET", "POST"))
+@login_required
 def delete_news():
     all_news = News.query.all()
     users = Users.query.filter(Users.id == News.id_user).all()
@@ -322,6 +341,7 @@ def delete_news():
 
 
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
+@login_required
 def delete_news_id(news_id):
     News.query.filter(News.id == news_id).delete()
     db.session.commit()
@@ -330,6 +350,7 @@ def delete_news_id(news_id):
 
 
 @app.route('/admin/edit_news', methods=("GET", "POST"))
+@login_required
 def edit_news():
     all_news = News.query.all()
     users = Users.query.filter(Users.id == News.id_user).all()
@@ -337,6 +358,7 @@ def edit_news():
 
 
 @app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
+@login_required
 def edit_news_id(news_id):
     post = News.query.filter(News.id == news_id).first()
     if request.method == 'POST':
@@ -350,18 +372,21 @@ def edit_news_id(news_id):
 
 
 @app.route("/admin/delete_product", methods=("GET", "POST"))
+@login_required
 def delete_product():
     all_products = products.get_all(g.db)
     return render_template("delete_product.html", products=all_products)
 
 
 @app.route("/admin/delete_confirm/<product_id>", methods=("GET", "POST"))
+@login_required
 def delete_confirm(product_id):
     product_ = products.get_product(g.db, product_id)
     return render_template("delete_confirm.html", id=product_id, product=product_)
 
 
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
+@login_required
 def delete(product_id):
     products.delete_product(g.db, product_id)
     flash("Deleted")
@@ -369,6 +394,7 @@ def delete(product_id):
 
 
 @app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
+@login_required
 def set_product_mark(product_id):
     if request.method == "POST":
         product_mark = request.form.get("mark", "")
@@ -394,9 +420,11 @@ def add_to_cart(product_id):
 
 
 @app.route('/admin/categories_list', methods=("GET", "POST"))
+@login_required
 def categories_list():
     all_categories = product_categories.get_all(g.db)
     return render_template("categories_list.html", all_categories=all_categories)
+
 
 @app.context_processor
 def inject_email():
@@ -405,3 +433,4 @@ def inject_email():
         user = Users.query.filter_by(id=session['user_id']).first()
         user_email = user.email
     return {'user_email': user_email}
+

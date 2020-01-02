@@ -43,17 +43,6 @@ def login_required(function):
     return wrap
 
 
-def save_image_and_thumbnail(image_data, product_id):
-    """save image and image_thumbnail"""
-    image = Image.open(image_data)
-    rgb_im = image.convert('RGB')
-    image_name = f"{product_id}.jpg"
-    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], image_name))
-    rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
-    thumbnail_name = f"{product_id}_thumbnail.jpg"
-    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
-
-
 @app.route('/image/<ln>')
 def image(ln):
     sn = products.get_product_image(g.db, ln)
@@ -195,14 +184,12 @@ def registration():
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required
 def add_category():
-    """admin: add category"""
     form = AddCategoryForm()
     if request.method == "POST":
         category = ProductCategories(name=form.name.data)
         db.session.add(category)
         db.session.commit()
         flash("Category added")
-        return redirect(url_for('categories_list'))
     return render_template("add_category.html", form=form)
 
 
@@ -210,6 +197,17 @@ def add_category():
 @login_required
 def index_admin():
     return render_template("index_admin.html")
+
+
+def save_image_and_thumbnail(image_data, product_id):
+    """save image and image_thumbnail"""
+    image = Image.open(image_data)
+    rgb_im = image.convert('RGB')
+    imagename = f"{product_id}.jpg"
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], imagename))
+    rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
+    thumbnail_name = f"{product_id}_thumbnail.jpg"
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
 
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
@@ -245,7 +243,8 @@ def categories(category_id="all"):
         products_array = Products.query.filter_by(deleted=False)
         if category_id != "all":
             products_array = products_array.filter_by(category_id=category_id, deleted=False)
-    return render_template("catalogue.html", categories=all_categories, products=products_array.all())
+    return render_template("catalogue.html", categories=all_categories,
+                           products=products_array.all())
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
@@ -421,8 +420,15 @@ def add_to_cart(product_id):
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():
-    all_categories = ProductCategories.query.all()
-    return render_template("categories_list.html", all_categories=all_categories)
+    page = request.args.get('page', 1, type=int)
+    all_categories = ProductCategories.query.all().paginate(page, app.config['CATEGORIES_PER_PAGE'], False)
+    next_url = url_for('categories', page=all_categories.next_num) \
+        if all_categories.has_next else None
+    prev_url = url_for('categories', page=all_categories.prev_num)\
+        if all_categories.has_prev else None
+
+    return render_template("categories_list.html", all_categories=all_categories,
+                           next_url=next_url, prev_url=prev_url)
 
 
 @app.context_processor

@@ -195,12 +195,14 @@ def registration():
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required
 def add_category():
+    """admin: add category"""
     form = AddCategoryForm()
     if request.method == "POST":
         category = ProductCategories(name=form.name.data)
         db.session.add(category)
         db.session.commit()
         flash("Category added")
+        return redirect(url_for('categories_list'))
     return render_template("add_category.html", form=form)
 
 
@@ -419,7 +421,7 @@ def add_to_cart(product_id):
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():
-    all_categories = product_categories.get_all(g.db)
+    all_categories = ProductCategories.query.all()
     return render_template("categories_list.html", all_categories=all_categories)
 
 

@@ -16,8 +16,8 @@ from products import products
 from users import validation
 from .forms import *
 from .models import *
-from .breadcrumb import breadcrumb
 from .login import login_required
+from .breadcrumb import breadcrumb
 
 
 def save_image_and_thumbnail(image_data, product_id):

@@ -2,6 +2,8 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+
+<!-- Breadcrumb -->
 <div class="container breadcrumb">
     <p>Breadcrumbs:
         {% for crumb in g.breadcrumbs %}
@@ -10,6 +12,7 @@
         {% endfor %}
     </p>
 </div>
+<!-- /Breadcrumb -->
 
 <div class="container">
   {% if message %}

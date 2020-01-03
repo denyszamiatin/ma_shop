@@ -1,6 +1,10 @@
 {% extends "index.html" %}
 {% block title %}Product name page{% endblock %}
 {% block content %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+
+<!-- Breadcrumb -->
 <div class="container breadcrumb">
     <p>Breadcrumbs:
         {% for crumb in g.breadcrumbs %}
@@ -9,9 +13,8 @@
         {% endfor %}
     </p>
 </div>
+<!-- /Breadcrumb -->
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src='https://kit.fontawesome.com/a076d05399.js'></script>
 <div class="container">
     {% for product in products %}
     <div class="row mt-3">

@@ -2,6 +2,7 @@
 {% block title %}Categories{% endblock %}
 {% block content %}
 
+<!-- Breadcrumb -->
 <div class="container breadcrumb">
     <p>Breadcrumbs:
         {% for crumb in g.breadcrumbs %}
@@ -10,6 +11,8 @@
         {% endfor %}
     </p>
 </div>
+<!-- /Breadcrumb -->
+
 
 <div class="container">
 {% for message in get_flashed_messages() %}

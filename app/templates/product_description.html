@@ -39,15 +39,26 @@
         </form>
 
         <!--MARKS-->
-
+        <br><br>
         <div class="btn-group">
             <form method="post" action="{{ url_for('set_product_mark', product_id=data[0])}}">
-                <label>
-                    <input name="mark" type="text" min="1" max="5" maxlength="25" placeholder="mark">
-                </label>
-                <button type="submit" class="btn btn-danger">Submit</button>
+                <table style="text-align: center">
+                    <tr>
+                        {% for mark_field in form.mark %}
+                            <th>{{ mark_field }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for mark_field in form.mark %}
+                            <td>{{ mark_field.label }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td colspan="5">{{ form.submit }}
+                    </tr>
+                </table>
             </form>
-        </div>
+        </div><br>
         <!--END MARKS-->
     </div>
         <!-- ADD TO CART-->

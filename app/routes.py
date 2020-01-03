@@ -63,6 +63,7 @@ def catalogue():
 
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
 def show_product(product_id):
+    form = MarkForm()
     avg_mark = mark.get_average(g.db, product_id)
     with g.db.cursor() as cursor:
         cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
@@ -75,7 +76,23 @@ def show_product(product_id):
                 return redirect(url_for('login'))
             else:
                 comments.add(g.db, product_id, session['id_user'], comment)
-        return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark)
+        return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark, form=form)
+
+
+@app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
+@login_required
+def set_product_mark(product_id):
+    if request.method == "POST":
+        new_mark = request.form.get("mark", "")
+        if 'user_id' not in session:
+            flash("Please log in to leave your mark")
+            return redirect(url_for('login'))
+        else:
+            mark = Mark(session['user_id'], product_id, new_mark)
+            db.session.add(mark)
+            db.session.commit()
+            flash("Your mark has been added successfully")
+        return redirect(f'/product/product_description/{product_id}')
 
 
 @app.route('/product/add_to_cart/<product_id>', methods=("GET", "POST"))
@@ -396,23 +413,6 @@ def delete(product_id):
     return redirect(url_for('products_list'))
 
 
-@app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
-@login_required
-def set_product_mark(product_id):
-    if request.method == "POST":
-        product_mark = request.form.get("mark", "")
-        if 'user_id' not in session:
-            flash("Please log in for leaving your mark")
-            return redirect(url_for('login'))
-        else:
-            if int(product_mark) <= 0 or int(product_mark) > 5:
-                flash("Mark should be between 1 and 5")
-            else:
-                mark.add(g.db, session['id_user'], product_id, product_mark)
-                flash("Your mark has been added successfully")
-        return redirect(url_for('product'))
-
-
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():
@@ -423,7 +423,7 @@ def categories_list():
     prev_url = url_for('categories_list', page=categories.prev_num) \
         if categories.has_prev else None
     print(categories.items)
-    print(categories.items[0])
+    # print(categories.items[0])
 
     return render_template("categories_list.html", categories=categories.items,
                            next_url=next_url, prev_url=prev_url)

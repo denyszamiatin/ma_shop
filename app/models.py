@@ -112,6 +112,11 @@ class Mark (db.Model):
     users_who_marked = db.relationship("Users")
     products_marked = db.relationship("Products")
 
+    def __init__(self, id_user, id_product, rating):
+        self.id_user = id_user
+        self.id_product = id_product
+        self.rating = rating
+
     def __str__(self):
         return f'<Mark id {self.id} is rating {self.rating} provided ' \
                f'for product {self.id_product} by user {self.id_user} on {self.mark_date}>'

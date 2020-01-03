@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired, FileAllowed, FileField
-from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, SelectField, PasswordField, IntegerField
+from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, SelectField, PasswordField, \
+    IntegerField, RadioField
 from wtforms.validators import DataRequired
 from wtforms.fields.html5 import EmailField
 
@@ -11,7 +12,7 @@ class AddProductForm(FlaskForm):
     """
     name = StringField("Name", validators=[DataRequired()])
     price = DecimalField("Price", validators=[DataRequired()])
-    image = FileField("Image", validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+    image = FileField("Image", validators=[FileRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     description = TextAreaField("Description", validators=[DataRequired()])
     category_id = SelectField("Category", choices=[], coerce=int, validators=[DataRequired()])
     submit = SubmitField("Submit")
@@ -43,3 +44,9 @@ class AddCategoryForm(FlaskForm):
     """Form to add category"""
     name = StringField("Name", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+class MarkForm(FlaskForm):
+    """Form for product evaluation"""
+    mark = RadioField(label='Mark', choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)])
+    submit = SubmitField("Rate product")

@@ -13,22 +13,22 @@
     <table class="table table-striped w-auto table-bordered">
         <thead>
         <tr>
-            <th>Category id</th>
-            <th>Category name</th>
-            <th>Action</th>
+        <th>Category id</th>
+        <th>Category name</th>
+        <th>Action</th>
         </tr>
         </thead>
         <tbody>
         {% for category in categories %}
-            <tr>
-                <td>{{category.id}}</td>
-                <td>{{category.name}}</td>
-                <td>
-                    <a href="{{ url_for('edit_category', category_id=category.id) }}">
-                        <button type="button" class="btn btn-primary">Update</button></a>
-                    <a href="{{url_for('confirm_delete_category', category_id=category.id)}}"><button type="button" class="btn btn-danger">Delete</button></a>
-                </td>
-            </tr>
+        <tr>
+            <td>{{category.id}}</td>
+            <td>{{category.name}}</td>
+            <td>
+                <a href="{{ url_for('edit_category', category_id=category.id) }}">
+                    <button type="button" class="btn btn-primary">Update</button></a>
+                <a href="{{url_for('confirm_delete_category', category_id=category.id)}}"><button type="button" class="btn btn-danger">Delete</button></a>
+            </td>
+        </tr>
         {% endfor %}
         </tbody>
     </table>

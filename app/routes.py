@@ -251,7 +251,7 @@ def add_product():
         db.session.commit()
         save_image_and_thumbnail(form.image.data, product.id)
         flash("Product added")
-
+        return redirect(url_for('products_list'))
     return render_template("add_product.html", form=form)
 
 
@@ -407,15 +407,15 @@ def delete_product():
 @app.route("/admin/delete_confirm/<product_id>", methods=("GET", "POST"))
 @login_required
 def delete_confirm(product_id):
-    product_ = products.get_product(g.db, product_id)
-    return render_template("delete_confirm.html", id=product_id, product=product_)
+    product = db.session.query(Products).filter_by(id = product_id).first()
+    return render_template("delete_confirm.html", product=product)
 
 
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
 @login_required
 def delete(product_id):
-    products.delete_product(g.db, product_id)
-    flash("Deleted")
+    Products.query.filter_by(id=product_id).delete()
+    db.session.commit()
     return redirect(url_for('products_list'))
 
 

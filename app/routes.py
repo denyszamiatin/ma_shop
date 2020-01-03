@@ -322,7 +322,6 @@ def products_list():
 @login_required
 def edit_product(product_id):
     product = Products.query.filter_by(id=product_id).first()
-    categories = ProductCategories.query.all()
     if request.method == "POST":
         form = AddProductForm(formdata=request.form, obj=product)
         form.populate_obj(product)
@@ -330,7 +329,7 @@ def edit_product(product_id):
         flash("Product edited")
         return redirect(url_for('products_list'))
     form = AddProductForm(obj=product)
-    return render_template("edit_product.html", form=form)
+    return render_template("edit_product.html", form=form, product_id=product_id)
 
 
 @app.route('/admin/delete_news', methods=("GET", "POST"))

@@ -10,6 +10,7 @@ class Config(object):
     UPLOAD_FOLDER = 'static/img'
     THUMBNAIL_SIZE = (120, 70)
     PRODUCT_NAME_MAX_LENGTH = 1000
+    SMTP_SERVER = "localhost"
 
 
 DATABASE = {

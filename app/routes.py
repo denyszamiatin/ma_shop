@@ -7,6 +7,7 @@ import psycopg2
 from PIL import Image
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file, abort
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql import func
 
 from app.config import DATABASE, basedir
 from cart import cart
@@ -70,7 +71,8 @@ def index():
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
 def show_product(product_id):
     form = MarkForm()
-    avg_mark = mark.get_average(g.db, product_id)
+    raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
+    avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks'
     with g.db.cursor() as cursor:
         cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
         prod_data = cursor.fetchone()
@@ -88,17 +90,19 @@ def show_product(product_id):
 @app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
 @login_required
 def set_product_mark(product_id):
-    if request.method == "POST":
-        new_mark = request.form.get("mark", "")
-        if 'user_id' not in session:
-            flash("Please log in to leave your mark")
-            return redirect(url_for('login'))
-        else:
-            mark = Mark(session['user_id'], product_id, new_mark)
-            db.session.add(mark)
-            db.session.commit()
-            flash("Your mark has been added successfully")
-        return redirect(f'/product/product_description/{product_id}')
+    form = MarkForm()
+    new_mark = form.mark.data
+    if Mark.query.filter_by(id_user=session['user_id'], id_product=product_id).first() is not None:
+        db.session.query(Mark).filter(Mark.id_user == session['user_id'], Mark.id_product == product_id).\
+            update({Mark.rating: new_mark})
+        db.session.commit()
+        flash("Your mark has been updated successfully")
+    else:
+        mark = Mark(session['user_id'], product_id, new_mark)
+        db.session.add(mark)
+        db.session.commit()
+        flash("Your mark has been added successfully")
+    return redirect(f'/product/product_description/{product_id}')
 
 
 @app.route('/product/add_to_cart/<product_id>', methods=("GET", "POST"))

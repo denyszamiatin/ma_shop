@@ -403,7 +403,7 @@ def delete(product_id):
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():
-    # this code, render_template and file html to task 83
+    # categories, render_template and file html to task 83
     page = request.args.get('page', 1, type=int)
     #
     # this code for another task (code not my)

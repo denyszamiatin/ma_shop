@@ -27,7 +27,7 @@
         {% for product in products %}
             <tr>
                 <td>{{ product.category_id }}</td>
-                <td>{{ categories[product.category_id] }}</td>
+                <td>{{ categories.filter_by(id=product.category_id).first().name }}</td>
                 <td>{{ product.id }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.price }}</td>

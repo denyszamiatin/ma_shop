@@ -314,30 +314,23 @@ def delete_category(category_id):
 @login_required
 def products_list():
     products = db.session.query(Products).order_by(Products.id).all()
-    categories = {}
-    for product in products:
-        categories[product.category_id] = db.session.query(ProductCategories).filter_by(id=product.category_id).first().name
+    categories = db.session.query(ProductCategories)
     return render_template("products_list.html", products=products, categories=categories)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
 @login_required
 def edit_product(product_id):
-    product = products.get_product_2(g.db, product_id)
-    categories = product_categories.get_all(g.db)
+    product = Products.query.filter_by(id=product_id).first()
+    categories = ProductCategories.query.all()
     if request.method == "POST":
-        id = request.form.get("product_id", "")
-        name = request.form.get("product_name", "")
-        price = request.form.get("price", "")
-        img = request.files['img'].read()
-        category = request.form.get("category", "")
-        try:
-            products.edit_product_2(g.db, id, name, price, category, img)
-            flash("Product edited")
-            return redirect(url_for('products_list'))
-        except errors.StoreError:
-            flash("Smth wrong, pls try again")
-    return render_template("edit_product.html", product=product, categories=categories)
+        form = AddProductForm(formdata=request.form, obj=product)
+        form.populate_obj(product)
+        db.session.commit()
+        flash("Product edited")
+        return redirect(url_for('products_list'))
+    form = AddProductForm(obj=product)
+    return render_template("edit_product.html", form=form)
 
 
 @app.route('/admin/delete_news', methods=("GET", "POST"))

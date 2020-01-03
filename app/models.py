@@ -159,12 +159,6 @@ class Users(db.Model):
     def __str__(self):
         return f"<User id: {self.id}>"
 
-    def __init__(self, first_name, second_name, email, password):
-        self.first_name = first_name
-        self.second_name = second_name
-        self.email = email
-        self.password = generate_password_hash(password)
-
 
 class Products(db.Model):
     """

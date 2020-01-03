@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired, FileAllowed, FileField
 from wtforms.fields import StringField, SubmitField, DecimalField, TextAreaField, SelectField, PasswordField, \
     IntegerField, RadioField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 from wtforms.fields.html5 import EmailField
 
 
@@ -28,7 +28,7 @@ class UserRegistrationForm(FlaskForm):
     """User registration form"""
     first_name = StringField("First name",  validators=[DataRequired()])
     second_name = StringField("Second name",  validators=[DataRequired()])
-    email = EmailField("Email",  validators=[DataRequired()])
+    email = EmailField("Email",  validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Submit")
 

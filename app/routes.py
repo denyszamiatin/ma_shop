@@ -56,11 +56,6 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/catalogue')
-def catalogue():
-    return render_template("catalogue.html")
-
-
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
 def show_product(product_id):
     form = MarkForm()
@@ -100,7 +95,7 @@ def set_product_mark(product_id):
 def add_to_cart(product_id):
     if request.method == "POST":
         cart.add(g.db, session["user_id"], product_id)
-    return redirect(url_for("categories"))
+    return redirect(url_for("get_catalogue"))
 
 
 @app.route('/cart', methods=("GET", "POST"))
@@ -255,22 +250,21 @@ def add_product():
     return render_template("add_product.html", form=form)
 
 
-@app.route('/categories/<string:category_id>', methods=("GET", "POST"))
-@app.route('/categories', methods=("GET", "POST"))
-def categories(category_id="all"):
-    all_categories = ProductCategories.query.all()
-    check_categories = [str(category.id) for category in all_categories]
+@app.route('/catalogue/<category>', methods=("GET", "POST"))
+@app.route('/catalogue', methods=("GET", "POST"))
+def get_catalogue(category="all"):
+    categories = ProductCategories.query.all()
+    existing_categories = [str(category.id) for category in categories]
     if request.method == "POST":
         if session["user_id"]:
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
-    if category_id not in check_categories and category_id != "all":
-        raise abort(404)
-    else:
-        products_array = Products.query.filter_by(deleted=False)
-        if category_id != "all":
-            products_array = products_array.filter_by(category_id=category_id, deleted=False)
-    return render_template("catalogue.html", categories=all_categories,
-                           products=products_array.all())
+    if category not in existing_categories and category != "all":
+        abort(404)
+    products = Products.query.filter_by(deleted=False)
+    if category != "all":
+        products = products.filter_by(category_id=category, deleted=False)
+    return render_template("catalogue.html", categories=categories,
+                           products=products.all())
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))

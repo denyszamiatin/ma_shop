@@ -90,6 +90,8 @@ def add_to_cart(product_id):
 @login_required
 def cart_call():
     cart_items = {}
+    items_qty = 0
+    total_amount = 0
     if request.method == "POST":
         cart.delete(g.db, int(session["user_id"]), int(request.form.get("delete_item", "")))
     for product_id in cart.get_all(g.db, int(session["user_id"])):
@@ -101,9 +103,13 @@ def cart_call():
                 "price": price,
                 "pieces": 1
             }
+            cart_items[product_id]["amount"] = cart_items[product_id]["price"] * cart_items[product_id]["pieces"]
         else:
             cart_items[product_id]["pieces"] += 1
-    return render_template("cart.html", cart_items=cart_items)
+            cart_items[product_id]["amount"] += cart_items[product_id]["price"]
+        total_amount += cart_items[product_id]["price"]
+        items_qty += 1
+    return render_template("cart.html", cart_items=cart_items, items_qty=items_qty, total_amount=total_amount)
 
 
 @app.route('/news')

@@ -395,6 +395,10 @@ def delete_confirm(product_id):
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
 @login_required
 def delete(product_id):
+    if os.path.exists(f"app/static/img/{product_id}.jpg"):
+        os.remove(f"app/static/img/{product_id}.jpg")
+    if os.path.exists(f"app/static/img/{product_id}_thumbnail.jpg"):
+        os.remove(f"app/static/img/{product_id}_thumbnail.jpg")
     Products.query.filter_by(id=product_id).delete()
     db.session.commit()
     return redirect(url_for('products_list'))

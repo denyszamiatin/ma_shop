@@ -2,7 +2,7 @@
 {% block title %} Cart {% endblock %}
 
 {% block content %}
-<script src="https://use.fontawesome.com/c560c025cf.js"></script>
+<script src="https://use.fontawesome.com/c560c025cf.js" xmlns="http://www.w3.org/1999/html"></script>
 <div class="container">
     <div class="card my-3">
         <table class="table table-striped w-auto table-bordered">
@@ -27,20 +27,23 @@
                     <td><h4 style="margin-top:20px;">₴{{cart_item["price"]}} </h4>
                 </td>
                 <td>
-                    <h4 style="margin-top:20px;"><input type="number" step="1" max="99" min="1" value="{{cart_item['pieces']}}" title="Qty" class="qty" size="4"></h4>
+                    <h4 style="margin-top:20px;">
+                        <form method="put">
+                            <input type="number" step="1" max="99" min="1" value="{{cart_item['pieces']}}" title="Qty" class="qty" size="4">
+                        </form>
+                    </h4>
                 </td>
                 <td>
-                    <h4 style="margin-top:20px;">₴{{cart_item["price"] * cart_item['pieces']}}</h4>
+                    <h4 style="margin-top:20px;">₴{{cart_item['amount']}}</h4>
                 </td>
                 <td>
                     <h4 style="margin-top:20px;">
                     <form method="post">
-                        <input type="hidden" name="delete_item" value="{{cart_item["product_id"] }}">
-                        <input type="hidden" name="delete_item" value="{{cart_item["product_id"] }}">
-                    <button class="btn btn-outline-danger btn-xs">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                    </button>
-                    </form>
+                        <input type="hidden" name="delete_item" value="{{cart_item['product_id'] }}"></input>
+                        <button class="btn btn-outline-danger btn-xs">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                </form>
                     </h4>
                 </td>
         {% endfor %}
@@ -48,7 +51,15 @@
         </tbody>
             <tfoot>
                 <td colspan="6" class="text-center">
-                    <h5>You have ordered XX items for ₴YY. Please proceed to checkout</h5>
+                    <h5>You have ordered
+                        <font color="#FF0000">
+                            {{items_qty}}
+                        </font>
+                        item(s) for
+                        <font color="#FF0000">
+                            ₴{{total_amount}}
+                        </font>
+                        . Please proceed to checkout</h5>
                 </td>
             </tfoot>
     </table>

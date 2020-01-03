@@ -1,6 +1,4 @@
 import io
-import collections
-from functools import wraps
 from pathlib import Path
 
 import psycopg2
@@ -19,6 +17,7 @@ from users import validation
 from .forms import *
 from .models import *
 from .breadcrumb import breadcrumb
+from .login import login_required
 
 
 def save_image_and_thumbnail(image_data, product_id):
@@ -43,18 +42,6 @@ def close_db(error):
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
-
-
-def login_required(function):
-    @wraps(function)
-    def wrap(*args, **kwargs):
-        if 'user_id' in session:
-            return function(*args, **kwargs)
-        else:
-            flash("You need to login first")
-            return redirect(url_for('login'))
-
-    return wrap
 
 
 @app.route('/image/<ln>')
@@ -176,19 +163,16 @@ def login():
     if request.method == "POST":
         email = form.email.data
         password = form.password.data
-        if validation.login_form_validation(email, password):
-            try:
-                user = Users.query.filter_by(email=email).first()
-                if check_password_hash(user.password, password):
-                    session['user_id'] = user.id
-                    flash("You are logged")
-                    return redirect(url_for('index'))
-                else:
-                    message = "Wrong email or password"
-            except AttributeError:
+        try:
+            user = Users.query.filter_by(email=email).first()
+            if check_password_hash(user.password, password):
+                session['user_id'] = user.id
+                flash("You are logged")
+                return redirect(url_for('index'))
+            else:
                 message = "Wrong email or password"
-        else:
-            message = "Something wrong, check form"
+        except AttributeError:
+            message = "Wrong email or password"
 
     return render_template("login.html", form=form, message=message)
 
@@ -203,9 +187,10 @@ def registration():
         second_name = form.second_name.data
         email = form.email.data
         password = form.password.data
-        if validation.register_form_validation(first_name, second_name, email, password):
+        if validation.register_form_validation(first_name, second_name, password):
+            password = generate_password_hash(password)
             try:
-                user = Users(first_name, second_name, email, password)
+                user = Users(first_name=first_name, second_name=second_name, email=email, password=password)
                 db.session.add(user)
                 db.session.commit()
                 flash("Registration was successful")

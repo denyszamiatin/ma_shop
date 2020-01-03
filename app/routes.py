@@ -20,6 +20,17 @@ from .forms import *
 from .models import *
 
 
+def save_image_and_thumbnail(image_data, product_id):
+    """save image and image_thumbnail"""
+    image = Image.open(image_data)
+    rgb_im = image.convert('RGB')
+    image_name = f"{product_id}.jpg"
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], image_name))
+    rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
+    thumbnail_name = f"{product_id}_thumbnail.jpg"
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
+
+
 @app.before_request
 def get_db():
     if not hasattr(g, 'db'):
@@ -219,16 +230,6 @@ def add_category():
 def index_admin():
     return render_template("index_admin.html")
 
-
-def save_image_and_thumbnail(image_data, product_id):
-    """save image and image_thumbnail"""
-    image = Image.open(image_data)
-    rgb_im = image.convert('RGB')
-    imagename = f"{product_id}.jpg"
-    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], imagename))
-    rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
-    thumbnail_name = f"{product_id}_thumbnail.jpg"
-    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
 
 
 @app.route('/admin/add_product', methods=("GET", "POST"))

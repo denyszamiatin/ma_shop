@@ -18,6 +18,18 @@ from users import validation
 from users.login import login_required
 from .forms import *
 from .models import *
+from .breadcrumb import breadcrumb
+
+
+def save_image_and_thumbnail(image_data, product_id):
+    """save image and image_thumbnail"""
+    image = Image.open(image_data)
+    rgb_im = image.convert('RGB')
+    image_name = f"{product_id}.jpg"
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], image_name))
+    rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
+    thumbnail_name = f"{product_id}_thumbnail.jpg"
+    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
 
 
 @app.before_request
@@ -40,13 +52,9 @@ def image(ln):
 
 
 @app.route('/')
+@breadcrumb('Home')
 def index():
     return render_template("index.html")
-
-
-@app.route('/catalogue')
-def catalogue():
-    return render_template("catalogue.html")
 
 
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
@@ -88,11 +96,12 @@ def set_product_mark(product_id):
 def add_to_cart(product_id):
     if request.method == "POST":
         cart.add(g.db, session["user_id"], product_id)
-    return redirect(url_for("categories"))
+    return redirect(url_for("get_catalogue"))
 
 
 @app.route('/cart', methods=("GET", "POST"))
 @login_required
+@breadcrumb('Cart')
 def cart_call():
     cart_items = {}
     items_qty = 0
@@ -118,6 +127,7 @@ def cart_call():
 
 
 @app.route('/news')
+@breadcrumb('News')
 def news():
     news = db.session.query(News) \
         .join(Users) \
@@ -133,6 +143,7 @@ def comments_list(product_id):
 
 
 @app.route('/contacts')
+@breadcrumb('Contacts')
 def contacts():
     return render_template("contacts.html")
 
@@ -146,6 +157,7 @@ def logout():
 
 
 @app.route('/login', methods=("GET", "POST"))
+@breadcrumb('Login')
 def login():
     message = ""
     form = UserLoginForm()
@@ -167,6 +179,7 @@ def login():
 
 
 @app.route('/registration', methods=("GET", "POST"))
+@breadcrumb('Registration')
 def registration():
     message = ""
     form = UserRegistrationForm()
@@ -211,16 +224,6 @@ def index_admin():
     return render_template("index_admin.html")
 
 
-def save_image_and_thumbnail(image_data, product_id):
-    """save image and image_thumbnail"""
-    image = Image.open(image_data)
-    rgb_im = image.convert('RGB')
-    imagename = f"{product_id}.jpg"
-    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], imagename))
-    rgb_im.thumbnail(app.config['THUMBNAIL_SIZE'])
-    thumbnail_name = f"{product_id}_thumbnail.jpg"
-    rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
-
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 @login_required
@@ -241,22 +244,22 @@ def add_product():
     return render_template("add_product.html", form=form)
 
 
-@app.route('/categories/<string:category_id>', methods=("GET", "POST"))
-@app.route('/categories', methods=("GET", "POST"))
-def categories(category_id="all"):
-    all_categories = ProductCategories.query.all()
-    check_categories = [str(category.id) for category in all_categories]
+@app.route('/catalogue/<category>', methods=("GET", "POST"))
+@app.route('/catalogue', methods=("GET", "POST"))
+@breadcrumb('Catalogue')
+def get_catalogue(category="all"):
+    categories = ProductCategories.query.all()
+    existing_categories = [str(category.id) for category in categories]
     if request.method == "POST":
         if session["user_id"]:
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
-    if category_id not in check_categories and category_id != "all":
-        raise abort(404)
-    else:
-        products_array = Products.query.filter_by(deleted=False)
-        if category_id != "all":
-            products_array = products_array.filter_by(category_id=category_id, deleted=False)
-    return render_template("catalogue.html", categories=all_categories,
-                           products=products_array.all())
+    if category not in existing_categories and category != "all":
+        abort(404)
+    products = Products.query.filter_by(deleted=False)
+    if category != "all":
+        products = products.filter_by(category_id=category, deleted=False)
+    return render_template("catalogue.html", categories=categories,
+                           products=products.all())
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))

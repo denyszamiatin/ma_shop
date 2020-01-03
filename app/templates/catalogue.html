@@ -1,6 +1,16 @@
 {% extends "index.html" %}
 {% block title %}Categories{% endblock %}
 {% block content %}
+
+<div class="container breadcrumb">
+    <p>Breadcrumbs:
+        {% for crumb in g.breadcrumbs %}
+            <a href="{{ crumb.path }}">{{ crumb.title }}</a>
+            {% if not loop.last %}&raquo;{% endif %}
+        {% endfor %}
+    </p>
+</div>
+
 <div class="container">
 {% for message in get_flashed_messages() %}
 <p class="alert alert-success">{{ message }}</p>
@@ -11,7 +21,7 @@
 <div class="col-md-3">
     <h3>Categories:</h3>
     {% for category in categories %}
-        <h4 class="my-2"><a style="text-decoration: none;" href="{{ url_for('categories') }}/{{ category.id }}">{{ category.name }}</a></h4>
+        <h4 class="my-2"><a style="text-decoration: none;" href="{{ url_for('get_catalogue') }}/{{ category.id }}">{{ category.name }}</a></h4>
     {% endfor %}
 
 </div>

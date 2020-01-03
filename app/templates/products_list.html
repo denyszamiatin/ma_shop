@@ -27,12 +27,12 @@
         {% for product in products %}
             <tr>
                 <td>{{ product.category_id }}</td>
-                <td>{{ categories[product.category_id] }}</td>
+                <td>{{ categories.filter_by(id=product.category_id).first().name }}</td>
                 <td>{{ product.id }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.price }}</td>
                 <td class="text-center">
-                <img class="img-responsive" src="/static/img/{{ product.id }}_thumbnail.jpg" alt="preview" width="120" height="70">
+                <img class="img-responsive" src="/static/img/{{ product.id }}_thumbnail.jpg" alt="preview">
                 </td>
                 <td>
                     <a href="{{ url_for('edit_product', product_id=product.id) }}">

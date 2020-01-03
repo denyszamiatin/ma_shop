@@ -1,6 +1,5 @@
 import io
-import collections
-from functools import wraps
+import os
 from pathlib import Path
 
 import psycopg2
@@ -19,6 +18,8 @@ from products import products
 from users import validation
 from .forms import *
 from .models import *
+from .login import login_required
+from .breadcrumb import breadcrumb
 
 
 def save_image_and_thumbnail(image_data, product_id):
@@ -45,18 +46,6 @@ def close_db(error):
         db.close()
 
 
-def login_required(function):
-    @wraps(function)
-    def wrap(*args, **kwargs):
-        if 'user_id' in session:
-            return function(*args, **kwargs)
-        else:
-            flash("You need to login first")
-            return redirect(url_for('login'))
-
-    return wrap
-
-
 @app.route('/image/<ln>')
 def image(ln):
     sn = products.get_product_image(g.db, ln)
@@ -64,6 +53,7 @@ def image(ln):
 
 
 @app.route('/')
+@breadcrumb('Home')
 def index():
     return render_template("index.html")
 
@@ -115,6 +105,7 @@ def add_to_cart(product_id):
 
 @app.route('/cart', methods=("GET", "POST"))
 @login_required
+@breadcrumb('Cart')
 def cart_call():
     cart_items = {}
     items_qty = 0
@@ -140,6 +131,7 @@ def cart_call():
 
 
 @app.route('/news')
+@breadcrumb('News')
 def news():
     news = db.session.query(News) \
         .join(Users) \
@@ -155,6 +147,7 @@ def comments_list(product_id):
 
 
 @app.route('/contacts')
+@breadcrumb('Contacts')
 def contacts():
     return render_template("contacts.html")
 
@@ -168,30 +161,29 @@ def logout():
 
 
 @app.route('/login', methods=("GET", "POST"))
+@breadcrumb('Login')
 def login():
     message = ""
     form = UserLoginForm()
     if request.method == "POST":
         email = form.email.data
         password = form.password.data
-        if validation.login_form_validation(email, password):
-            try:
-                user = Users.query.filter_by(email=email).first()
-                if check_password_hash(user.password, password):
-                    session['user_id'] = user.id
-                    flash("You are logged")
-                    return redirect(url_for('index'))
-                else:
-                    message = "Wrong email or password"
-            except AttributeError:
+        try:
+            user = Users.query.filter_by(email=email).first()
+            if check_password_hash(user.password, password):
+                session['user_id'] = user.id
+                flash("You are logged")
+                return redirect(url_for('index'))
+            else:
                 message = "Wrong email or password"
-        else:
-            message = "Something wrong, check form"
+        except AttributeError:
+            message = "Wrong email or password"
 
     return render_template("login.html", form=form, message=message)
 
 
 @app.route('/registration', methods=("GET", "POST"))
+@breadcrumb('Registration')
 def registration():
     message = ""
     form = UserRegistrationForm()
@@ -200,9 +192,10 @@ def registration():
         second_name = form.second_name.data
         email = form.email.data
         password = form.password.data
-        if validation.register_form_validation(first_name, second_name, email, password):
+        if validation.register_form_validation(first_name, second_name, password):
+            password = generate_password_hash(password)
             try:
-                user = Users(first_name, second_name, email, password)
+                user = Users(first_name=first_name, second_name=second_name, email=email, password=password)
                 db.session.add(user)
                 db.session.commit()
                 flash("Registration was successful")
@@ -257,6 +250,7 @@ def add_product():
 
 @app.route('/catalogue/<category>', methods=("GET", "POST"))
 @app.route('/catalogue', methods=("GET", "POST"))
+@breadcrumb('Catalogue')
 def get_catalogue(category="all"):
     categories = ProductCategories.query.all()
     existing_categories = [str(category.id) for category in categories]
@@ -325,30 +319,22 @@ def delete_category(category_id):
 @login_required
 def products_list():
     products = db.session.query(Products).order_by(Products.id).all()
-    categories = {}
-    for product in products:
-        categories[product.category_id] = db.session.query(ProductCategories).filter_by(id=product.category_id).first().name
+    categories = db.session.query(ProductCategories)
     return render_template("products_list.html", products=products, categories=categories)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
 @login_required
 def edit_product(product_id):
-    product = products.get_product_2(g.db, product_id)
-    categories = product_categories.get_all(g.db)
+    product = Products.query.filter_by(id=product_id).first()
     if request.method == "POST":
-        id = request.form.get("product_id", "")
-        name = request.form.get("product_name", "")
-        price = request.form.get("price", "")
-        img = request.files['img'].read()
-        category = request.form.get("category", "")
-        try:
-            products.edit_product_2(g.db, id, name, price, category, img)
-            flash("Product edited")
-            return redirect(url_for('products_list'))
-        except errors.StoreError:
-            flash("Smth wrong, pls try again")
-    return render_template("edit_product.html", product=product, categories=categories)
+        form = AddProductForm(formdata=request.form, obj=product)
+        form.populate_obj(product)
+        db.session.commit()
+        flash("Product edited")
+        return redirect(url_for('products_list'))
+    form = AddProductForm(obj=product)
+    return render_template("edit_product.html", form=form, product_id=product_id)
 
 
 @app.route('/admin/delete_news', methods=("GET", "POST"))
@@ -413,6 +399,19 @@ def delete_confirm(product_id):
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
 @login_required
 def delete(product_id):
+    # why pathlib ?
+    # pathlib 6 lines
+    img_to_rem = Path(f"app/static/img/{product_id}.jpg")
+    if img_to_rem.is_file():
+        img_to_rem.unlink()
+    thumbnail_to_rem = Path(f"app/static/img/{product_id}_thumbnail.jpg")
+    if thumbnail_to_rem.is_file():
+        thumbnail_to_rem.unlink()
+    # os 4 lines
+    # if os.path.exists(f"app/static/img/{product_id}.jpg"):
+    #     os.remove(f"app/static/img/{product_id}.jpg")
+    # if os.path.exists(f"app/static/img/{product_id}_thumbnail.jpg"):
+    #     os.remove(f"app/static/img/{product_id}_thumbnail.jpg")
     Products.query.filter_by(id=product_id).delete()
     db.session.commit()
     return redirect(url_for('products_list'))
@@ -421,17 +420,21 @@ def delete(product_id):
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():
-    page = request.args.get('page', 1, type=int)
-    categories = ProductCategories.query.paginate(page, 3, False)
-    next_url = url_for('categories_list', page=categories.next_num) \
-        if categories.has_next else None
-    prev_url = url_for('categories_list', page=categories.prev_num) \
-        if categories.has_prev else None
-    print(categories.items)
-    # print(categories.items[0])
+    categories = ProductCategories.query.all()
+    return render_template("categories_list.html", categories=categories)
 
-    return render_template("categories_list.html", categories=categories.items,
-                           next_url=next_url, prev_url=prev_url)
+    # this code for another task (code not my)
+    # page = request.args.get('page', 1, type=int)
+    # categories = ProductCategories.query.paginate(page, 3, False)
+    # next_url = url_for('categories_list', page=categories.next_num) \
+    #     if categories.has_next else None
+    # prev_url = url_for('categories_list', page=categories.prev_num) \
+    #     if categories.has_prev else None
+    # print(categories.items)
+    # print(categories.items[0])
+    #
+    # return render_template("categories_list.html", categories=categories.items,
+    #                        next_url=next_url, prev_url=prev_url)
 
 
 @app.context_processor

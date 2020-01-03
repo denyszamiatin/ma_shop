@@ -1,5 +1,4 @@
 import io
-import collections
 from pathlib import Path
 
 import psycopg2
@@ -15,10 +14,10 @@ from marks import mark
 from product_categories import product_categories
 from products import products
 from users import validation
-from users.login import login_required
 from .forms import *
 from .models import *
 from .breadcrumb import breadcrumb
+from .login import login_required
 
 
 def save_image_and_thumbnail(image_data, product_id):

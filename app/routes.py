@@ -320,6 +320,10 @@ def delete_category(category_id):
 def products_list():
     products = db.session.query(Products).order_by(Products.id).all()
     categories = db.session.query(ProductCategories)
+    # test_categories = db.session.query(ProductCategories).first()
+    # for i in test_categories.products:
+    #     print(i)
+    # print(test_categories.products.fetchone())
     return render_template("products_list.html", products=products, categories=categories)
 
 
@@ -399,22 +403,20 @@ def delete_confirm(product_id):
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
 @login_required
 def delete(product_id):
-    # why pathlib ?
-    # pathlib 6 lines
-    img_to_rem = Path(f"app/static/img/{product_id}.jpg")
-    if img_to_rem.is_file():
-        img_to_rem.unlink()
-    thumbnail_to_rem = Path(f"app/static/img/{product_id}_thumbnail.jpg")
-    if thumbnail_to_rem.is_file():
-        thumbnail_to_rem.unlink()
-    # os 4 lines
-    # if os.path.exists(f"app/static/img/{product_id}.jpg"):
-    #     os.remove(f"app/static/img/{product_id}.jpg")
-    # if os.path.exists(f"app/static/img/{product_id}_thumbnail.jpg"):
-    #     os.remove(f"app/static/img/{product_id}_thumbnail.jpg")
+    rem_img(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
     Products.query.filter_by(id=product_id).delete()
     db.session.commit()
     return redirect(url_for('products_list'))
+
+
+def rem_img(*names):
+    """Delete image"""
+    for name in names:
+        img_to_rem = Path(f"app/static/img/{name}")
+        print(f"app/static/img/{name}")
+        if img_to_rem.is_file():
+            img_to_rem.unlink()
+    return True
 
 
 @app.route('/admin/categories_list', methods=("GET", "POST"))

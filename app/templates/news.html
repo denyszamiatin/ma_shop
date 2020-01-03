@@ -1,6 +1,15 @@
 {% extends "index.html" %}
 {% block title %}MA SHOP | NEWS{% endblock %}
 {% block content %}
+<div class="container breadcrumb">
+    <p>Breadcrumbs:
+        {% for crumb in g.breadcrumbs %}
+            <a href="{{ crumb.path }}">{{ crumb.title }}</a>
+            {% if not loop.last %}&raquo;{% endif %}
+        {% endfor %}
+    </p>
+</div>
+
 <div class="container">
 
     {% with messages = get_flashed_messages() %}

@@ -18,6 +18,7 @@ from products import products
 from users import validation
 from .forms import *
 from .models import *
+from .breadcrumb import breadcrumb
 
 
 def save_image_and_thumbnail(image_data, product_id):
@@ -63,6 +64,7 @@ def image(ln):
 
 
 @app.route('/')
+@breadcrumb('Home')
 def index():
     return render_template("index.html")
 
@@ -111,6 +113,7 @@ def add_to_cart(product_id):
 
 @app.route('/cart', methods=("GET", "POST"))
 @login_required
+@breadcrumb('Cart')
 def cart_call():
     cart_items = {}
     items_qty = 0
@@ -136,6 +139,7 @@ def cart_call():
 
 
 @app.route('/news')
+@breadcrumb('News')
 def news():
     news = db.session.query(News) \
         .join(Users) \
@@ -151,6 +155,7 @@ def comments_list(product_id):
 
 
 @app.route('/contacts')
+@breadcrumb('Contacts')
 def contacts():
     return render_template("contacts.html")
 
@@ -164,6 +169,7 @@ def logout():
 
 
 @app.route('/login', methods=("GET", "POST"))
+@breadcrumb('Login')
 def login():
     message = ""
     form = UserLoginForm()
@@ -188,6 +194,7 @@ def login():
 
 
 @app.route('/registration', methods=("GET", "POST"))
+@breadcrumb('Registration')
 def registration():
     message = ""
     form = UserRegistrationForm()
@@ -253,6 +260,7 @@ def add_product():
 
 @app.route('/catalogue/<category>', methods=("GET", "POST"))
 @app.route('/catalogue', methods=("GET", "POST"))
+@breadcrumb('Catalogue')
 def get_catalogue(category="all"):
     categories = ProductCategories.query.all()
     existing_categories = [str(category.id) for category in categories]

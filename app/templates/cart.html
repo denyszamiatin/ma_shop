@@ -2,6 +2,15 @@
 {% block title %} Cart {% endblock %}
 
 {% block content %}
+<div class="container breadcrumb">
+    <p>Breadcrumbs:
+        {% for crumb in g.breadcrumbs %}
+            <a href="{{ crumb.path }}">{{ crumb.title }}</a>
+            {% if not loop.last %}&raquo;{% endif %}
+        {% endfor %}
+    </p>
+</div>
+
 <script src="https://use.fontawesome.com/c560c025cf.js" xmlns="http://www.w3.org/1999/html"></script>
 <div class="container">
     <div class="card my-3">

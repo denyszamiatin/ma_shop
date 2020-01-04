@@ -8,7 +8,7 @@ from flask import render_template, request, redirect, url_for, flash, g, session
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
 
-from app.config import DATABASE, basedir
+from app.config import DATABASE, basedir, ITEMS_PER_PAGE
 from cart import cart
 from comments import comments
 from errors import errors
@@ -418,21 +418,14 @@ def rem_img(*names):
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
 def categories_list():
-    categories = ProductCategories.query.all()
-    return render_template("categories_list.html", categories=categories)
-
-    # this code for another task (code not my)
-    # page = request.args.get('page', 1, type=int)
-    # categories = ProductCategories.query.paginate(page, 3, False)
-    # next_url = url_for('categories_list', page=categories.next_num) \
-    #     if categories.has_next else None
-    # prev_url = url_for('categories_list', page=categories.prev_num) \
-    #     if categories.has_prev else None
-    # print(categories.items)
-    # print(categories.items[0])
-    #
-    # return render_template("categories_list.html", categories=categories.items,
-    #                        next_url=next_url, prev_url=prev_url)
+    page = request.args.get('page', 1, type=int)
+    categories = ProductCategories.query.paginate(page, ITEMS_PER_PAGE, False)
+    next_url = url_for('categories_list', page=categories.next_num) \
+        if categories.has_next else None
+    prev_url = url_for('categories_list', page=categories.prev_num) \
+        if categories.has_prev else None
+    return render_template("categories_list.html", categories=categories.items,
+                           next_url=next_url, prev_url=prev_url)
 
 
 @app.context_processor

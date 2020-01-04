@@ -32,11 +32,6 @@
         {% endfor %}
         </tbody>
     </table>
-{% if prev_url %}
-<a href="{{ prev_url }}">Prev</a>
-{% endif %}
-{% if next_url %}
-<a href="{{ next_url }}">Next</a>
-{% endif %}
+    {% include 'paging.html' %}
 </div>
 {% endblock %}

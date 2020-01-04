@@ -2,8 +2,8 @@
 {% block title %}Delete category {% endblock %}
 {% block content %}
 <div class="container text-center" >
-    <p><h4 style="margin-top:20px;">Do you want to delete category {{category}} with id {{id}}</h4></p>
-    <a href="{{url_for('delete_category', category_id = id)}}"><button type="button" class="btn btn-light">YES</button></a>
+    <p><h4 style="margin-top:20px;">Do you want to delete category {{category.name}} with id {{category.id}}</h4></p>
+    <a href="{{url_for('delete_category', category_id = category.id)}}"><button type="button" class="btn btn-light">YES</button></a>
     <a href="{{ url_for('categories_list') }}"><button type="button" class="btn btn-light">NO</button></a>
 </div>
 {% endblock %}

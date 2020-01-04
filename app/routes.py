@@ -303,14 +303,15 @@ def edit_category(category_id):
 @app.route("/admin/confirm_delete_category/<category_id>", methods=("GET", "POST"))
 @login_required
 def confirm_delete_category(category_id):
-    category_ = product_categories.read(g.db, category_id)
-    return render_template("confirm_delete_category.html", id=category_id, category=category_)
+    category_ = ProductCategories.query.filter_by(id=category_id).first()
+    return render_template("confirm_delete_category.html", category=category_)
 
 
 @app.route("/admin/confirm_delete_category/delete/<category_id>", methods=("GET", "POST"))
 @login_required
 def delete_category(category_id):
-    product_categories.delete(g.db, category_id)
+    ProductCategories.query.filter_by(id=category_id).delete()
+    db.session.commit()
     flash("Deleted")
     return redirect(url_for('categories_list'))
 

@@ -320,10 +320,6 @@ def delete_category(category_id):
 def products_list():
     products = db.session.query(Products).order_by(Products.id).all()
     categories = db.session.query(ProductCategories)
-    # test_categories = db.session.query(ProductCategories).first()
-    # for i in test_categories.products:
-    #     print(i)
-    # print(test_categories.products.fetchone())
     return render_template("products_list.html", products=products, categories=categories)
 
 

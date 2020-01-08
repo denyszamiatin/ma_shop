@@ -328,14 +328,20 @@ def products_list():
 @login_required
 def edit_product(product_id):
     product = Products.query.filter_by(id=product_id).first()
+    form = AddProductForm(formdata=request.form, obj=product)
+    form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
+    form.category_id.choices.remove((product.category_id, product.category.name))
+    form.category_id.choices.insert(0, (product.category_id, product.category.name))
     if request.method == "POST":
-        form = AddProductForm(formdata=request.form, obj=product)
+        print(form.image.data)
+        if form.image.data:
+            rem_img(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
+            save_image_and_thumbnail(form.image.data, product.id)
         form.populate_obj(product)
         db.session.commit()
         flash("Product edited")
         return redirect(url_for('products_list'))
-    form = AddProductForm(obj=product)
-    return render_template("edit_product.html", form=form, product_id=product_id)
+    return render_template("edit_product.html", form=form, product_id=product.id)
 
 
 @app.route('/admin/delete_news', methods=("GET", "POST"))
@@ -400,17 +406,16 @@ def delete_confirm(product_id):
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
 @login_required
 def delete(product_id):
-    rem_img(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
+    remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
     Products.query.filter_by(id=product_id).delete()
     db.session.commit()
     return redirect(url_for('products_list'))
 
 
-def rem_img(*names):
+def remove_images(*names):
     """Delete image"""
     for name in names:
         img_to_rem = Path(f"app/static/img/{name}")
-        print(f"app/static/img/{name}")
         if img_to_rem.is_file():
             img_to_rem.unlink()
     return True

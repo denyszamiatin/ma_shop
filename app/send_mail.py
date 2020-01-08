@@ -6,7 +6,7 @@ from email.message import EmailMessage
 from app import app
 
 
-def send_mail(sender, receiver, subject, message):
+def send_mail(receiver, subject, message):
     """
     :param sender: from whom the email "admin@ma_shop.org"
     :param receiver: for whom the email "client@gmail.com"
@@ -18,7 +18,7 @@ def send_mail(sender, receiver, subject, message):
     # smtpObj.login('admin@ma_shop.org','password')  #autentification to SMPT server
     msg = EmailMessage()
     msg['Subject'] = subject
-    msg['From'] = sender
+    msg['From'] = app.config['ADMIN_EMAIL']
     msg['To'] = receiver
     msg.set_content(message)
     smtpObj.send_message(msg)

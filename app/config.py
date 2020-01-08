@@ -11,6 +11,7 @@ class Config(object):
     THUMBNAIL_SIZE = (120, 70)
     PRODUCT_NAME_MAX_LENGTH = 1000
     SMTP_SERVER = "localhost"
+    ADMIN_EMAIL = "admin@ma_shop.org"
 
 
 DATABASE = {

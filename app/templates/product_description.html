@@ -20,12 +20,14 @@
 
     <div class="container">
         <br>
-        <h2>{{ product.name }}</h2><br>
-        <h2>Price: {{ product.price }}₴</h2>
+        <h2><b><i>{{ product.name }}</i></b></h2><br>
+        <h3>Category: <a href="/catalogue/{{ product.category_id }}"><i>{{ product_category }}</i></a></h3>
+        <h2>Price: <b>{{ product.price }}₴</b></h2>
 
         <img class="img-responsive" src="/static/img/{{ product.id }}.jpg" alt="{{ product.name }}" width="480" height="280">
         <h4>Product mark:
             <span class="badge badge-primary">{{ avg_mark }}</span>
+            <span><i>({{ number_of_marks }} ratings)</i></span>
         </h4>
         <!--MARKS-->
         <div class="btn-group">
@@ -77,6 +79,7 @@
     {% endif %}
         <!-- END ADD TO CART-->
     <!-- ADD COMMENT_LIST-->
+    <br><br>
     <div class="col-sm text-center" style="margin-top:10px;">
             <form method="post" action="{{ url_for('comments_list', product_id=product.id) }}">
                 <button type="submit" class="btn btn-success btn-lg" style="float:left">All comments <i class='fas fa-cart-plus'></i></button>

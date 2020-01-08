@@ -12,7 +12,6 @@ from app.config import DATABASE, basedir, ITEMS_PER_PAGE
 from cart import cart
 from comments import comments
 from errors import errors
-from marks import mark
 from product_categories import product_categories
 from products import products
 from users import validation
@@ -64,9 +63,8 @@ def show_product(product_id):
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
     avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks'
     product = Products.query.filter_by(id=product_id).first()
-    # with g.db.cursor() as cursor:
-        # cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
-        # prod_data = cursor.fetchone()
+    number_of_marks = len(Mark.query.filter_by(id_product=product_id).all())
+    product_category = ProductCategories.query.get(product.category_id).name
     comment = ""
     if request.method == "POST":
         comment = request.form.get("comment", "")
@@ -75,7 +73,8 @@ def show_product(product_id):
             return redirect(url_for('login'))
         else:
             comments.add(g.db, product_id, session['id_user'], comment)
-    return render_template("product_description.html", product=product, comment=comment, avg_mark=avg_mark, form=form)
+    return render_template("product_description.html", product=product, comment=comment, avg_mark=avg_mark, form=form,
+                           number_of_marks=number_of_marks, product_category=product_category)
 
 
 @app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))

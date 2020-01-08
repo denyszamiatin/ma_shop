@@ -1,6 +1,5 @@
 from sqlalchemy.exc import IntegrityError
 
-from app.config import basedir, Config
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow.exceptions import ValidationError
 from flask_restful import Resource
@@ -50,6 +49,19 @@ class ProductCategoryApi(Resource):
         db.session.delete(category)
         db.session.commit()
         return "", 204
+
+    def put(self, uuid):
+        json_data = request.json
+        try:
+            new_category = product_category_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        category = ProductCategories.query.filter_by(uuid=uuid).first()
+        if not category:
+            return {"message": "Category not found"}, 404
+        category.name = new_category.name
+        db.session.commit()
+        return product_category_schema.dump(category)
 
 api.add_resource(ProductCategoriesApi, '/api/categories')
 api.add_resource(ProductCategoryApi, '/api/category/<uuid>')

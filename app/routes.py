@@ -19,6 +19,7 @@ from .forms import *
 from .models import *
 from .login import login_required
 from .breadcrumb import breadcrumb
+from .api import *
 
 
 def save_image_and_thumbnail(image_data, product_id):
@@ -381,7 +382,7 @@ def edit_news_id(news_id):
     post = News.query.filter(News.id == news_id).first()
     if request.method == 'POST':
         form = NewsForm(formdata=request.form, obj=post)
-        form.populate_obj(post)
+        form.populate_objpopulate_obj(post)
         db.session.commit()
         flash('News was successfully updated in db.')
         return redirect(url_for('edit_news'))

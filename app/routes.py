@@ -63,18 +63,19 @@ def show_product(product_id):
     form = MarkForm()
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
     avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks'
-    with g.db.cursor() as cursor:
-        cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
-        prod_data = cursor.fetchone()
-        comment = ""
-        if request.method == "POST":
-            comment = request.form.get("comment", "")
-            if 'user_id' not in session:
-                flash("Please log in for leaving your comment")
-                return redirect(url_for('login'))
-            else:
-                comments.add(g.db, product_id, session['id_user'], comment)
-        return render_template("product_description.html", data=prod_data, comment=comment, avg_mark=avg_mark, form=form)
+    product = Products.query.filter_by(id=product_id).first()
+    # with g.db.cursor() as cursor:
+        # cursor.execute(f"select id, name, price, image from products where id = '{product_id}'")
+        # prod_data = cursor.fetchone()
+    comment = ""
+    if request.method == "POST":
+        comment = request.form.get("comment", "")
+        if 'user_id' not in session:
+            flash("Please log in for leaving your comment")
+            return redirect(url_for('login'))
+        else:
+            comments.add(g.db, product_id, session['id_user'], comment)
+    return render_template("product_description.html", product=product, comment=comment, avg_mark=avg_mark, form=form)
 
 
 @app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))

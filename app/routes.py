@@ -382,7 +382,7 @@ def edit_news_id(news_id):
     post = News.query.filter(News.id == news_id).first()
     if request.method == 'POST':
         form = NewsForm(formdata=request.form, obj=post)
-        form.populate_objpopulate_obj(post)
+        form.populate_obj(post)
         db.session.commit()
         flash('News was successfully updated in db.')
         return redirect(url_for('edit_news'))

@@ -1,12 +1,16 @@
-import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+from pathlib import Path
+from environs import Env
+
+basedir = Path(Path(__file__).parent).resolve()
+env = Env()
+env.read_env()
 
 
 class Config(object):
-    # ...
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+
+    SQLALCHEMY_DATABASE_URI = env.str("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = env.str("SECRET_KEY")
     UPLOAD_FOLDER = 'static/img'
     THUMBNAIL_SIZE = (120, 70)
     PRODUCT_NAME_MAX_LENGTH = 1000
@@ -17,7 +21,7 @@ class Config(object):
 DATABASE = {
     "database": "ma_shop",
     "user": "ma_admin",
-    "password": os.environ.get('OLD_DATABASE_PASS'),
+    "password": env.str('OLD_DATABASE_PASS'),
     "host": "localhost",
     "port": 5432
 }

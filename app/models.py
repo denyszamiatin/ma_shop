@@ -1,3 +1,5 @@
+import uuid
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -30,7 +32,12 @@ class ProductCategories(db.Model):
     __tablename__ = "product_categories"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1000), unique=True)
+    uuid = db.Column(db.String(36), unique=True)
     products = db.relationship("Products", cascade="delete", backref="category", lazy='dynamic')
+
+    def __init__(self, name):
+        self.name = name
+        self.uuid = str(uuid.uuid4())
 
     def __str__(self):
         return self.name

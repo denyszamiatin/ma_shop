@@ -218,7 +218,7 @@ def registration():
 @login_required
 def add_category():
     """Admin: add category"""
-    form = AddCategoryForm()
+    form = CategoryForm()
     if request.method == "POST":
         category = ProductCategories(name=form.name.data)
         db.session.add(category)
@@ -292,18 +292,17 @@ def add_news():
 @app.route('/admin/edit_category/<string:category_id>', methods=("GET", "POST"))
 @login_required
 def edit_category(category_id):
-    category = product_categories.read(g.db, category_id)
+    category = ProductCategories.query.filter_by(id=category_id).first()
+    form = CategoryForm(formdata=request.form, obj=category)
     if request.method == "POST":
-        new_name = request.form.get("new_name", "")
         try:
-            product_categories.update(g.db, category_id, new_name)
+            form.populate_obj(category)
+            db.session.commit()
             flash("Category updated")
-            return redirect(url_for('index_admin'))
-        except psycopg2.errors.UniqueViolation:
-            flash(f"Category {new_name} already exist")
-        except errors.StoreError:
-            flash("Something wrong, check form")
-    return render_template("edit_category.html", category=category)
+        except IntegrityError:
+            flash('Category was not added!!')
+        return redirect(url_for('categories_list'))
+    return render_template("edit_category.html", form=form, category=category)
 
 
 @app.route("/admin/confirm_delete_category/<category_id>", methods=("GET", "POST"))
@@ -431,7 +430,7 @@ def remove_images(*names):
 @login_required
 def categories_list():
     page = request.args.get('page', 1, type=int)
-    categories = ProductCategories.query.paginate(page, ITEMS_PER_PAGE, False)
+    categories = ProductCategories.query.order_by(ProductCategories.id).paginate(page, ITEMS_PER_PAGE, False)
     next_url = url_for('categories_list', page=categories.next_num) \
         if categories.has_next else None
     prev_url = url_for('categories_list', page=categories.prev_num) \

@@ -14,7 +14,7 @@ build/
 develop-eggs/
 dist/
 downloads/
-app/static/img/
+app/db_utils/static/img/
 eggs/
 .eggs/
 lib/

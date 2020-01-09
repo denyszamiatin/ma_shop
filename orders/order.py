@@ -65,3 +65,7 @@ def cancel(conn, id_order):
             raise errors.StoreError
         else:
             cursor.execute(f"delete from orders where id='{id_order}'")
+
+
+
+

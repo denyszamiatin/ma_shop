@@ -52,8 +52,8 @@ class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
-    addition_date = db.Column(db.Date, default=datetime.today().date())
-    user = db.relationship("Users")
+    addition_date = db.Column(db.Date, default=datetime.utcnow())
+    users = db.relationship("Users")
     product = db.relationship("Products")
 
     def __str__(self):
@@ -191,10 +191,13 @@ class OrderProduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
+    orders = db.relationship('Orders')
+    products = db.relationship('Products')
 
 
 class Orders(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    users = db.relationship('Users')
 

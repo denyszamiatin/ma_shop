@@ -99,7 +99,9 @@ def set_product_mark(product_id):
 @login_required
 def add_to_cart(product_id):
     if request.method == "POST":
-        cart.add(g.db, session["user_id"], product_id)
+        to_cart = Cart(id_user=session["user_id"], id_product=product_id)
+        db.session.add(to_cart)
+        db.session.commit()
     return redirect(url_for("get_catalogue"))
 
 
@@ -111,10 +113,14 @@ def cart_call():
     items_qty = 0
     total_amount = 0
     if request.method == "POST":
-        cart.delete(g.db, int(session["user_id"]), int(request.form.get("delete_item", "")))
-    for product_id in cart.get_all(g.db, int(session["user_id"])):
+        Cart.query.filter_by(id_user=session["user_id"], id_product=request.form.get("delete_item", "")).delete()
+        db.session.commit()
+    all_ids = db.session.query(Cart.id_product).all()
+    all_ids = [i[0] for i in all_ids]
+    for product_id in all_ids:
         if product_id not in cart_items:
-            name, price = products.get_for_cart(g.db, product_id)
+            name = db.session.query(Products.name).filter(Products.id == product_id).first().name
+            price = db.session.query(Products.price).filter(Products.id == product_id).first().price
             cart_items[product_id] = {
                 "product_id": product_id,
                 "name": name,
@@ -436,3 +442,28 @@ def inject_email():
         user = Users.query.filter_by(id=session['user_id']).first()
         user_email = user.email
     return {'user_email': user_email}
+
+
+@app.route('/cart/create_order', methods=("GET", "POST"))
+@login_required
+def create_order():
+    new_order = []
+    if request.method == "POST":
+        all_ids = db.session.query(Cart.id_product).filter(Cart.id_user == session['user_id']).all()
+        all_ids = [i[0] for i in all_ids]
+        for product_id in all_ids:
+            user_order = Orders(id_user=session['user_id'])
+            db.session.add(user_order)
+            db.session.commit()
+            product_order = OrderProduct(id_order=user_order.id, id_product=product_id)
+            db.session.add(product_order)
+            Cart.query.filter_by(id_user=session["user_id"]).delete()
+        db.session.commit()
+    return render_template("create_order.html", new_order=new_order)
+
+
+@app.route('/admin/manage_orders', methods=("GET", "POST"))
+@login_required
+def manage_orders():
+    all_orders = Orders.query.all()
+    return render_template("manage_orders.html", all_orders=all_orders)

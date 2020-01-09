@@ -16,7 +16,7 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('products_list') }}">Products</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('categories_list') }}">Categories</a></li>
         <li class="nav-item"><a class="nav-link" href="#">News</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Manage orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_orders') }}">Manage orders</a></li>
       </ul>
     </div>
 
@@ -47,7 +47,7 @@
               </div>
           </li>
           <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Manage orders</a>
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="{{ url_for('manage_orders') }} " role="button" aria-haspopup="true" aria-expanded="false">Manage orders</a>
               <div class="dropdown-menu">
                 <a class="dropdown-item" href="/admin/manage_orders">Inspect</a>
               </div>

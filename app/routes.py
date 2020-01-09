@@ -139,11 +139,16 @@ def cart_call():
 @app.route('/news')
 @breadcrumb('News')
 def news():
+    page = request.args.get('page', 1, type=int)
     news = db.session.query(News) \
         .join(Users) \
         .add_columns(News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
-        .filter(Users.id == News.id_user).all()
-    return render_template("news.html", news=news)
+        .filter(Users.id == News.id_user).paginate(page, ITEMS_PER_PAGE, False)
+    next_url = url_for('news', page=news.next_num) \
+        if news.has_next else None
+    prev_url = url_for('news', page=news.prev_num) \
+        if news.has_prev else None
+    return render_template("news.html", news=news.items, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/comments_list/<product_id>', methods=("GET", "POST"))
@@ -265,11 +270,16 @@ def get_catalogue(category="all"):
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
     if category not in existing_categories and category != "all":
         abort(404)
-    products = Products.query.filter_by(deleted=False)
+    page = request.args.get('page', 1, type=int)
+    products = Products.query.filter_by(deleted=False).paginate(page, ITEMS_PER_PAGE, False)
     if category != "all":
-        products = products.filter_by(category_id=category, deleted=False)
+        products = products.filter_by(category_id=category, deleted=False).paginate(page, ITEMS_PER_PAGE, False)
+    next_url = url_for('get_catalogue', page=products.next_num) \
+        if products.has_next else None
+    prev_url = url_for('get_catalogue', page=products.prev_num) \
+        if products.has_prev else None
     return render_template("catalogue.html", categories=categories,
-                           products=products.all())
+                           products=products.items, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
@@ -324,9 +334,15 @@ def delete_category(category_id):
 @app.route('/admin/products_list', methods=("GET", "POST"))
 @login_required
 def products_list():
-    products = db.session.query(Products).order_by(Products.id).all()
+    page = request.args.get('page', 1, type=int)
+    products = Products.query.order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
     categories = db.session.query(ProductCategories)
-    return render_template("products_list.html", products=products, categories=categories)
+    next_url = url_for('products_list', page=products.next_num) \
+        if products.has_next else None
+    prev_url = url_for('products_list', page=products.prev_num) \
+        if products.has_prev else None
+    return render_template("products_list.html", products=products.items,
+                           categories=categories, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))

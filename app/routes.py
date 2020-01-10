@@ -181,7 +181,6 @@ def login():
         password = form.password.data
         try:
             user = Users.query.filter_by(email=email).first()
-            print(check_password_hash(user.password, password))
             if check_password_hash(user.password, password):
                 session['user_id'] = user.id
                 flash("You are logged")

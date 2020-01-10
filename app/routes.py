@@ -57,6 +57,14 @@ def index():
     return render_template("index.html")
 
 
+def paging(items, page_template):
+    next_url = url_for(page_template, page=items.next_num) \
+        if items.has_next else None
+    prev_url = url_for(page_template, page=items.prev_num) \
+        if items.has_prev else None
+    return next_url, prev_url
+
+
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
 def show_product(product_id):
     form = MarkForm()
@@ -144,10 +152,7 @@ def news():
         .join(Users) \
         .add_columns(News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).paginate(page, ITEMS_PER_PAGE, False)
-    next_url = url_for('news', page=news.next_num) \
-        if news.has_next else None
-    prev_url = url_for('news', page=news.prev_num) \
-        if news.has_prev else None
+    next_url, prev_url = paging(news, 'news')
     return render_template("news.html", news=news.items, next_url=next_url, prev_url=prev_url)
 
 
@@ -237,7 +242,6 @@ def index_admin():
     return render_template("index_admin.html")
 
 
-
 @app.route('/admin/add_product', methods=("GET", "POST"))
 @login_required
 def add_product():
@@ -271,11 +275,8 @@ def get_catalogue(category="all"):
     page = request.args.get('page', 1, type=int)
     products = Products.query.filter_by(deleted=False).paginate(page, ITEMS_PER_PAGE, False)
     if category != "all":
-        products = products.filter_by(category_id=category, deleted=False).paginate(page, ITEMS_PER_PAGE, False)
-    next_url = url_for('get_catalogue', page=products.next_num) \
-        if products.has_next else None
-    prev_url = url_for('get_catalogue', page=products.prev_num) \
-        if products.has_prev else None
+        products = Products.query.filter_by(category_id=category, deleted=False).paginate(page, ITEMS_PER_PAGE, False)
+    next_url, prev_url = paging(products, 'get_catalogue')
     return render_template("catalogue.html", categories=categories,
                            products=products.items, next_url=next_url, prev_url=prev_url)
 
@@ -337,10 +338,7 @@ def products_list():
     page = request.args.get('page', 1, type=int)
     products = Products.query.order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
     categories = db.session.query(ProductCategories)
-    next_url = url_for('products_list', page=products.next_num) \
-        if products.has_next else None
-    prev_url = url_for('products_list', page=products.prev_num) \
-        if products.has_prev else None
+    next_url, prev_url = paging(products, 'products_list')
     return render_template("products_list.html", products=products.items,
                            categories=categories, next_url=next_url, prev_url=prev_url)
 
@@ -446,10 +444,7 @@ def remove_images(*names):
 def categories_list():
     page = request.args.get('page', 1, type=int)
     categories = ProductCategories.query.order_by(ProductCategories.id).paginate(page, ITEMS_PER_PAGE, False)
-    next_url = url_for('categories_list', page=categories.next_num) \
-        if categories.has_next else None
-    prev_url = url_for('categories_list', page=categories.prev_num) \
-        if categories.has_prev else None
+    next_url, prev_url = paging(categories, 'categories_list')
     return render_template("categories_list.html", categories=categories.items,
                            next_url=next_url, prev_url=prev_url)
 

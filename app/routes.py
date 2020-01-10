@@ -181,6 +181,7 @@ def login():
         password = form.password.data
         try:
             user = Users.query.filter_by(email=email).first()
+            print(check_password_hash(user.password, password))
             if check_password_hash(user.password, password):
                 session['user_id'] = user.id
                 flash("You are logged")
@@ -234,7 +235,6 @@ def add_category():
 
 
 @app.route('/admin')
-@login_required
 def index_admin():
     return render_template("index_admin.html")
 

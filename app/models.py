@@ -136,6 +136,9 @@ class Comments(db.Model):
     comment_date = db.Column(db.Date, default=datetime.today().date())
     body = db.Column(db.Text)
 
+    def __repr__(self):
+        return f"comment id <{self.id}>, body <{self.body}>"
+
 
 class Users(db.Model):
     """

@@ -7,7 +7,7 @@ from flask import request
 from werkzeug.security import generate_password_hash
 
 from app import db, api
-from .models import ProductCategories, Users
+from .models import ProductCategories, Users, Comments
 
 
 class ProductCategorySchema(ModelSchema):
@@ -134,3 +134,61 @@ class UserApi(Resource):
 
 api.add_resource(UsersApi, '/users')
 api.add_resource(UserApi, '/user/<uuid>')
+
+
+class CommentSchema(ModelSchema):
+    class Meta:
+        model = Comments
+
+
+comment_schema = CommentSchema()
+comments_schema = CommentSchema(many=True)
+
+
+class CommentsApi(Resource):
+
+    def post(self):
+        json_data = request.json
+        try:
+            comment = comment_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        try:
+            db.session.add(comment)
+            db.session.commit()
+        except IntegrityError:
+            return {"message": "Category exists"}, 409
+        return comment_schema.dump(comment)
+
+    def get(self):
+        comments = Comments.query.all()
+        return comments_schema.dump(comments)
+
+
+class CommentApi(Resource):
+    def get(self, id):
+        comment = Comments.filter_by(id=id).first()
+        if not comment:
+            return {"message": "Comment not found"}, 404
+        return comment_schema.dump(comment)
+
+    def delete(self, id):
+        comment = Comments.filter_by(id=id).first()
+        if not comment:
+            return {"message": "Comment not found"}, 404
+        db.session.delete(comment)
+        db.session.commit()
+        return "", 204
+
+    def put(self, id):
+        json_data = request.json
+        comment = Comments.filter_by(id=id).first()
+        if not comment:
+            return {"message": "Comment not found"}, 404
+        comment.body = json_data['body']
+        db.session.commit()
+        return comment_schema.dump(comment)
+
+
+api.add_resource(CommentsApi, '/api/comment')
+api.add_resource(CommentApi, 'api/comment/<id>')

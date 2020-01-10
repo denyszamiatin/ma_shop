@@ -354,9 +354,10 @@ def edit_product(product_id):
     form.category_id.choices.remove((product.category_id, product.category.name))
     form.category_id.choices.insert(0, (product.category_id, product.category.name))
     if request.method == "POST":
+        form.validate()
         if form.image:
             remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
-            # save_image_and_thumbnail(form.image, product.id)
+            save_image_and_thumbnail(form.image.data, product.id)
         form.populate_obj(product)
         db.session.commit()
         flash("Product edited")

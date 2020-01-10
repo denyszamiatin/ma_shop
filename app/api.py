@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash
 
 from app import db, api
 from .models import ProductCategories, Users, Comments, Orders
+from .models import OrderArchive
 
 
 class OrderSchema(ModelSchema):
@@ -253,3 +254,56 @@ class CommentApi(Resource):
 
 api.add_resource(CommentsApi, '/api/comment')
 api.add_resource(CommentApi, '/api/comment/<id>')
+
+
+class OrderArchiveSchema(ModelSchema):
+    class Meta:
+        model = OrderArchive
+
+
+order_archive_schema = OrderArchiveSchema()
+orders_archive_schema = OrderArchiveSchema(many=True)
+
+
+class OrdersArchiveApi(Resource):
+    def get(self):
+        orders_archive = OrderArchive.query.all()
+        return orders_archive_schema.dump(orders_archive)
+
+    def post(self):
+        json_data = request.json
+        try:
+            order_archive = orders_archive_schema.load(json_data, session=db.session)
+        except ValidationError as e:
+            return {'message': str(e)}, 422
+        try:
+            db.session.add(order_archive)
+            db.session.commit()
+        except IntegrityError:
+            return {'message': 'Order is already in Archive'}, 409
+        return orders_archive_schema.dump(order_archive)
+
+    def delete(self):
+        db.session.query(OrderArchive).delete()
+        db.session.commit()
+        return "", 204
+
+
+class OrderArchiveApi(Resource):
+    def get(self, uuid):
+        order_archive = OrderArchive.query.filter_by(uuid=uuid).first()
+        if not order_archive:
+            return {'message': 'No such Order in Archive'}, 404
+        return order_archive_schema.dump(order_archive)
+
+    def delete(self, uuid):
+        order_archive = OrderArchive.query.filter_by(uuid=uuid).first()
+        if not order_archive:
+            return {"massage": "No such Order in Archive"}, 404
+        db.session.delete(order_archive)
+        db.session.commit()
+        return "", 204
+
+
+api.add_resource(OrdersArchiveApi, '/api/order_archive')
+api.add_resource(OrderArchiveApi, '/api/order_archive/<id>')

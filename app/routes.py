@@ -205,9 +205,8 @@ def registration():
         email = form.email.data
         password = form.password.data
         if validation.register_form_validation(first_name, second_name, password):
-            password = generate_password_hash(password)
             try:
-                user = Users(first_name=first_name, second_name=second_name, email=email, password=password)
+                user = Users(first_name, second_name, email, password)
                 db.session.add(user)
                 db.session.commit()
                 flash("Registration was successful")

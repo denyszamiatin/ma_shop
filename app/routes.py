@@ -223,7 +223,7 @@ def registration():
 def add_category():
     """Admin: add category"""
     form = CategoryForm()
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         category = ProductCategories(name=form.name.data)
         db.session.add(category)
         db.session.commit()
@@ -301,9 +301,8 @@ def add_news():
 @login_required
 def edit_category(category_id):
     category = ProductCategories.query.filter_by(id=category_id).first()
-    form = CategoryForm(formdata=request.form, obj=category)
+    form = CategoryForm()
     if request.method == "POST":
-        print(form.validate())
         try:
             form.populate_obj(category)
             db.session.commit()
@@ -311,6 +310,8 @@ def edit_category(category_id):
         except IntegrityError:
             flash('Category was not added!!')
         return redirect(url_for('categories_list'))
+    elif request.method == "GET":
+        form = CategoryForm(formdata=request.form, obj=category)
     return render_template("edit_category.html", form=form, category=category)
 
 

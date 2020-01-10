@@ -7,7 +7,68 @@ from flask import request
 from werkzeug.security import generate_password_hash
 
 from app import db, api
-from .models import ProductCategories, Users, Comments
+from .models import ProductCategories, Users, Comments, Orders
+
+
+class OrderSchema(ModelSchema):
+    class Meta:
+        model = Orders
+
+
+order_schema = OrderSchema
+orders_schema = OrderSchema(many=True)
+
+
+class OrdersApi(Resource):
+    def get(self):
+        orders = Orders.query.all()
+        return orders_schema.dump(orders)
+
+    def post(self):
+        json_data = request.json
+        try:
+            order = orders_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        try:
+            db.session.add(order)
+            db.session.commit()
+        except IntegrityError:
+            return {"message": "Order exists"}, 409
+        return orders_schema.dump(order)
+
+
+class OrderApi(Resource):
+    def get(self, uuid):
+        order = Orders.query.filter_by(uuid=uuid).first()
+        if not order:
+            return {"message": "Order not found"}, 404
+        return order_schema.dump(order)
+
+    def put(self, uuid):
+        json_data = request.json
+        try:
+            new_order = order_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        order = Orders.query.filter_by(uuid=uuid).first()
+        if not order:
+            return {"message": "Order not found"}, 404
+        order.name = new_order
+        db.session.commit()
+        return order_schema.dump(order)
+
+    def delete(self, uuid):
+        order = Orders.query.filter_by(uuid=uuid).first()
+        if not order:
+            return {"message": "Order not found"}, 404
+        db.session.delete(order)
+        db.session.commit()
+        return "", 204
+
+
+api.add_resource(OrdersApi, '/api/orders')
+api.add_resource(OrderApi, '/api/order/<uuid>')
 
 
 class ProductCategorySchema(ModelSchema):

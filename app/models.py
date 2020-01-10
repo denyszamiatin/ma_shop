@@ -219,3 +219,15 @@ class Orders(db.Model):
     order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     users = db.relationship('Users')
 
+    def __init__(self, id_user, order_date):
+        self.id_user = id_user
+        self.order_date = order_date
+        self.uuid = str(uuid.uuid4())
+
+    def __repr__(self):
+        return f'User_id: {self.id_user}, date: {self.order_date}'
+
+    def __str__(self):
+        return f'User_id: {self.id_user}, date: {self.order_date}'
+
+

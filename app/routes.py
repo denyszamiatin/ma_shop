@@ -309,7 +309,7 @@ def edit_category(category_id):
             db.session.commit()
             flash("Category updated")
         except IntegrityError:
-            flash('Category was not added!!')
+            flash('Category was not edited!!')
         return redirect(url_for('categories_list'))
     elif request.method == "GET":
         form = CategoryForm(formdata=request.form, obj=category)
@@ -347,18 +347,22 @@ def products_list():
 @login_required
 def edit_product(product_id):
     product = Products.query.filter_by(id=product_id).first()
-    form = AddProductForm(formdata=request.form, obj=product)
-    form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
-    form.category_id.choices.remove((product.category_id, product.category.name))
-    form.category_id.choices.insert(0, (product.category_id, product.category.name))
+    form = AddProductForm()
     if request.method == "POST":
-        if form.image:
+        try:
+            form.populate_obj(product)
+            db.session.commit()
+            flash("Product edited")
             remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
             save_image_and_thumbnail(form.image.data, product.id)
-        form.populate_obj(product)
-        db.session.commit()
-        flash("Product edited")
+        except IntegrityError:
+            flash('Product was not edited!!')
         return redirect(url_for('products_list'))
+    elif request.method == "GET":
+        form = AddProductForm(formdata=request.form, obj=product)
+        form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
+        form.category_id.choices.remove((product.category_id, product.category.name))
+        form.category_id.choices.insert(0, (product.category_id, product.category.name))
     return render_template("edit_product.html", form=form, product_id=product.id)
 
 

@@ -470,7 +470,7 @@ def create_order():
         all_ids = db.session.query(Cart.id_product).filter(Cart.id_user == session['user_id']).all()
         all_ids = [i[0] for i in all_ids]
         for product_id in all_ids:
-            user_order = Orders(id_user=session['user_id'])
+            user_order = Orders(id_user=session['user_id'],order_date=datetime.now())
             db.session.add(user_order)
             db.session.commit()
             product_order = OrderProduct(id_order=user_order.id, id_product=product_id)

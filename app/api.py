@@ -191,4 +191,4 @@ class CommentApi(Resource):
 
 
 api.add_resource(CommentsApi, '/api/comment')
-api.add_resource(CommentApi, 'api/comment/<id>')
+api.add_resource(CommentApi, '/api/comment/<id>')

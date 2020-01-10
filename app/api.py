@@ -132,7 +132,7 @@ class UserApi(Resource):
         return user_schema.dump(user)
 
 
-api.add_resource(UsersApi, '/users')
+api.add_resource(UsersApi, '/user')
 api.add_resource(UserApi, '/user/<uuid>')
 
 

@@ -115,7 +115,7 @@ def cart_call():
     if request.method == "POST":
         Cart.query.filter_by(id_user=session["user_id"], id_product=request.form.get("delete_item", "")).delete()
         db.session.commit()
-    all_ids = db.session.query(Cart.id_product).all()
+    all_ids = db.session.query(Cart.id_product).filter(Cart.id_user == session["user_id"]).all()
     all_ids = [i[0] for i in all_ids]
     for product_id in all_ids:
         if product_id not in cart_items:

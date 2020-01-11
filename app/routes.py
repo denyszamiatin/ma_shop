@@ -172,7 +172,8 @@ def contacts():
 @login_required
 def logout():
     session.pop("user_id")
-    session["next"] = ""
+    if "next" in session:
+        session.pop("next")
     flash("You logged out")
     return redirect(url_for('index'))
 
@@ -190,12 +191,9 @@ def login():
             if check_password_hash(user.password, password):
                 session['user_id'] = user.id
                 flash("You are logged")
-                try:
-                    if session["next"]:
-                        return redirect(session["next"])
-                    return redirect(url_for("index"))
-                except KeyError:
-                    return redirect(url_for("index"))
+                if 'next' in session:
+                    return redirect(session["next"])
+                return redirect(url_for("index"))
             else:
                 message = "Wrong email or password"
         except AttributeError:

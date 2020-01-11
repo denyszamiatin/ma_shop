@@ -1,4 +1,4 @@
-from flask import session, redirect, flash, url_for
+from flask import session, redirect, flash, url_for, request
 from functools import wraps
 
 
@@ -9,6 +9,7 @@ def login_required(function):
         if 'user_id' in session:
             return function(*args, **kwargs)
         else:
+            session["next_page"] = request.path
             flash("You need to login first")
             return redirect(url_for('login'))
 

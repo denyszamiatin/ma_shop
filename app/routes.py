@@ -172,6 +172,8 @@ def contacts():
 @login_required
 def logout():
     session.pop("user_id")
+    if "next_page" in session:
+        session.pop("next_page")
     flash("You logged out")
     return redirect(url_for('index'))
 
@@ -188,8 +190,10 @@ def login():
             user = Users.query.filter_by(email=email).first()
             if check_password_hash(user.password, password):
                 session['user_id'] = user.id
+                if 'next_page' in session:
+                    return redirect(session["next_page"])
                 flash("You are logged")
-                return redirect(url_for('index'))
+                return redirect(url_for("index"))
             else:
                 message = "Wrong email or password"
         except AttributeError:
@@ -348,21 +352,22 @@ def products_list():
 def edit_product(product_id):
     product = Products.query.filter_by(id=product_id).first()
     form = AddProductForm()
-    if request.method == "POST":
+    form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
+    if request.method == "POST" and form.validate():
         try:
             form.populate_obj(product)
             db.session.commit()
             flash("Product edited")
-            remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
-            save_image_and_thumbnail(form.image.data, product.id)
+            if form.image.data:
+                remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
+                save_image_and_thumbnail(form.image.data, product.id)
         except IntegrityError:
             flash('Product was not edited!!')
         return redirect(url_for('products_list'))
     elif request.method == "GET":
         form = AddProductForm(formdata=request.form, obj=product)
         form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
-        form.category_id.choices.remove((product.category_id, product.category.name))
-        form.category_id.choices.insert(0, (product.category_id, product.category.name))
+        form.category_id.default = (product.category_id, product.category.name)
     return render_template("edit_product.html", form=form, product_id=product.id)
 
 

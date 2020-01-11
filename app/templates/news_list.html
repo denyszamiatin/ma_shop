@@ -31,8 +31,16 @@
         <tbody>
         {% for item in news %}
             <tr class="text-center">
-                <td>{{ item.title }}</td>
-                <td>{{ item.post }}</td>
+                {% if item.title|length > 30 %}
+                    <td>{{ item.title[0:30] + '...' }}</td>
+                {% else %}
+                    <td>{{ item.title }}</td>
+                {% endif %}
+                {% if item.post|length > 90 %}
+                    <td>{{ item.post[0:90] + '...'}}</td>
+                {% else %}
+                    <td>{{ item.post}}</td>
+                {% endif %}
                 <td>{{ item.first_name+' '+item.second_name }}</td>
                 <td>{{ item.news_date }}</td>
                 <td>

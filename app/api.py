@@ -308,7 +308,7 @@ class OrderArchiveApi(Resource):
 api.add_resource(OrdersArchiveApi, '/api/order_archive')
 api.add_resource(OrderArchiveApi, '/api/order_archive/<id>')
 
-
+'''
 class MarkSchema(ModelSchema):
     class Meta:
         model = Mark
@@ -360,3 +360,4 @@ class MarkApi(Resource):
 
 api.add_resource(MarkApi, '/api/mark')
 api.add_resource(MarkApi, '/api/mark/<id>')
+'''

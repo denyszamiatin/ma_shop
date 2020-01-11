@@ -7,7 +7,7 @@ from flask import request
 from werkzeug.security import generate_password_hash
 
 from app import db, api
-from .models import ProductCategories, Users, Comments, Orders
+from .models import ProductCategories, Users, Comments, Orders, Mark
 from .models import OrderArchive
 
 
@@ -307,3 +307,4 @@ class OrderArchiveApi(Resource):
 
 api.add_resource(OrdersArchiveApi, '/api/order_archive')
 api.add_resource(OrderArchiveApi, '/api/order_archive/<id>')
+

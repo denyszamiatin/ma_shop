@@ -1,13 +1,14 @@
 from sqlalchemy.exc import IntegrityError
 
 from marshmallow_sqlalchemy import ModelSchema
+from marshmallow import Schema, fields
 from marshmallow.exceptions import ValidationError
 from flask_restful import Resource
 from flask import request
 from werkzeug.security import generate_password_hash
 
 from app import db, api
-from .models import ProductCategories, Users, Comments, Orders, Mark
+from .models import ProductCategories, Users, Comments, Orders, Products
 from .models import OrderArchive
 
 
@@ -208,7 +209,6 @@ comments_schema = CommentSchema(many=True)
 
 
 class CommentsApi(Resource):
-
     def post(self):
         json_data = request.json
         try:
@@ -308,3 +308,66 @@ class OrderArchiveApi(Resource):
 api.add_resource(OrdersArchiveApi, '/api/order_archive')
 api.add_resource(OrderArchiveApi, '/api/order_archive/<id>')
 
+
+class ProductSchema(ModelSchema):
+    class Meta:
+        model = Products
+
+
+class ProductsSchema(Schema):
+    id = fields.Integer()
+    name = fields.String()
+    price = fields.Decimal()
+    description = fields.String()
+    category_id = fields.Nested(ProductCategorySchema)
+    deleted = fields.Boolean()
+
+
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
+
+
+class ProductsApi(Resource):
+    def post(self):
+        json_data = request.json
+        try:
+            product = product_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        try:
+            db.session.add(product)
+            db.session.commit()
+        except IntegrityError:
+            return {"message": "Category exists"}, 409
+        return product_schema.dump(product)
+
+    def get(self):
+        products = Products.query.all()
+        return products_schema.dump(products)
+
+
+class ProductApi(Resource):
+    def get(self, id):
+        product = Products.filter_by(id=id).first()
+        if not product:
+            return {"message": "Comment not found"}, 404
+        db.session.delete(product)
+        db.session.commit()
+        return "", 204
+
+    def put(self, id):
+        json_data = request.json
+        product = Products.filter_by(id=id).first()
+        if not product:
+            return {"message": "Comment not found"}, 404
+        product.name = json_data['name']
+        product.price = json_data['price']
+        product.description = json_data['description']
+        product.category_id = json_data['category_id']
+        product.deleted = json_data['deleted']
+        db.session.commit()
+        return product_schema.dump(product)
+
+
+api.add_resource(ProductsApi, '/api/product')
+api.add_resource(ProductApi, '/api/product/<id>')

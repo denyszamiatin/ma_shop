@@ -371,35 +371,24 @@ def edit_product(product_id):
     return render_template("edit_product.html", form=form, product_id=product.id)
 
 
-@app.route('/admin/delete_news', methods=("GET", "POST"))
-@login_required
-def delete_news():
-    news = db.session.query(News) \
-        .join(Users) \
-        .add_columns(News.id, News.title, News.post, News.news_date,
-                     Users.first_name, Users.second_name) \
-        .filter(Users.id == News.id_user).all()
-    return render_template("delete_news.html", news=news)
-
-
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
 @login_required
 def delete_news_id(news_id):
     News.query.filter(News.id == news_id).delete()
     db.session.commit()
     flash('News was successfully deleted from db.')
-    return redirect(url_for('delete_news'))
+    return redirect(url_for('news_list'))
 
 
-@app.route('/admin/edit_news', methods=("GET", "POST"))
+@app.route('/admin/news_list', methods=("GET", "POST"))
 @login_required
-def edit_news():
+def news_list():
     news = db.session.query(News) \
         .join(Users) \
         .add_columns(News.id, News.title, News.post, News.news_date,
                      Users.first_name, Users.second_name) \
         .filter(Users.id == News.id_user).all()
-    return render_template("edit_news.html", news=news)
+    return render_template("news_list.html", news=news)
 
 
 @app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
@@ -411,7 +400,7 @@ def edit_news_id(news_id):
         form.populate_obj(post)
         db.session.commit()
         flash('News was successfully updated in db.')
-        return redirect(url_for('edit_news'))
+        return redirect(url_for('news_list'))
     form = NewsForm(obj=post)
     return render_template('edit_news_id.html', post=post, form=form)
 

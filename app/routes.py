@@ -57,6 +57,14 @@ def index():
     return render_template("index.html")
 
 
+def paging(items, page_template):
+    next_url = url_for(page_template, page=items.next_num) \
+        if items.has_next else None
+    prev_url = url_for(page_template, page=items.prev_num) \
+        if items.has_prev else None
+    return next_url, prev_url
+
+
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
 def show_product(product_id):
     form = MarkForm()
@@ -139,11 +147,13 @@ def cart_call():
 @app.route('/news')
 @breadcrumb('News')
 def news():
+    page = request.args.get('page', 1, type=int)
     news = db.session.query(News) \
         .join(Users) \
         .add_columns(News.title, News.post, News.news_date, Users.first_name, Users.second_name) \
-        .filter(Users.id == News.id_user).all()
-    return render_template("news.html", news=news)
+        .filter(Users.id == News.id_user).paginate(page, ITEMS_PER_PAGE, False)
+    next_url, prev_url = paging(news, 'news')
+    return render_template("news.html", news=news.items, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/comments_list/<product_id>', methods=("GET", "POST"))
@@ -199,9 +209,8 @@ def registration():
         email = form.email.data
         password = form.password.data
         if validation.register_form_validation(first_name, second_name, password):
-            password = generate_password_hash(password)
             try:
-                user = Users(first_name=first_name, second_name=second_name, email=email, password=password)
+                user = Users(first_name, second_name, email, password)
                 db.session.add(user)
                 db.session.commit()
                 flash("Registration was successful")
@@ -218,8 +227,8 @@ def registration():
 @login_required
 def add_category():
     """Admin: add category"""
-    form = AddCategoryForm()
-    if request.method == "POST":
+    form = CategoryForm()
+    if request.method == "POST" and form.validate():
         category = ProductCategories(name=form.name.data)
         db.session.add(category)
         db.session.commit()
@@ -229,10 +238,8 @@ def add_category():
 
 
 @app.route('/admin')
-@login_required
 def index_admin():
     return render_template("index_admin.html")
-
 
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
@@ -265,11 +272,13 @@ def get_catalogue(category="all"):
             cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
     if category not in existing_categories and category != "all":
         abort(404)
-    products = Products.query.filter_by(deleted=False)
+    page = request.args.get('page', 1, type=int)
+    products = Products.query.filter_by(deleted=False).paginate(page, ITEMS_PER_PAGE, False)
     if category != "all":
-        products = products.filter_by(category_id=category, deleted=False)
+        products = Products.query.filter_by(category_id=category, deleted=False).paginate(page, ITEMS_PER_PAGE, False)
+    next_url, prev_url = paging(products, 'get_catalogue')
     return render_template("catalogue.html", categories=categories,
-                           products=products.all())
+                           products=products.items, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
@@ -292,18 +301,19 @@ def add_news():
 @app.route('/admin/edit_category/<string:category_id>', methods=("GET", "POST"))
 @login_required
 def edit_category(category_id):
-    category = product_categories.read(g.db, category_id)
+    category = ProductCategories.query.filter_by(id=category_id).first()
+    form = CategoryForm()
     if request.method == "POST":
-        new_name = request.form.get("new_name", "")
         try:
-            product_categories.update(g.db, category_id, new_name)
+            form.populate_obj(category)
+            db.session.commit()
             flash("Category updated")
-            return redirect(url_for('index_admin'))
-        except psycopg2.errors.UniqueViolation:
-            flash(f"Category {new_name} already exist")
-        except errors.StoreError:
-            flash("Something wrong, check form")
-    return render_template("edit_category.html", category=category)
+        except IntegrityError:
+            flash('Category was not edited!!')
+        return redirect(url_for('categories_list'))
+    elif request.method == "GET":
+        form = CategoryForm(formdata=request.form, obj=category)
+    return render_template("edit_category.html", form=form, category=category)
 
 
 @app.route("/admin/confirm_delete_category/<category_id>", methods=("GET", "POST"))
@@ -325,28 +335,34 @@ def delete_category(category_id):
 @app.route('/admin/products_list', methods=("GET", "POST"))
 @login_required
 def products_list():
-    products = db.session.query(Products).order_by(Products.id).all()
+    page = request.args.get('page', 1, type=int)
+    products = Products.query.order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
     categories = db.session.query(ProductCategories)
-    return render_template("products_list.html", products=products, categories=categories)
+    next_url, prev_url = paging(products, 'products_list')
+    return render_template("products_list.html", products=products.items,
+                           categories=categories, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
 @login_required
 def edit_product(product_id):
     product = Products.query.filter_by(id=product_id).first()
-    form = AddProductForm(formdata=request.form, obj=product)
-    form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
-    form.category_id.choices.remove((product.category_id, product.category.name))
-    form.category_id.choices.insert(0, (product.category_id, product.category.name))
+    form = AddProductForm()
     if request.method == "POST":
-        print(form.image.data)
-        if form.image.data:
-            rem_img(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
+        try:
+            form.populate_obj(product)
+            db.session.commit()
+            flash("Product edited")
+            remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
             save_image_and_thumbnail(form.image.data, product.id)
-        form.populate_obj(product)
-        db.session.commit()
-        flash("Product edited")
+        except IntegrityError:
+            flash('Product was not edited!!')
         return redirect(url_for('products_list'))
+    elif request.method == "GET":
+        form = AddProductForm(formdata=request.form, obj=product)
+        form.category_id.choices = [(int(category.id), category.name) for category in ProductCategories.query.all()]
+        form.category_id.choices.remove((product.category_id, product.category.name))
+        form.category_id.choices.insert(0, (product.category_id, product.category.name))
     return render_template("edit_product.html", form=form, product_id=product.id)
 
 
@@ -431,11 +447,8 @@ def remove_images(*names):
 @login_required
 def categories_list():
     page = request.args.get('page', 1, type=int)
-    categories = ProductCategories.query.paginate(page, ITEMS_PER_PAGE, False)
-    next_url = url_for('categories_list', page=categories.next_num) \
-        if categories.has_next else None
-    prev_url = url_for('categories_list', page=categories.prev_num) \
-        if categories.has_prev else None
+    categories = ProductCategories.query.order_by(ProductCategories.id).paginate(page, ITEMS_PER_PAGE, False)
+    next_url, prev_url = paging(categories, 'categories_list')
     return render_template("categories_list.html", categories=categories.items,
                            next_url=next_url, prev_url=prev_url)
 
@@ -457,7 +470,7 @@ def create_order():
         all_ids = db.session.query(Cart.id_product).filter(Cart.id_user == session['user_id']).all()
         all_ids = [i[0] for i in all_ids]
         for product_id in all_ids:
-            user_order = Orders(id_user=session['user_id'])
+            user_order = Orders(id_user=session['user_id'],order_date=datetime.now())
             db.session.add(user_order)
             db.session.commit()
             product_order = OrderProduct(id_order=user_order.id, id_product=product_id)

@@ -40,7 +40,7 @@ class UserLoginForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class AddCategoryForm(FlaskForm):
+class CategoryForm(FlaskForm):
     """Form to add category"""
     name = StringField("Name", validators=[DataRequired()])
     submit = SubmitField("Submit")

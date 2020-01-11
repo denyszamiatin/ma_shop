@@ -1,5 +1,5 @@
 {% extends "index.html" %}
-{% block title %}Categories{% endblock %}
+{% block title %}Catalogue{% endblock %}
 {% block content %}
 
 <!-- Breadcrumb -->
@@ -22,11 +22,12 @@
 <div class="row my-3">
 
 <div class="col-md-3">
-    <h3>Categories:</h3>
+    <h5>CATEGORIES:</h5>
+    <div class="list-group">
     {% for category in categories %}
-        <h4 class="my-2"><a style="text-decoration: none;" href="{{ url_for('get_catalogue') }}/{{ category.id }}">{{ category.name }}</a></h4>
+        <a class="list-group-item list-group-item-action" href="{{ url_for('get_catalogue') }}/{{ category.id }}">{{ category.name }}</a>
     {% endfor %}
-
+    </div>
 </div>
 
 <div class="col-md-9">
@@ -35,7 +36,7 @@
 
          <table class="table table-striped w-auto table-bordered">
         <thead>
-        <tr>
+        <tr class="text-center">
             <th>Image</th>
             <th>Product name</th>
             <th>Price</th>
@@ -44,11 +45,11 @@
         </thead>
         <tbody>
         {% for product in products %}
-            <tr>
-                <td class="text-center">
-                <img class="img-responsive" src="/static/img/{{ product.id }}_thumbnail.jpg" alt="{{ product.name }}" width="120" height="70">
+            <tr class="text-center">
+                <td>
+                <img class="img-responsive" src="/static/img/{{ product.id }}_thumbnail.jpg" alt="{{ product.name }}">
                 </td>
-                <td><h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{product.id}}">{{product.name}}</a></h4></td>
+                <td><h4 style="margin-top:20px;"><a class = "text-secondary" href="/product/product_description/{{product.id}}">{{product.name}}</a></h4></td>
                 <td><h4 style="margin-top:20px;">₴{{product.price}}</h4></td>
 
                 <td>
@@ -56,7 +57,7 @@
                     <div class="col-sm text-center" style="margin-top:10px;">
                     <form method="post">
                     <input type="hidden" name="add_to_cart" value="{{ product.id }}">
-                    <button type="submit" class="btn btn-success btn-lg">Add to cart<i class='fas fa-cart-plus'></i></button>
+                    <button type="submit" class="btn btn-secondary">Add to cart<i class='fas fa-cart-plus'></i></button>
                     </form>
                     </div>
                 {% else %}
@@ -69,7 +70,7 @@
         {% endfor %}
         </tbody>
     </table>
-
+{% include 'paging.html' %}
     </div>
 
 </div>

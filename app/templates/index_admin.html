@@ -15,39 +15,10 @@
         <li class="nav-item"><a class="nav-link" href="/admin">Admin</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('products_list') }}">Products</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('categories_list') }}">Categories</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">News</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('news_list') }}">News</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_orders') }}">Manage orders</a></li>
-      </ul>
-    </div>
-
-<!--  The code below will be cleared (edit/delete)  -->
-
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto">
-          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-to5ggle" data-toggle="dropdown" href="{{ url_for('products_list') }}" role="button" aria-haspopup="true" aria-expanded="false">Product</a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="/admin/add_product">Add</a>
-                <a class="dropdown-item" href="/admin/products_list">Edit</a>
-                <a class="dropdown-item" href="/admin/delete_product">Delete</a>
-              </div>
-          </li>
-          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">News</a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="/admin/add_news">Add</a>
-                <a class="dropdown-item" href="/admin/edit_news">Edit</a>
-                <a class="dropdown-item" href="/admin/delete_news">Delete</a>
-              </div>
-          </li>
-          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="{{ url_for('manage_orders') }} " role="button" aria-haspopup="true" aria-expanded="false">Manage orders</a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="/admin/manage_orders">Inspect</a>
-              </div>
-          </li>
-           {% if "user_id" in session %}
-          <li class="nav-item"><a class="nav-link" href="/logout">{{user_email}}</a></li>
+          {% if "user_id" in session %}
+            <li class="nav-item"><a class="nav-link" href="/logout">{{user_email}}</a></li>
           {% endif %}
       </ul>
     </div>

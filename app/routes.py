@@ -123,23 +123,23 @@ def cart_call():
     if request.method == "POST":
         Cart.query.filter_by(id_user=session["user_id"], id_product=request.form.get("delete_item", "")).delete()
         db.session.commit()
-    all_ids = db.session.query(Cart.id_product).filter(Cart.id_user == session["user_id"]).all()
-    all_ids = [i[0] for i in all_ids]
-    for product_id in all_ids:
-        if product_id not in cart_items:
-            name = db.session.query(Products.name).filter(Products.id == product_id).first().name
-            price = db.session.query(Products.price).filter(Products.id == product_id).first().price
-            cart_items[product_id] = {
-                "product_id": product_id,
+    all_products = db.session.query(Cart.id_product, Products.name, Products.price)\
+        .filter(Products.id == Cart.id_product, Cart.id_user == session["user_id"]).all()
+    for item in range(len(all_products)):
+        prod_id = all_products[item][0]
+        if prod_id not in cart_items:
+            name, price = all_products[item][1], all_products[item][2]
+            cart_items[prod_id] = {
+                "product_id": prod_id,
                 "name": name,
                 "price": price,
                 "pieces": 1
             }
-            cart_items[product_id]["amount"] = cart_items[product_id]["price"] * cart_items[product_id]["pieces"]
+            cart_items[prod_id]["amount"] = cart_items[prod_id]["price"] * cart_items[prod_id]["pieces"]
         else:
-            cart_items[product_id]["pieces"] += 1
-            cart_items[product_id]["amount"] += cart_items[product_id]["price"]
-        total_amount += cart_items[product_id]["price"]
+            cart_items[prod_id]["pieces"] += 1
+            cart_items[prod_id]["amount"] += cart_items[prod_id]["price"]
+        total_amount += cart_items[prod_id]["price"]
         items_qty += 1
     return render_template("cart.html", cart_items=cart_items, items_qty=items_qty, total_amount=total_amount)
 
@@ -475,7 +475,7 @@ def create_order():
         all_ids = db.session.query(Cart.id_product).filter(Cart.id_user == session['user_id']).all()
         all_ids = [i[0] for i in all_ids]
         for product_id in all_ids:
-            user_order = Orders(id_user=session['user_id'],order_date=datetime.now())
+            user_order = Orders(id_user=session['user_id'], order_date=datetime.now())
             db.session.add(user_order)
             db.session.commit()
             product_order = OrderProduct(id_order=user_order.id, id_product=product_id)

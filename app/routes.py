@@ -15,7 +15,7 @@ from products import products
 from users import validation
 from .forms import *
 from .models import *
-from .login import login_required
+from .login import login_required, admin_role_required
 from .breadcrumb import breadcrumb
 from .api import *
 from .send_mail import send_mail
@@ -253,8 +253,10 @@ def confirmation(token):
         flash('You have confirmed your account. Thanks!', 'success')
     return redirect(url_for('login'))
 
+
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def add_category():
     """Admin: add category"""
     form = CategoryForm()
@@ -268,12 +270,15 @@ def add_category():
 
 
 @app.route('/admin')
+@login_required
+@admin_role_required
 def index_admin():
     return render_template("index_admin.html")
 
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def add_product():
     """function for add product in database"""
     form = AddProductForm()
@@ -310,6 +315,7 @@ def get_catalogue(category="all"):
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def add_news():
     form = NewsForm()
     if request.method == 'POST':
@@ -327,6 +333,7 @@ def add_news():
 
 @app.route('/admin/edit_category/<string:category_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def edit_category(category_id):
     category = ProductCategories.query.filter_by(id=category_id).first()
     form = CategoryForm()
@@ -345,6 +352,7 @@ def edit_category(category_id):
 
 @app.route("/admin/confirm_delete_category/<category_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def confirm_delete_category(category_id):
     category_ = ProductCategories.query.filter_by(id=category_id).first()
     return render_template("confirm_delete_category.html", category=category_)
@@ -352,6 +360,7 @@ def confirm_delete_category(category_id):
 
 @app.route("/admin/confirm_delete_category/delete/<category_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_category(category_id):
     ProductCategories.query.filter_by(id=category_id).delete()
     db.session.commit()
@@ -361,9 +370,10 @@ def delete_category(category_id):
 
 @app.route('/admin/products_list', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def products_list():
     page = request.args.get('page', 1, type=int)
-    products = Products.query.order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
+    products = Products.query.filter_by(deleted=False).order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
     categories = db.session.query(ProductCategories)
     next_url, prev_url = paging(products, 'products_list')
     return render_template("products_list.html", products=products.items,
@@ -372,6 +382,7 @@ def products_list():
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def edit_product(product_id):
     product = Products.query.filter_by(id=product_id).first()
     form = AddProductForm()
@@ -396,6 +407,7 @@ def edit_product(product_id):
 
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_news_id(news_id):
     News.query.filter(News.id == news_id).delete()
     db.session.commit()
@@ -405,6 +417,7 @@ def delete_news_id(news_id):
 
 @app.route('/admin/news_list', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def news_list():
     news = db.session.query(News) \
         .join(Users) \
@@ -416,6 +429,7 @@ def news_list():
 
 @app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def edit_news_id(news_id):
     post = News.query.filter(News.id == news_id).first()
     if request.method == 'POST':
@@ -430,6 +444,7 @@ def edit_news_id(news_id):
 
 @app.route("/admin/delete_product", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_product():
     all_products = products.get_all(g.db)
     return render_template("delete_product.html", products=all_products)
@@ -437,6 +452,7 @@ def delete_product():
 
 @app.route("/admin/delete_confirm/<product_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_confirm(product_id):
     product = db.session.query(Products).filter_by(id = product_id).first()
     return render_template("delete_confirm.html", product=product)
@@ -444,9 +460,11 @@ def delete_confirm(product_id):
 
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete(product_id):
-    remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
-    Products.query.filter_by(id=product_id).delete()
+    # remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
+    product = Products.query.filter_by(id=product_id, deleted=False).first()
+    product.deleted = True
     db.session.commit()
     return redirect(url_for('products_list'))
 
@@ -462,6 +480,7 @@ def remove_images(*names):
 
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def categories_list():
     page = request.args.get('page', 1, type=int)
     categories = ProductCategories.query.order_by(ProductCategories.id).paginate(page, ITEMS_PER_PAGE, False)
@@ -503,6 +522,7 @@ def create_order():
 
 @app.route('/admin/manage_orders', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def manage_orders():
     all_orders = Orders.query.all()
     return render_template("manage_orders.html", all_orders=all_orders)

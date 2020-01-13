@@ -70,7 +70,7 @@ def paging(items, page_template):
 def show_product(product_id):
     form = MarkForm()
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
-    avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks'
+    avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks yet'
     product = Products.query.filter_by(id=product_id).first()
     number_of_marks = len(Mark.query.filter_by(id_product=product_id).all())
     product_category = ProductCategories.query.get(product.category_id).name
@@ -174,7 +174,7 @@ def logout():
     session.pop("user_id")
     if "next_page" in session:
         session.pop("next_page")
-    flash("You logged out")
+    flash("You have logged out")
     return redirect(url_for('index'))
 
 
@@ -192,7 +192,7 @@ def login():
                 session['user_id'] = user.id
                 if 'next_page' in session:
                     return redirect(session["next_page"])
-                flash("You are logged")
+                flash("You are logged in")
                 return redirect(url_for("index"))
             else:
                 message = "Wrong email or password"
@@ -221,7 +221,7 @@ def registration():
                 db.session.add(user)
                 db.session.commit()
             except IntegrityError:
-                flash(f"User with email: {email} already exist")
+                flash(f"User with email {email} already exist")
             token = generate_confirmation_token(email)
             confirm_url = app.config['SITE_URL'] + url_for('confirmation', token=token)
             subject = "Please confirm your email"
@@ -232,7 +232,7 @@ def registration():
             flash('A confirmation email has been sent via email.', 'success')
             return redirect(url_for('index'))
         else:
-            message = "Something wrong, check form"
+            message = "Something went wrong, please check the form"
 
     return render_template("registration.html", message=message, form=form)
 
@@ -245,7 +245,7 @@ def confirmation(token):
         return redirect(url_for('index'))
     user = Users.query.filter_by(email=email).first_or_404()
     if user.confirmed:
-        flash('Account already confirmed. Please login.', 'success')
+        flash('Account is already confirmed. Please log in.', 'success')
     else:
         user.confirmed = True
         db.session.add(user)

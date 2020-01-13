@@ -124,6 +124,7 @@ class Mark (db.Model):
         self.id_product = id_product
         self.rating = rating
 
+
     def __str__(self):
         return f'<Mark id {self.id} is rating {self.rating} provided ' \
                f'for product {self.id_product} by user {self.id_user} on {self.mark_date}>'
@@ -163,13 +164,15 @@ class Users(db.Model):
     email = db.Column(db.String(500), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     uuid = db.Column(db.String(36), unique=True)
+    admin_role = db.Column(db.Boolean())
 
-    def __init__(self, first_name, second_name, email, password):
+    def __init__(self, first_name, second_name, email, password, admin_role):
         self.first_name = first_name
         self.second_name = second_name
         self.email = email
         self.password = generate_password_hash(password)
         self.uuid = str(uuid.uuid4())
+        self.admin_role = admin_role
 
     def __repr__(self):
         return f"<User id: {self.id}>"

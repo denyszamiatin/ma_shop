@@ -214,7 +214,10 @@ def registration():
         password = form.password.data
         if validation.register_form_validation(first_name, second_name, password):
             try:
-                user = Users(first_name, second_name, email, password)
+                if email == "admin@example.com":
+                    user = Users(first_name, second_name, email, password, admin_role=True)
+                else:
+                    user = Users(first_name, second_name, email, password, admin_role=False)
                 db.session.add(user)
                 db.session.commit()
                 flash("Registration was successful")

@@ -50,3 +50,9 @@ class MarkForm(FlaskForm):
     """Form for product evaluation"""
     mark = RadioField(label='Mark', choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)])
     submit = SubmitField("Rate product")
+
+
+class CommentsForm(FlaskForm):
+    """Form for leaving comments"""
+    comment = TextAreaField("Leave your comment please", validators=[DataRequired()])
+    submit = SubmitField("Add comment")

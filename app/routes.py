@@ -271,9 +271,6 @@ def add_product():
 def get_catalogue(category="all"):
     categories = ProductCategories.query.all()
     existing_categories = [str(category.id) for category in categories]
-    if request.method == "POST":
-        if session["user_id"]:
-            cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
     if category not in existing_categories and category != "all":
         abort(404)
     page = request.args.get('page', 1, type=int)

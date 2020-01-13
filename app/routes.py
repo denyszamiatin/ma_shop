@@ -19,6 +19,7 @@ from .models import *
 from .login import login_required
 from .breadcrumb import breadcrumb
 from .api import *
+from .send_mail import send_mail
 
 
 def save_image_and_thumbnail(image_data, product_id):
@@ -463,10 +464,11 @@ def create_order():
         user_order = Orders(id_user=session['user_id'], order_date=datetime.now())
         db.session.add(user_order)
         db.session.commit()
+        send_mail(user_order.users.email, "Ma shop", f"Order #{user_order.id} was created")
         for product_id in all_ids:
             product_order = OrderProduct(id_order=user_order.id, id_product=product_id)
             db.session.add(product_order)
-            Cart.query.filter_by(id_user=session["user_id"]).delete()
+        Cart.query.filter_by(id_user=session["user_id"]).delete()
         db.session.commit()
     return render_template("create_order.html", new_order=new_order)
 

@@ -164,15 +164,17 @@ class Users(db.Model):
     email = db.Column(db.String(500), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     uuid = db.Column(db.String(36), unique=True)
+    confirmed = db.Column(db.Boolean, default=False)
     admin_role = db.Column(db.Boolean())
 
-    def __init__(self, first_name, second_name, email, password, admin_role):
+    def __init__(self, first_name, second_name, email, password, admin_role, confirmed):
         self.first_name = first_name
         self.second_name = second_name
         self.email = email
         self.password = generate_password_hash(password)
         self.uuid = str(uuid.uuid4())
         self.admin_role = admin_role
+        self.confirmed = confirmed
 
     def __repr__(self):
         return f"<User id: {self.id}>"

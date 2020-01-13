@@ -19,6 +19,7 @@ from .login import login_required
 from .breadcrumb import breadcrumb
 from .api import *
 from .send_mail import send_mail
+from .registration_token import generate_confirmation_token, confirm_token
 
 
 def save_image_and_thumbnail(image_data, product_id):
@@ -215,20 +216,45 @@ def registration():
         if validation.register_form_validation(first_name, second_name, password):
             try:
                 if email == "admin@example.com":
-                    user = Users(first_name, second_name, email, password, admin_role=True)
+                    user = Users(first_name, second_name, email, password, admin_role=True, confirmed=True)
                 else:
-                    user = Users(first_name, second_name, email, password, admin_role=False)
+                    user = Users(first_name, second_name, email, password, admin_role=False, confirmed=False)
                 db.session.add(user)
                 db.session.commit()
-                flash("Registration was successful")
-                return redirect(url_for('index'))
             except IntegrityError:
-                message = f"User with email: {email} already exist"
+                flash(f"User with email: {email} already exist")
+            token = generate_confirmation_token(email)
+            confirm_url = app.config['SITE_URL'] + url_for('confirmation', token=token)
+            subject = "Please confirm your email"
+            try:
+                send_mail(email, subject, confirm_url)
+            except ConnectionRefusedError as error:
+                print(error)
+            flash('A confirmation email has been sent via email.', 'success')
+            return redirect(url_for('index'))
         else:
             message = "Something wrong, check form"
 
     return render_template("registration.html", message=message, form=form)
 
+
+@app.route('/confirm/<token>')
+def confirmation(token):
+    try:
+        email = confirm_token(token)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+    user = Users.query.filter_by(email=email).first_or_404()
+    if user.confirmed:
+        flash('Account already confirmed. Please login.', 'success')
+    else:
+        user.confirmed = True
+        db.session.add(user)
+        db.session.commit()
+        flash('You have confirmed your account. Thanks!', 'success')
+    if 'next_page' in session:
+        return redirect(session["next_page"])
+    return redirect(url_for('index'))
 
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required

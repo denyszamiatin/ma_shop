@@ -373,7 +373,7 @@ def delete_category(category_id):
 @admin_role_required
 def products_list():
     page = request.args.get('page', 1, type=int)
-    products = Products.query.order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
+    products = Products.query.filter_by(deleted=False).order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
     categories = db.session.query(ProductCategories)
     next_url, prev_url = paging(products, 'products_list')
     return render_template("products_list.html", products=products.items,
@@ -462,8 +462,9 @@ def delete_confirm(product_id):
 @login_required
 @admin_role_required
 def delete(product_id):
-    remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
-    Products.query.filter_by(id=product_id).delete()
+    # remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
+    product = Products.query.filter_by(id=product_id, deleted=False).first()
+    product.deleted = True
     db.session.commit()
     return redirect(url_for('products_list'))
 

@@ -240,10 +240,10 @@ def registration():
 
 @app.route('/confirm/<token>')
 def confirmation(token):
-    try:
-        email = confirm_token(token)
-    except:
+    email = confirm_token(token)
+    if not email:
         flash('The confirmation link is invalid or has expired.', 'danger')
+        return redirect(url_for('index'))
     user = Users.query.filter_by(email=email).first_or_404()
     if user.confirmed:
         flash('Account already confirmed. Please login.', 'success')
@@ -252,9 +252,7 @@ def confirmation(token):
         db.session.add(user)
         db.session.commit()
         flash('You have confirmed your account. Thanks!', 'success')
-    if 'next_page' in session:
-        return redirect(session["next_page"])
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required

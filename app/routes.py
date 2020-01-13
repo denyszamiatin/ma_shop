@@ -467,7 +467,10 @@ def create_order():
         user_order = Orders(id_user=session['user_id'], order_date=datetime.now())
         db.session.add(user_order)
         db.session.commit()
-        send_mail(user_order.users.email, "Ma shop", f"Order #{user_order.id} was created")
+        try:
+            send_mail(user_order.users.email, "Ma shop", f"Order #{user_order.id} was created")
+        except ConnectionRefusedError as error:
+            print(error)
         for product_id in all_ids:
             product_order = OrderProduct(id_order=user_order.id, id_product=product_id)
             db.session.add(product_order)

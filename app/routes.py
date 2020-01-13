@@ -123,23 +123,22 @@ def cart_call():
     if request.method == "POST":
         Cart.query.filter_by(id_user=session["user_id"], id_product=request.form.get("delete_item", "")).delete()
         db.session.commit()
-    all_products = db.session.query(Cart.id_product, Products.name, Products.price)\
+    products = db.session.query(Cart.id_product, Products.name, Products.price)\
         .filter(Products.id == Cart.id_product, Cart.id_user == session["user_id"], Products.deleted == 'False').all()
-    for item in range(len(all_products)):
-        prod_id = all_products[item][0]
-        if prod_id not in cart_items:
-            name, price = all_products[item][1], all_products[item][2]
-            cart_items[prod_id] = {
-                "product_id": prod_id,
+    for product in products:
+        if product[0] not in cart_items:
+            name, price = product[1], product[2]
+            cart_items[product[0]] = {
+                "product_id": product[0],
                 "name": name,
                 "price": price,
                 "pieces": 1
             }
-            cart_items[prod_id]["amount"] = cart_items[prod_id]["price"] * cart_items[prod_id]["pieces"]
+            cart_items[product[0]]["amount"] = cart_items[product[0]]["price"] * cart_items[product[0]]["pieces"]
         else:
-            cart_items[prod_id]["pieces"] += 1
-            cart_items[prod_id]["amount"] += cart_items[prod_id]["price"]
-        total_amount += cart_items[prod_id]["price"]
+            cart_items[product[0]]["pieces"] += 1
+            cart_items[product[0]]["amount"] += cart_items[product[0]]["price"]
+        total_amount += cart_items[product[0]]["price"]
         items_qty += 1
     return render_template("cart.html", cart_items=cart_items, items_qty=items_qty, total_amount=total_amount)
 

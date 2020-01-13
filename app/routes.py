@@ -11,7 +11,6 @@ from app.config import DATABASE, basedir, ITEMS_PER_PAGE
 from cart import cart
 from comments import comments
 from errors import errors
-from product_categories import product_categories
 from products import products
 from users import validation
 from .forms import *
@@ -19,6 +18,8 @@ from .models import *
 from .login import login_required
 from .breadcrumb import breadcrumb
 from .api import *
+from .send_mail import send_mail
+from .registration_token import generate_confirmation_token, confirm_token
 
 
 def save_image_and_thumbnail(image_data, product_id):
@@ -213,18 +214,44 @@ def registration():
         password = form.password.data
         if validation.register_form_validation(first_name, second_name, password):
             try:
-                user = Users(first_name, second_name, email, password)
+                if email == "admin@example.com":
+                    user = Users(first_name, second_name, email, password, admin_role=True, confirmed=True)
+                else:
+                    user = Users(first_name, second_name, email, password, admin_role=False, confirmed=False)
                 db.session.add(user)
                 db.session.commit()
-                flash("Registration was successful")
-                return redirect(url_for('index'))
             except IntegrityError:
-                message = f"User with email: {email} already exist"
+                flash(f"User with email: {email} already exist")
+            token = generate_confirmation_token(email)
+            confirm_url = app.config['SITE_URL'] + url_for('confirmation', token=token)
+            subject = "Please confirm your email"
+            try:
+                send_mail(email, subject, confirm_url)
+            except ConnectionRefusedError as error:
+                print(error)
+            flash('A confirmation email has been sent via email.', 'success')
+            return redirect(url_for('index'))
         else:
             message = "Something wrong, check form"
 
     return render_template("registration.html", message=message, form=form)
 
+
+@app.route('/confirm/<token>')
+def confirmation(token):
+    email = confirm_token(token)
+    if not email:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+        return redirect(url_for('index'))
+    user = Users.query.filter_by(email=email).first_or_404()
+    if user.confirmed:
+        flash('Account already confirmed. Please login.', 'success')
+    else:
+        user.confirmed = True
+        db.session.add(user)
+        db.session.commit()
+        flash('You have confirmed your account. Thanks!', 'success')
+    return redirect(url_for('login'))
 
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required
@@ -270,9 +297,6 @@ def add_product():
 def get_catalogue(category="all"):
     categories = ProductCategories.query.all()
     existing_categories = [str(category.id) for category in categories]
-    if request.method == "POST":
-        if session["user_id"]:
-            cart.add(g.db, session["user_id"], request.form.get("add_to_cart", ""))
     if category not in existing_categories and category != "all":
         abort(404)
     page = request.args.get('page', 1, type=int)
@@ -465,10 +489,14 @@ def create_order():
         user_order = Orders(id_user=session['user_id'], order_date=datetime.now())
         db.session.add(user_order)
         db.session.commit()
+        try:
+            send_mail(user_order.users.email, "Ma shop", f"Order #{user_order.id} was created")
+        except ConnectionRefusedError as error:
+            print(error)
         for product_id in all_ids:
             product_order = OrderProduct(id_order=user_order.id, id_product=product_id)
             db.session.add(product_order)
-            Cart.query.filter_by(id_user=session["user_id"]).delete()
+        Cart.query.filter_by(id_user=session["user_id"]).delete()
         db.session.commit()
     return render_template("create_order.html", new_order=new_order)
 

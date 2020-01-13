@@ -11,7 +11,6 @@ from app.config import DATABASE, basedir, ITEMS_PER_PAGE
 from cart import cart
 from comments import comments
 from errors import errors
-from product_categories import product_categories
 from products import products
 from users import validation
 from .forms import *

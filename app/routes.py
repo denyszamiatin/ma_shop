@@ -67,6 +67,7 @@ def paging(items, page_template):
 
 
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
+@breadcrumb('Description')
 def show_product(product_id):
     form = MarkForm()
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
@@ -154,12 +155,6 @@ def news():
         .filter(Users.id == News.id_user).paginate(page, ITEMS_PER_PAGE, False)
     next_url, prev_url = paging(news, 'news')
     return render_template("news.html", news=news.items, next_url=next_url, prev_url=prev_url)
-
-
-@app.route('/comments_list/<product_id>', methods=("GET", "POST"))
-def comments_list(product_id):
-    all_comments = comments.get(g.db, product_id)
-    return render_template("comments_list.html", comments=all_comments)
 
 
 @app.route('/contacts')

@@ -22,29 +22,14 @@
     <div class="container">
         <table>
             <tr>
-                <td colspan="2"><h2><b>{{ product.name }}</b> <small> (category: <a class="text-secondary" href="/catalogue/{{ product.category_id }}">{{ product_category }})</a></small></h2></td>
+                <td align="center" colspan="2"><h2><b>{{ product.name }}</b> <small> (category: <a class="text-secondary" href="/catalogue/{{ product.category_id }}">{{ product_category }})</a></small></h2></td>
             </tr>
-            <tr>
-                <td>
-                    <img class="img-responsive" src="/static/img/{{ product.id }}.jpg" alt="{{ product.name }}" width="480" height="280">
-                </td>
-                <td>
-                    <h4>Product mark:
-                        <span class="badge badge-primary">{{ avg_mark }}</span>
-                        <span><i>({{ number_of_marks }} ratings)</i></span>
-                        <h5><b>Description:</b></h5>
-                        <p>
-                            <i>{{ product.description }}</i>
-                        </p>
-                    </h4>
-                </td>
-            </tr>
-            <tr>
-            <td><h3>Price: <b>₴{{ product.price }}</b></h3></td>
+             <tr>
+                 <td><h4 align="right"> <font color="#FF0000"> ₴{{ product.price }}   </font></h4></td>
             <td>
                 <!-- ADD TO CART-->
                 {% if "user_id" in session %}
-                        <div >
+                    <div>
                         <form method="post" action="{{ url_for('add_to_cart', product_id=product.id) }}">
                             <input type="hidden" name="add_to_cart">
                             <button type="submit" class="btn btn-success btn-lg" style="float:left">Add to cart <i class='fas fa-cart-plus'></i></button>
@@ -52,52 +37,73 @@
                     </div>
                 {% else %}
                     <div >
-                        <h4><b><i>Please <a href="/login">log in</a> to make orders</i></b></h4>
+                        <h4>Please <a href="/login">log in</a> to make orders</h4>
                     </div>
                 {% endif %}
             <!-- END ADD TO CART-->
             </td>
             </tr>
+
+            <tr>
+                <td>
+                    <img class="img-responsive" src="/static/img/{{ product.id }}.jpg" alt="{{ product.name }}" width="480" height="280">
+                </td>
+                <td/>
+                        <h5>Product mark (based on {{ number_of_marks }} ratings):</h5>
+                            <p class="badge badge-primary">{{ avg_mark }}</p>
+                        <h5>Description:</h5>
+                            <p>
+                                <i>{{ product.description }}</i>
+                            </p>
+                       <!-- COMMENT_LIST-->
+                        <h5>Comments:</h5>
+                        <div class="card w-100 smooth-scroll list-unstyled">
+                            <div class="col-sm-12 col-lg-6">
+                                    comment list
+                            </div>
+                        </div>
+                        <!-- END COMMENT_LIST-->
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <!--MARKS-->
+                                <div class="btn-group">
+                                    <form method="post" action="{{ url_for('set_product_mark', product_id=product.id)}}">
+                                        <table style="text-align: center">
+                                            <tr>
+                                                {% for mark_field in form.mark %}
+                                                    <th>{{ mark_field }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                            <tr>
+                                                {% for mark_field in form.mark %}
+                                                    <td>{{ mark_field.label }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5">{{ form.submit }}
+                                            </tr>
+                                        </table>
+                                    </form>
+                                </div>
+                                <!--END MARKS-->
+                            </td>
+                            <td>
+                                <form action="" method="POST">
+                                    <textarea name="comment" value="{{ comment }}" placeholder="Type your comment here"></textarea>
+                                    <div class="container">
+                                        <input type="submit" name="submit_comment" value="Send">
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
         </table>
-        <!--MARKS-->
-        <div class="btn-group">
-            <form method="post" action="{{ url_for('set_product_mark', product_id=product.id)}}">
-                <table style="text-align: center">
-                    <tr>
-                        {% for mark_field in form.mark %}
-                            <th>{{ mark_field }}</th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for mark_field in form.mark %}
-                            <td>{{ mark_field.label }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td colspan="5">{{ form.submit }}
-                    </tr>
-                </table>
-            </form>
-        </div><br><br>
-        <!--END MARKS-->
-
-
-        <form action="" method="POST">
-            <textarea name="comment" value="{{ comment }}" placeholder="Type your comment here"></textarea>
-            <div class="container">
-                <input type="submit" name="submit_comment" value="Send">
-            </div>
-        </form>
-
-
     </div>
-
-    <!-- ADD COMMENT_LIST-->
-    <div class="col-sm text-center" style="margin-top:10px;">
-            <form method="post" action="{{ url_for('comments_list', product_id=product.id) }}">
-                <button type="submit" class="btn btn-success btn-lg" style="float:left">All comments <i class='fas fa-cart-plus'></i></button>
-            </form>
-    </div>
-    <!-- END COMMENT_LIST-->
-</div>
 {% endblock %}

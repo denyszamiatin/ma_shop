@@ -71,8 +71,8 @@ def show_product(product_id):
     form = MarkForm()
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
     avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks yet'
+    number_of_marks = db.session.query(func.count(Mark.rating)).filter(Mark.id_product == product_id).first()[0]
     product = Products.query.filter_by(id=product_id).first()
-    number_of_marks = len(Mark.query.filter_by(id_product=product_id).all())
     product_category = ProductCategories.query.get(product.category_id).name
     comment = ""
     if request.method == "POST":

@@ -1,5 +1,5 @@
 {% extends "index.html" %}
-{% block title %} Cart {% endblock %}
+{% block title %}MA Cart {% endblock %}
 
 {% block content %}
 <script src="https://use.fontawesome.com/c560c025cf.js" xmlns="http://www.w3.org/1999/html"></script>
@@ -32,16 +32,12 @@
                 <td class="text-center">
                     <img class="img-responsive" src="/static/img/{{cart_item['product_id']}}_thumbnail.jpg" alt="preview" width="120" height="80">
                 </td>
-                    <td><h4 style="margin-top:20px;"><a style="text-decoration: none;" href="/product/product_description/{{cart_item['product_id']}}">{{cart_item["name"]}}</h4>
+                    <td><h4 style="margin-top:20px;"><a class="text-secondary" href="/product/product_description/{{cart_item['product_id']}}">{{cart_item["name"]}}</h4>
                 </td>
                     <td><h4 style="margin-top:20px;">₴{{cart_item["price"]}} </h4>
                 </td>
                 <td>
-                    <h4 style="margin-top:20px;">
-                        <form method="put">
-                            <input type="number" step="1" max="99" min="1" value="{{cart_item['pieces']}}" title="Qty" class="qty" size="4">
-                        </form>
-                    </h4>
+                    <h4 style="margin-top:20px;">{{cart_item["pieces"]}} </h4>
                 </td>
                 <td>
                     <h4 style="margin-top:20px;">₴{{cart_item['amount']}}</h4>

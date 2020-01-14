@@ -228,6 +228,7 @@ class Orders(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    status = db.Column(db.String(35), default='New order')
     users = db.relationship('Users')
 
     def __init__(self, id_user, order_date):

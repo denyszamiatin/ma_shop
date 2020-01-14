@@ -52,6 +52,11 @@ class MarkForm(FlaskForm):
     submit = SubmitField("Rate product")
 
 
+class CommentsForm(FlaskForm):
+    """Form for leaving comments"""
+    comment = TextAreaField("Leave your comment please", validators=[DataRequired()])
+    submit = SubmitField("Add comment")
+
 class RestorePasswordForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
     submit = SubmitField("Submit")

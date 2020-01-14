@@ -15,7 +15,7 @@ from products import products
 from users import validation
 from .forms import *
 from .models import *
-from .login import login_required
+from .login import login_required, admin_role_required
 from .breadcrumb import breadcrumb
 from .api import *
 from .send_mail import send_mail
@@ -70,7 +70,7 @@ def paging(items, page_template):
 def show_product(product_id):
     form = MarkForm()
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
-    avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks'
+    avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks yet'
     product = Products.query.filter_by(id=product_id).first()
     number_of_marks = len(Mark.query.filter_by(id_product=product_id).all())
     product_category = ProductCategories.query.get(product.category_id).name
@@ -124,23 +124,22 @@ def cart_call():
     if request.method == "POST":
         Cart.query.filter_by(id_user=session["user_id"], id_product=request.form.get("delete_item", "")).delete()
         db.session.commit()
-    all_products = db.session.query(Cart.id_product, Products.name, Products.price)\
+    products = db.session.query(Cart.id_product, Products.name, Products.price)\
         .filter(Products.id == Cart.id_product, Cart.id_user == session["user_id"], Products.deleted == 'False').all()
-    for item in range(len(all_products)):
-        prod_id = all_products[item][0]
-        if prod_id not in cart_items:
-            name, price = all_products[item][1], all_products[item][2]
-            cart_items[prod_id] = {
-                "product_id": prod_id,
+    for product in products:
+        if product[0] not in cart_items:
+            name, price = product[1], product[2]
+            cart_items[product[0]] = {
+                "product_id": product[0],
                 "name": name,
                 "price": price,
                 "pieces": 1
             }
-            cart_items[prod_id]["amount"] = cart_items[prod_id]["price"] * cart_items[prod_id]["pieces"]
+            cart_items[product[0]]["amount"] = cart_items[product[0]]["price"] * cart_items[product[0]]["pieces"]
         else:
-            cart_items[prod_id]["pieces"] += 1
-            cart_items[prod_id]["amount"] += cart_items[prod_id]["price"]
-        total_amount += cart_items[prod_id]["price"]
+            cart_items[product[0]]["pieces"] += 1
+            cart_items[product[0]]["amount"] += cart_items[product[0]]["price"]
+        total_amount += cart_items[product[0]]["price"]
         items_qty += 1
     return render_template("cart.html", cart_items=cart_items, items_qty=items_qty, total_amount=total_amount)
 
@@ -175,7 +174,7 @@ def logout():
     session.pop("user_id")
     if "next_page" in session:
         session.pop("next_page")
-    flash("You logged out")
+    flash("You have logged out")
     return redirect(url_for('index'))
 
 
@@ -193,7 +192,7 @@ def login():
                 session['user_id'] = user.id
                 if 'next_page' in session:
                     return redirect(session["next_page"])
-                flash("You are logged")
+                flash("You are logged in")
                 return redirect(url_for("index"))
             else:
                 message = "Wrong email or password"
@@ -222,7 +221,7 @@ def registration():
                 db.session.add(user)
                 db.session.commit()
             except IntegrityError:
-                flash(f"User with email: {email} already exist")
+                flash(f"User with email {email} already exist")
             token = generate_confirmation_token(email)
             confirm_url = app.config['SITE_URL'] + url_for('confirmation', token=token)
             subject = "Please confirm your email"
@@ -233,7 +232,7 @@ def registration():
             flash('A confirmation email has been sent via email.', 'success')
             return redirect(url_for('index'))
         else:
-            message = "Something wrong, check form"
+            message = "Something went wrong, please check the form"
 
     return render_template("registration.html", message=message, form=form)
 
@@ -246,7 +245,7 @@ def confirmation(token):
         return redirect(url_for('index'))
     user = Users.query.filter_by(email=email).first_or_404()
     if user.confirmed:
-        flash('Account already confirmed. Please login.', 'success')
+        flash('Account is already confirmed. Please log in.', 'success')
     else:
         user.confirmed = True
         db.session.add(user)
@@ -254,8 +253,10 @@ def confirmation(token):
         flash('You have confirmed your account. Thanks!', 'success')
     return redirect(url_for('login'))
 
+
 @app.route('/admin/add_category', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def add_category():
     """Admin: add category"""
     form = CategoryForm()
@@ -269,12 +270,15 @@ def add_category():
 
 
 @app.route('/admin')
+@login_required
+@admin_role_required
 def index_admin():
     return render_template("index_admin.html")
 
 
 @app.route('/admin/add_product', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def add_product():
     """function for add product in database"""
     form = AddProductForm()
@@ -311,6 +315,7 @@ def get_catalogue(category="all"):
 
 @app.route('/admin/add_news', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def add_news():
     form = NewsForm()
     if request.method == 'POST':
@@ -328,6 +333,7 @@ def add_news():
 
 @app.route('/admin/edit_category/<string:category_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def edit_category(category_id):
     category = ProductCategories.query.filter_by(id=category_id).first()
     form = CategoryForm()
@@ -346,6 +352,7 @@ def edit_category(category_id):
 
 @app.route("/admin/confirm_delete_category/<category_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def confirm_delete_category(category_id):
     category_ = ProductCategories.query.filter_by(id=category_id).first()
     return render_template("confirm_delete_category.html", category=category_)
@@ -353,6 +360,7 @@ def confirm_delete_category(category_id):
 
 @app.route("/admin/confirm_delete_category/delete/<category_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_category(category_id):
     ProductCategories.query.filter_by(id=category_id).delete()
     db.session.commit()
@@ -362,9 +370,10 @@ def delete_category(category_id):
 
 @app.route('/admin/products_list', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def products_list():
     page = request.args.get('page', 1, type=int)
-    products = Products.query.order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
+    products = Products.query.filter_by(deleted=False).order_by(Products.id).paginate(page, ITEMS_PER_PAGE, False)
     categories = db.session.query(ProductCategories)
     next_url, prev_url = paging(products, 'products_list')
     return render_template("products_list.html", products=products.items,
@@ -373,6 +382,7 @@ def products_list():
 
 @app.route('/admin/edit_product/<string:product_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def edit_product(product_id):
     product = Products.query.filter_by(id=product_id).first()
     form = AddProductForm()
@@ -397,6 +407,7 @@ def edit_product(product_id):
 
 @app.route('/admin/delete_news/<string:news_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_news_id(news_id):
     News.query.filter(News.id == news_id).delete()
     db.session.commit()
@@ -406,6 +417,7 @@ def delete_news_id(news_id):
 
 @app.route('/admin/news_list', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def news_list():
     news = db.session.query(News) \
         .join(Users) \
@@ -417,6 +429,7 @@ def news_list():
 
 @app.route('/admin/edit_news/<string:news_id>', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def edit_news_id(news_id):
     post = News.query.filter(News.id == news_id).first()
     if request.method == 'POST':
@@ -431,6 +444,7 @@ def edit_news_id(news_id):
 
 @app.route("/admin/delete_product", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_product():
     all_products = products.get_all(g.db)
     return render_template("delete_product.html", products=all_products)
@@ -438,6 +452,7 @@ def delete_product():
 
 @app.route("/admin/delete_confirm/<product_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete_confirm(product_id):
     product = db.session.query(Products).filter_by(id = product_id).first()
     return render_template("delete_confirm.html", product=product)
@@ -445,9 +460,11 @@ def delete_confirm(product_id):
 
 @app.route("/admin/delete_confirm/delete/<product_id>", methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def delete(product_id):
-    remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
-    Products.query.filter_by(id=product_id).delete()
+    # remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
+    product = Products.query.filter_by(id=product_id, deleted=False).first()
+    product.deleted = True
     db.session.commit()
     return redirect(url_for('products_list'))
 
@@ -463,6 +480,7 @@ def remove_images(*names):
 
 @app.route('/admin/categories_list', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def categories_list():
     page = request.args.get('page', 1, type=int)
     categories = ProductCategories.query.order_by(ProductCategories.id).paginate(page, ITEMS_PER_PAGE, False)
@@ -504,6 +522,7 @@ def create_order():
 
 @app.route('/admin/manage_orders', methods=("GET", "POST"))
 @login_required
+@admin_role_required
 def manage_orders():
     all_orders = Orders.query.all()
     return render_template("manage_orders.html", all_orders=all_orders)

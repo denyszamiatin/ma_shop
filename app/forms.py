@@ -50,3 +50,13 @@ class MarkForm(FlaskForm):
     """Form for product evaluation"""
     mark = RadioField(label='Mark', choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)])
     submit = SubmitField("Rate product")
+
+
+class RestorePasswordForm(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Submit")
+
+
+class SetNewPasswordForm(FlaskForm):
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Submit")

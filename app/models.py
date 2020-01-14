@@ -60,8 +60,14 @@ class Cart(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     addition_date = db.Column(db.Date, default=datetime.utcnow())
+    ucid = db.Column(db.String(36), unique=True)
     users = db.relationship("Users")
     product = db.relationship("Products")
+
+    def __init__(self, id_user, id_product):
+        self.ucid = str(uuid.uuid4())
+        self.id_user = id_user
+        self.id_product = id_product
 
     def __str__(self):
         return f"cart {self.id}"

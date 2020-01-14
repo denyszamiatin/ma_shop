@@ -507,3 +507,50 @@ def create_order():
 def manage_orders():
     all_orders = Orders.query.all()
     return render_template("manage_orders.html", all_orders=all_orders)
+
+
+@app.route("/set_new_password/<token>", methods=("GET", "POST"))
+def set_new_password(token):
+    form = SetNewPasswordForm()
+    email = False
+    try:
+        email = confirm_token(token)
+    except:
+        flash('Link to reset password is invalid or has expired.', 'danger')
+    print(email)
+    if request.method == "POST":
+        new_password = form.password.data
+        if email:
+            if validation.password_validator(new_password):
+                password_hash = generate_password_hash(new_password)
+                db.session.query(Users).filter(Users.email == email).update({Users.password: password_hash})
+                db.session.commit()
+                flash("Your password successfully updated")
+                return redirect(url_for("login"))
+            else:
+                flash("Invalid password")
+        else:
+            flash("You used invalid link, try again")
+    return render_template('set_new_password.html', form=form)
+
+
+@app.route('/password_recovery', methods=("GET", "POST"))
+def password_recovery():
+    form = RestorePasswordForm()
+    emails_in_db = [item[0] for item in Users.query.with_entities(Users.email).all()]
+    print(form.validate())
+    print()
+    if request.method == "POST":
+        email = form.email.data
+        token = generate_confirmation_token(email)
+        reset_url = app.config["SITE_URL"] + url_for("set_new_password", token=token)
+        subject = "Follow this link to reset you password"
+        if email in emails_in_db:
+            try:
+                send_mail(email, subject, reset_url)
+                flash('Email with link to restore your password has been sent via email.', 'success')
+            except ConnectionRefusedError:
+                flash("Cannot connect to the server to send you an email")
+        else:
+            flash(f"There is no user with email '{email}'")
+    return render_template("password_recovery.html", form=form)

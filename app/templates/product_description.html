@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
 {% block title %} MA {{ product.name }} {% endblock %}
 {% block content %}
+
 <div class="container">
     {% with messages = get_flashed_messages() %}
     {% if messages%}
@@ -19,16 +20,45 @@
     {% endwith %}
 
     <div class="container">
-        <br>
-        <h2><b><i>{{ product.name }}</i></b></h2><br>
-        <h3>Category: <a href="/catalogue/{{ product.category_id }}"><i>{{ product_category }}</i></a></h3>
-        <h2>Price: <b>{{ product.price }}₴</b></h2>
-
-        <img class="img-responsive" src="/static/img/{{ product.id }}.jpg" alt="{{ product.name }}" width="480" height="280">
-        <h4>Product mark:
-            <span class="badge badge-primary">{{ avg_mark }}</span>
-            <span><i>({{ number_of_marks }} ratings)</i></span>
-        </h4>
+        <table>
+            <tr>
+                <td colspan="2"><h2><b>{{ product.name }}</b> <small> (category: <a class="text-secondary" href="/catalogue/{{ product.category_id }}">{{ product_category }})</a></small></h2></td>
+            </tr>
+            <tr>
+                <td>
+                    <img class="img-responsive" src="/static/img/{{ product.id }}.jpg" alt="{{ product.name }}" width="480" height="280">
+                </td>
+                <td>
+                    <h4>Product mark:
+                        <span class="badge badge-primary">{{ avg_mark }}</span>
+                        <span><i>({{ number_of_marks }} ratings)</i></span>
+                        <h5><b>Description:</b></h5>
+                        <p>
+                            <i>{{ product.description }}</i>
+                        </p>
+                    </h4>
+                </td>
+            </tr>
+            <tr>
+            <td><h3>Price: <b>₴{{ product.price }}</b></h3></td>
+            <td>
+                <!-- ADD TO CART-->
+                {% if "user_id" in session %}
+                        <div >
+                        <form method="post" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                            <input type="hidden" name="add_to_cart">
+                            <button type="submit" class="btn btn-success btn-lg" style="float:left">Add to cart <i class='fas fa-cart-plus'></i></button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div >
+                        <h4><b><i>Please <a href="/login">log in</a> to make orders</i></b></h4>
+                    </div>
+                {% endif %}
+            <!-- END ADD TO CART-->
+            </td>
+            </tr>
+        </table>
         <!--MARKS-->
         <div class="btn-group">
             <form method="post" action="{{ url_for('set_product_mark', product_id=product.id)}}">
@@ -50,10 +80,7 @@
             </form>
         </div><br><br>
         <!--END MARKS-->
-        <h5><b>Description:</b></h5>
-        <p>
-            <i>{{ product.description }}</i>
-        </p>
+
 
         <form action="" method="POST">
             <textarea name="comment" value="{{ comment }}" placeholder="Type your comment here"></textarea>
@@ -64,22 +91,8 @@
 
 
     </div>
-        <!-- ADD TO CART-->
-    {% if "user_id" in session %}
-        <div class="col-sm text-center" style="margin-top:10px;">
-            <form method="post" action="{{ url_for('add_to_cart', product_id=product.id) }}">
-                <input type="hidden" name="add_to_cart">
-                <button type="submit" class="btn btn-success btn-lg" style="float:left">Add to cart <i class='fas fa-cart-plus'></i></button>
-            </form>
-        </div>
-    {% else %}
-        <div class="col-sm text-center" style="margin-top:10px;">
-            <h4><b><i>Please <a href="/login">log in</a> to make orders</i></b></h4>
-        </div>
-    {% endif %}
-        <!-- END ADD TO CART-->
+
     <!-- ADD COMMENT_LIST-->
-    <br><br>
     <div class="col-sm text-center" style="margin-top:10px;">
             <form method="post" action="{{ url_for('comments_list', product_id=product.id) }}">
                 <button type="submit" class="btn btn-success btn-lg" style="float:left">All comments <i class='fas fa-cart-plus'></i></button>

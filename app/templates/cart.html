@@ -1,18 +1,9 @@
 {% extends "index.html" %}
-{% block title %}MA Cart {% endblock %}
+{% block title %} Cart {% endblock %}
 
 {% block content %}
 <script src="https://use.fontawesome.com/c560c025cf.js" xmlns="http://www.w3.org/1999/html"></script>
-<!-- Breadcrumb -->
-<div class="container breadcrumb">
-    <p>Breadcrumbs:
-        {% for crumb in g.breadcrumbs %}
-            <a href="{{ crumb.path }}">{{ crumb.title }}</a>
-            {% if not loop.last %}&raquo;{% endif %}
-        {% endfor %}
-    </p>
-</div>
-<!-- /Breadcrumb -->
+
 <div class="container">
     <div class="card my-3">
         <table class="table table-striped w-auto table-bordered">

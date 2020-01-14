@@ -30,11 +30,7 @@
     </div>
   </div>
 </nav>
-{% endblock %}}
-
-{% block content %}
-
-     <!-- Breadcrumb -->
+<!-- Breadcrumb -->
     <div class="container breadcrumb">
         <p>Breadcrumbs:
             {% for crumb in g.breadcrumbs %}
@@ -44,19 +40,22 @@
         </p>
     </div>
      <!-- /Breadcrumb -->
+{% endblock %}}
 
-    <!-- Page Content -->
-    <div class="container">
-    {% for message in get_flashed_messages() %}
-      <p class="alert alert-success">{{ message }}</p>
-    {% endfor %}
-      <h1 class="mt-4">Mate academy shop</h1>
-      <p>Free shipping all over the world!</p>
-    </div>
-    <!-- /.container -->
-    <div class="img-container">
-        <img src="https://djfgy1h8qi1y7.cloudfront.net/fit-in/1920x760/2058885d63644432ad0a80ef5045ab98.jpg"
-             width=100% alt="Mates" class="center">
-    </div>
+{% block content %}
+
+<!-- Page Content -->
+<div class="container">
+{% for message in get_flashed_messages() %}
+  <p class="alert alert-success">{{ message }}</p>
+{% endfor %}
+  <h1 class="mt-4">Mate academy shop</h1>
+  <p>Free shipping all over the world!</p>
+</div>
+<!-- /.container -->
+<div class="img-container">
+    <img src="https://djfgy1h8qi1y7.cloudfront.net/fit-in/1920x760/2058885d63644432ad0a80ef5045ab98.jpg"
+         width=100% alt="Mates" class="center">
+</div>
 
 {% endblock %}

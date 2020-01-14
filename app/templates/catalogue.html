@@ -1,19 +1,6 @@
 {% extends "index.html" %}
 {% block title %}MA Catalogue{% endblock %}
 {% block content %}
-
-<!-- Breadcrumb -->
-<div class="container breadcrumb">
-    <p>Breadcrumbs:
-        {% for crumb in g.breadcrumbs %}
-            <a href="{{ crumb.path }}">{{ crumb.title }}</a>
-            {% if not loop.last %}&raquo;{% endif %}
-        {% endfor %}
-    </p>
-</div>
-<!-- /Breadcrumb -->
-
-
 <div class="container">
 {% for message in get_flashed_messages() %}
 <p class="alert alert-success">{{ message }}</p>

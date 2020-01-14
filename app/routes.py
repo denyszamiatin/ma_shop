@@ -181,6 +181,8 @@ def logout():
 @app.route('/login', methods=("GET", "POST"))
 @breadcrumb('Login')
 def login():
+    if 'user_id' in session:
+        return redirect(url_for('index'))
     message = ""
     form = UserLoginForm()
     if request.method == "POST":
@@ -198,13 +200,14 @@ def login():
                 message = "Wrong email or password"
         except AttributeError:
             message = "Wrong email or password"
-
     return render_template("login.html", form=form, message=message)
 
 
 @app.route('/registration', methods=("GET", "POST"))
 @breadcrumb('Registration')
 def registration():
+    if 'user_id' in session:
+        return redirect(url_for('index'))
     message = ""
     form = UserRegistrationForm()
     if request.method == "POST":

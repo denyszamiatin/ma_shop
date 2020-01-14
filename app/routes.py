@@ -534,12 +534,7 @@ def manage_orders():
 @app.route("/set_new_password/<token>", methods=("GET", "POST"))
 def set_new_password(token):
     form = SetNewPasswordForm()
-    email = False
-    try:
-        email = confirm_token(token)
-    except:
-        flash('Link to reset password is invalid or has expired.', 'danger')
-    print(email)
+    email = confirm_token(token)
     if request.method == "POST":
         new_password = form.password.data
         if email:
@@ -559,18 +554,16 @@ def set_new_password(token):
 @app.route('/password_recovery', methods=("GET", "POST"))
 def password_recovery():
     form = RestorePasswordForm()
-    emails_in_db = [item[0] for item in Users.query.with_entities(Users.email).all()]
-    print(form.validate())
-    print()
     if request.method == "POST":
         email = form.email.data
+        user_exists = bool(Users.query.filter_by(email=email).first())
         token = generate_confirmation_token(email)
         reset_url = app.config["SITE_URL"] + url_for("set_new_password", token=token)
         subject = "Follow this link to reset you password"
-        if email in emails_in_db:
+        if user_exists:
             try:
                 send_mail(email, subject, reset_url)
-                flash('Email with link to restore your password has been sent via email.', 'success')
+                flash('Email with link to restore your password has been sent to you via email.', 'success')
             except ConnectionRefusedError:
                 flash("Cannot connect to the server to send you an email")
         else:

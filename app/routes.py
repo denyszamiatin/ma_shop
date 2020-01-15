@@ -231,8 +231,8 @@ def registration():
             try:
                 send_mail(email, subject, confirm_url)
             except ConnectionRefusedError as error:
-                print(error)
-            flash('A confirmation email has been sent via email.', 'success')
+                flash(f'Error sending email: {error}')
+            flash('A confirmation email has been sent via email.')
             return redirect(url_for('index'))
         else:
             message = "Something went wrong, please check the form"
@@ -244,16 +244,16 @@ def registration():
 def confirmation(token):
     email = confirm_token(token)
     if not email:
-        flash('The confirmation link is invalid or has expired.', 'danger')
+        flash('The confirmation link is invalid or has expired.')
         return redirect(url_for('index'))
     user = Users.query.filter_by(email=email).first_or_404()
     if user.confirmed:
-        flash('Account is already confirmed. Please log in.', 'success')
+        flash('Account is already confirmed. Please log in.')
     else:
         user.confirmed = True
         db.session.add(user)
         db.session.commit()
-        flash('You have confirmed your account. Thanks!', 'success')
+        flash('You have confirmed your account. Thanks!')
     return redirect(url_for('login'))
 
 

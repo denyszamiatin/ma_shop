@@ -8,7 +8,7 @@ from flask import request
 from werkzeug.security import generate_password_hash
 
 from app import db, api
-from .models import ProductCategories, Users, Comments, Orders, Products
+from .models import ProductCategories, Users, Comments, Orders, Products, Cart
 from .models import OrderArchive
 
 
@@ -371,3 +371,64 @@ class ProductApi(Resource):
 
 api.add_resource(ProductsApi, '/api/product')
 api.add_resource(ProductApi, '/api/product/<id>')
+
+
+class CartSchema(ModelSchema):
+    class Meta:
+        model = Cart
+        include_fk = True
+
+cart_schema = CartSchema()
+carts_schema = CartSchema(many=True)
+
+class CartsApi(Resource):
+    def post(self):
+        """Add new items to the cart"""
+        json_data = request.json
+        try:
+            cart = cart_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        db.session.add(cart)
+        db.session.commit()
+        return cart_schema.dump(cart)
+
+    def get(self):
+        """Return all cart items"""
+        cart_items = Cart.query.all()
+        return carts_schema.dump(cart_items)
+
+
+class CartApi(Resource):
+    def get(self, ucid):
+        """Return all products that user with id 'ucid' has in his cart"""
+        cart_items = Cart.query.filter_by(id_user=ucid).all()
+        if not cart_items:
+            return {"message": "There are no products in the cart"}, 404
+        return carts_schema.dump(cart_items)
+
+    def delete(self, ucid):
+        """Delete cart item by given 'ucid'"""
+        cart_item = Cart.query.filter_by(ucid=ucid).first()
+        if not cart_item:
+            return {"message": "Product not found"}, 404
+        db.session.delete(cart_item)
+        db.session.commit()
+        return "", 204
+
+    def put(self, ucid):
+        """Update id_product value of a Cart object"""
+        json_data = request.json
+        try:
+            new_product_id = json_data['id_product']
+        except KeyError:
+            return {"message": "New product id expected"}
+        cart = Cart.query.filter_by(ucid=ucid).first()
+        if not cart:
+            return {"message": "Cart not found"}, 404
+        cart.id_product = new_product_id
+        db.session.commit()
+        return cart_schema.dump(cart)
+
+api.add_resource(CartsApi, '/api/cart')
+api.add_resource(CartApi, '/api/cart/<ucid>')

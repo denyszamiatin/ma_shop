@@ -72,8 +72,8 @@ def show_product(product_id):
     form = MarkForm()
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
     avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks yet'
+    number_of_marks = db.session.query(func.count(Mark.rating)).filter(Mark.id_product == product_id).first()[0]
     product = Products.query.filter_by(id=product_id).first()
-    number_of_marks = len(Mark.query.filter_by(id_product=product_id).all())
     product_category = ProductCategories.query.get(product.category_id).name
     comment = ""
     if request.method == "POST":
@@ -176,6 +176,8 @@ def logout():
 @app.route('/login', methods=("GET", "POST"))
 @breadcrumb('Login')
 def login():
+    if 'user_id' in session:
+        return redirect(url_for('index'))
     message = ""
     form = UserLoginForm()
     if request.method == "POST":
@@ -193,13 +195,14 @@ def login():
                 message = "Wrong email or password"
         except AttributeError:
             message = "Wrong email or password"
-
     return render_template("login.html", form=form, message=message)
 
 
 @app.route('/registration', methods=("GET", "POST"))
 @breadcrumb('Registration')
 def registration():
+    if 'user_id' in session:
+        return redirect(url_for('index'))
     message = ""
     form = UserRegistrationForm()
     if request.method == "POST":
@@ -223,8 +226,8 @@ def registration():
             try:
                 send_mail(email, subject, confirm_url)
             except ConnectionRefusedError as error:
-                print(error)
-            flash('A confirmation email has been sent via email.', 'success')
+                flash(f'Error sending email: {error}')
+            flash('A confirmation email has been sent via email.')
             return redirect(url_for('index'))
         else:
             message = "Something went wrong, please check the form"
@@ -236,16 +239,16 @@ def registration():
 def confirmation(token):
     email = confirm_token(token)
     if not email:
-        flash('The confirmation link is invalid or has expired.', 'danger')
+        flash('The confirmation link is invalid or has expired.')
         return redirect(url_for('index'))
     user = Users.query.filter_by(email=email).first_or_404()
     if user.confirmed:
-        flash('Account is already confirmed. Please log in.', 'success')
+        flash('Account is already confirmed. Please log in.')
     else:
         user.confirmed = True
         db.session.add(user)
         db.session.commit()
-        flash('You have confirmed your account. Thanks!', 'success')
+        flash('You have confirmed your account. Thanks!')
     return redirect(url_for('login'))
 
 
@@ -521,3 +524,43 @@ def create_order():
 def manage_orders():
     all_orders = Orders.query.all()
     return render_template("manage_orders.html", all_orders=all_orders)
+
+
+@app.route("/set_new_password/<token>", methods=("GET", "POST"))
+def set_new_password(token):
+    form = SetNewPasswordForm()
+    email = confirm_token(token)
+    if request.method == "POST":
+        new_password = form.password.data
+        if email:
+            if validation.password_validator(new_password):
+                password_hash = generate_password_hash(new_password)
+                db.session.query(Users).filter(Users.email == email).update({Users.password: password_hash})
+                db.session.commit()
+                flash("Your password successfully updated")
+                return redirect(url_for("login"))
+            else:
+                flash("Invalid password")
+        else:
+            flash("You used invalid link, try again")
+    return render_template('set_new_password.html', form=form)
+
+
+@app.route('/password_recovery', methods=("GET", "POST"))
+def password_recovery():
+    form = RestorePasswordForm()
+    if request.method == "POST":
+        email = form.email.data
+        user_exists = bool(Users.query.filter_by(email=email).first())
+        token = generate_confirmation_token(email)
+        reset_url = app.config["SITE_URL"] + url_for("set_new_password", token=token)
+        subject = "Follow this link to reset you password"
+        if user_exists:
+            try:
+                send_mail(email, subject, reset_url)
+                flash('Email with link to restore your password has been sent to you via email.', 'success')
+            except ConnectionRefusedError:
+                flash("Cannot connect to the server to send you an email")
+        else:
+            flash(f"There is no user with email '{email}'")
+    return render_template("password_recovery.html", form=form)

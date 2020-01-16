@@ -111,7 +111,6 @@ class Mark (db.Model):
     rating
     users_who_marked
     products_marked
-
     Methods
     -------
     __str__
@@ -157,7 +156,6 @@ class Users(db.Model):
     second_name
     email
     password
-
     Methods
     -------
     __repr__
@@ -241,5 +239,3 @@ class Orders(db.Model):
 
     def __str__(self):
         return f'User_id: {self.id_user}, date: {self.order_date}'
-
-

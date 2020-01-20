@@ -57,6 +57,7 @@ class CommentsForm(FlaskForm):
     comment = TextAreaField("Leave your comment please", validators=[DataRequired()])
     submit = SubmitField("Add comment")
 
+
 class RestorePasswordForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
     submit = SubmitField("Submit")
@@ -64,4 +65,10 @@ class RestorePasswordForm(FlaskForm):
 
 class SetNewPasswordForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class UpdateOrderForm(FlaskForm):
+    id_user = SelectField("User", choices=[], coerce=int, validators=[DataRequired()])
+    id_product = SelectField("Product", choices=[], coerce=int, validators=[DataRequired()])
     submit = SubmitField("Submit")

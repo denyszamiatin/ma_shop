@@ -93,7 +93,7 @@ def set_product_mark(product_id):
     form = MarkForm()
     new_mark = form.mark.data
     if Mark.query.filter_by(id_user=session['user_id'], id_product=product_id).first() is not None:
-        db.session.query(Mark).filter(Mark.id_user == session['user_id'], Mark.id_product == product_id).\
+        db.session.query(Mark).filter(Mark.id_user == session['user_id'], Mark.id_product == product_id). \
             update({Mark.rating: new_mark})
         db.session.commit()
         flash("Your mark has been updated successfully")
@@ -125,7 +125,7 @@ def cart_call():
     if request.method == "POST":
         Cart.query.filter_by(id_user=session["user_id"], id_product=request.form.get("delete_item", "")).delete()
         db.session.commit()
-    products = db.session.query(Cart.id_product, Products.name, Products.price)\
+    products = db.session.query(Cart.id_product, Products.name, Products.price) \
         .filter(Products.id == Cart.id_product, Cart.id_user == session["user_id"], Products.deleted == 'False').all()
     for product in products:
         if product[0] not in cart_items:
@@ -458,7 +458,7 @@ def delete_product():
 @login_required
 @admin_role_required
 def delete_confirm(product_id):
-    product = db.session.query(Products).filter_by(id = product_id).first()
+    product = db.session.query(Products).filter_by(id=product_id).first()
     return render_template("delete_confirm.html", product=product)
 
 
@@ -528,8 +528,32 @@ def create_order():
 @login_required
 @admin_role_required
 def manage_orders():
-    all_orders = Orders.query.all()
+    all_orders = db.session.query(Orders.id, Orders.id_user, Orders.order_date, Orders.status, OrderProduct.id_product) \
+        .outerjoin(OrderProduct, Orders.id == OrderProduct.id_order)
     return render_template("manage_orders.html", all_orders=all_orders)
+
+
+@app.route('/admin/update_order/<string:order_id>', methods=['GET', 'POST'])
+@login_required
+@admin_role_required
+def update_order(order_id):
+    order_user = Orders.query.filter_by(id=order_id).first()
+    order_product = OrderProduct.query.filter_by(id_order=order_id).first()
+    form = UpdateOrderForm()
+    form.id_user.choices = [(int(user.id), " ".join([user.first_name, user.second_name])) for user in
+                            Users.query.all()]
+    form.id_product.choices = [(int(product.id), product.name) for product
+                               in Products.query.filter_by(deleted="False").all()]
+    if request.method == "POST" and form.validate():
+        try:
+            form.populate_obj(order_user)
+            form.populate_obj(order_product)
+            db.session.commit()
+            flash("Order edited")
+        except IntegrityError:
+            flash('Order was not edited!!')
+        return redirect(url_for('manage_orders'))
+    return render_template("update_order.html", form=form)
 
 
 @app.route("/set_new_password/<token>", methods=("GET", "POST"))

@@ -12,6 +12,8 @@
             <th>Order id</th>
             <th>User id</th>
             <th>Order date</th>
+            <th>Status</th>
+            <th>Product id</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -21,13 +23,11 @@
                 <td>{{order.id}}</td>
                 <td>{{order.id_user}}</td>
                 <td>{{order.order_date}}</td>
+                <td>{{order.status}}</td>
+                <td>{{order.id_product}}</td>
                 <td>
-                    <form method="post">
-                        <input type="hidden" name="delete_item" value="{{ order.id }}">
-                        <button class="btn btn-outline-danger btn-xs">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </button>
-                    </form>
+                    <a href="{{ url_for('update_order', order_id=order.id) }}">
+                        <button type="button" class="btn btn-primary">Update</button></a>
                 </td>
             </tr>
         {% endfor %}

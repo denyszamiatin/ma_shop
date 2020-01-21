@@ -87,7 +87,7 @@ class News(db.Model):
     -------
     __str__
     """
-    __tablename__= "news"
+    __tablename__ = "news"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000))
     post = db.Column(db.Text)
@@ -99,7 +99,7 @@ class News(db.Model):
                f' {self.news_dta}, title: {self.title}and all post:{self.post} '
 
 
-class Mark (db.Model):
+class Mark(db.Model):
     """
     Class to create table "marks" in database.
     Variables
@@ -128,7 +128,6 @@ class Mark (db.Model):
         self.id_user = id_user
         self.id_product = id_product
         self.rating = rating
-
 
     def __str__(self):
         return f'<Mark id {self.id} is rating {self.rating} provided ' \
@@ -221,6 +220,16 @@ class OrderProduct(db.Model):
     orders = db.relationship('Orders')
     products = db.relationship('Products')
 
+    def __init__(self, id_order, id_product):
+        self.id_order = id_order
+        self.id_product = id_product
+
+    def __repr__(self):
+        return f'<Order_id: {self.id_order}, product_id: {self.id_product}>'
+
+    def __str__(self):
+        return f'<Order_id: {self.id_order}, product_id: {self.id_product}>'
+
 
 class Orders(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -235,7 +244,7 @@ class Orders(db.Model):
         self.uuid = str(uuid.uuid4())
 
     def __repr__(self):
-        return f'User_id: {self.id_user}, date: {self.order_date}'
+        return f'<User_id: {self.id_user}, date: {self.order_date}>'
 
     def __str__(self):
-        return f'User_id: {self.id_user}, date: {self.order_date}'
+        return f'<User_id: {self.id_user}, date: {self.order_date}>'

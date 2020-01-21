@@ -8,7 +8,7 @@ from flask import request
 from werkzeug.security import generate_password_hash
 
 from app import db, api
-from .models import ProductCategories, Users, Comments, Orders, Products, Cart
+from .models import ProductCategories, Users, Comments, Orders, Products, Cart, OrderProduct
 from .models import OrderArchive
 
 
@@ -378,8 +378,10 @@ class CartSchema(ModelSchema):
         model = Cart
         include_fk = True
 
+
 cart_schema = CartSchema()
 carts_schema = CartSchema(many=True)
+
 
 class CartsApi(Resource):
     def post(self):
@@ -430,5 +432,67 @@ class CartApi(Resource):
         db.session.commit()
         return cart_schema.dump(cart)
 
+
 api.add_resource(CartsApi, '/api/cart')
 api.add_resource(CartApi, '/api/cart/<ucid>')
+
+
+class OrderProductSchema(ModelSchema):
+    class Meta:
+        model = OrderProduct
+
+
+order_product_schema = OrderProductSchema()
+order_products_schema = OrderProductSchema(many=True)
+
+
+class OrderProductsApi(Resource):
+    def post(self):
+        json_data = request.json
+        try:
+            order_products = order_products_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        try:
+            db.session.add(order_products)
+            db.session.commit()
+        except IntegrityError:
+            return {"message": "Order exists"}, 409
+        return order_products_schema.dump(order_products)
+
+    def get(self):
+        order_products = OrderProduct.query.all()
+        return order_products_schema.dump(order_products)
+
+
+class OrderProductApi(Resource):
+    def get(self, id):
+        order_product = OrderProduct.query.filter_by(id_order=id).first()
+        if not order_product:
+            return {"message": "Order not found"}, 404
+        return order_product_schema.dump(order_product)
+
+    def put(self, id):
+        json_data = request.json
+        try:
+            new_order_product = order_product_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        order_product = OrderProduct.query.filter_by(id_order=id).first()
+        if not order_product:
+            return {"message": "Order not found"}, 404
+        order_product.name = new_order_product
+        db.session.commit()
+        return order_schema.dump(order_product)
+
+    def delete(self, id):
+        order_product = OrderProduct.query.filter_by(id_order=id).first()
+        if not order_product:
+            return {"message": "Order not found"}, 404
+        db.session.delete(order_product)
+        db.session.commit()
+        return "", 204
+
+
+api.add_resource(OrderProductsApi, '/api/order_products')
+api.add_resource(OrderProductApi, '/api/order_product/<id>')

@@ -29,7 +29,7 @@ DATABASE = {
 }
 
 """App config variables"""
-STATUS_ORDER = ['New order', 'Completed', 'Canceled']
+STATUS_ORDER = [('New order', 'New order'), ('Completed', 'Completed'), ('Canceled', 'Canceled')]
 
 NAME_MAX_LENGTH = 50
 PASSWORD_MAX_LENGTH = 50

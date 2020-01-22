@@ -71,4 +71,5 @@ class SetNewPasswordForm(FlaskForm):
 class UpdateOrderForm(FlaskForm):
     id_user = SelectField("User", choices=[], coerce=int, validators=[DataRequired()])
     id_product = SelectField("Product", choices=[], coerce=int, validators=[DataRequired()])
+    status = SelectField('Status', choices=[], validators=[DataRequired()])
     submit = SubmitField("Submit")

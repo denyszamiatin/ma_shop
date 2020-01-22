@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
     <h1 class="m-5">Edit order</h1>
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST">
         {{ form.csrf_token }}
         <div class="form-group">
         {{ form.id_user.label }}
@@ -18,6 +18,10 @@
         {% for error in form.id_product.errors %}
         <small style="color: red">{{ error }}</small>
         {% endfor %}
+        </div>
+        <div class="form-group">
+        {{ form.status.label }}
+        {{ form.status(class="form-control") }}
         </div>
         <div id="form-group mt-3">
         {{ form.submit(class="btn btn-primary") }}

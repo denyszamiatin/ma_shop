@@ -7,7 +7,7 @@ from flask import render_template, request, redirect, url_for, flash, g, session
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
 
-from app.config import DATABASE, basedir, ITEMS_PER_PAGE
+from app.config import DATABASE, basedir, ITEMS_PER_PAGE, STATUS_ORDER
 from cart import cart
 from comments import comments
 from errors import errors
@@ -544,6 +544,7 @@ def update_order(order_id):
                             Users.query.all()]
     form.id_product.choices = [(int(product.id), product.name) for product
                                in Products.query.filter_by(deleted="False").all()]
+    form.status.choices = STATUS_ORDER
     if request.method == "POST" and form.validate():
         try:
             form.populate_obj(order_user)

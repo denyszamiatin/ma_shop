@@ -135,14 +135,30 @@ class Mark(db.Model):
 
 
 class Comments(db.Model):
+    """
+        Class to create table "comments" in database.
+        Variables
+        ----------
+        id
+        body
+        comment_date
+        id_product
+        id_user
+        uuid_user
+        Methods
+        -------
+        __repr__
+        """
+    __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    comment_date = db.Column(db.Date, default=datetime.today().date())
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comment_date = db.Column(db.Date, default=datetime.today().date())
-    body = db.Column(db.Text)
 
     def __repr__(self):
-        return f"comment id <{self.id}>, body <{self.body}>"
+        return f"Comment id <{self.id}>: '<{self.body}>' provided for product {self.id_product} " \
+               f"by user {self.id_user} on {self.comment_date}"
 
 
 class Users(db.Model):
@@ -169,6 +185,7 @@ class Users(db.Model):
     uuid = db.Column(db.String(36), unique=True)
     confirmed = db.Column(db.Boolean, default=False)
     admin_role = db.Column(db.Boolean())
+    comments = db.relationship("Comments")
 
     def __init__(self, first_name, second_name, email, password, admin_role, confirmed):
         self.first_name = first_name
@@ -200,6 +217,7 @@ class Products(db.Model):
     added_to_cart = db.relationship("Cart")
     ordered = db.relationship("OrderProduct")
     marked = db.relationship("Mark")
+    commented = db.relationship("Comments")
 
     def __str__(self):
         return f"<Id: {self.id}, name: {self.name}, price: {self.price}>"

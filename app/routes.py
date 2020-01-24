@@ -70,21 +70,30 @@ def paging(items, page_template):
 @breadcrumb("Description")
 def show_product(product_id):
     form = MarkForm()
+    form_c = CommentsForm()
     raw_avg = db.session.query(func.avg(Mark.rating)).filter(Mark.id_product == product_id).first()
     avg_mark = round(raw_avg[0], 2) if raw_avg[0] is not None else 'No marks yet'
     number_of_marks = db.session.query(func.count(Mark.rating)).filter(Mark.id_product == product_id).first()[0]
     product = Products.query.filter_by(id=product_id).first()
     product_category = ProductCategories.query.get(product.category_id).name
-    comment = ""
-    if request.method == "POST":
-        comment = request.form.get("comment", "")
-        if 'user_id' not in session:
-            flash("Please log in for leaving your comment")
-            return redirect(url_for('login'))
-        else:
-            comments.add(g.db, product_id, session['id_user'], comment)
-    return render_template("product_description.html", product=product, comment=comment, avg_mark=avg_mark, form=form,
-                           number_of_marks=number_of_marks, product_category=product_category)
+    comments_list = db.session.query(Comments).join(Users).\
+        add_columns(Users.first_name, Comments.comment_date, Comments.comment_body).\
+        filter(Comments.id_product==product_id).all()
+    return render_template("product_description.html", product=product, comments_list=comments_list,
+                           avg_mark=avg_mark, form=form, number_of_marks=number_of_marks,
+                           product_category=product_category, form_c=form_c)
+
+
+@app.route('/product/add_comment/<string:product_id>', methods=("GET", "POST"))
+@login_required
+def add_comment(product_id):
+    form_c = CommentsForm()
+    new_comment = form_c.comment_body.data
+    comment_body = Comments(session['user_id'], product_id, new_comment)
+    db.session.add(comment_body)
+    db.session.commit()
+    flash("Your comment has been added successfully")
+    return redirect(f'/product/product_description/{product_id}')
 
 
 @app.route('/product/set_mark/<string:product_id>', methods=("GET", "POST"))
@@ -155,12 +164,6 @@ def news():
         .filter(Users.id == News.id_user).paginate(page, ITEMS_PER_PAGE, False)
     next_url, prev_url = paging(news, 'news')
     return render_template("news.html", news=news.items, next_url=next_url, prev_url=prev_url)
-
-
-@app.route('/comments_list/<product_id>', methods=("GET", "POST"))
-def comments_list(product_id):
-    all_comments = comments.get(g.db, product_id)
-    return render_template("comments_list.html", comments=all_comments)
 
 
 @app.route('/contacts')

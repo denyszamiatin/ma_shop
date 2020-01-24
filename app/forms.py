@@ -54,7 +54,7 @@ class MarkForm(FlaskForm):
 
 class CommentsForm(FlaskForm):
     """Form for leaving comments"""
-    comment = TextAreaField("Leave your comment please", validators=[DataRequired()])
+    comment_body = TextAreaField("Leave your comment please", validators=[DataRequired()])
     submit = SubmitField("Add comment")
 
 

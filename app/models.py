@@ -151,13 +151,18 @@ class Comments(db.Model):
         """
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
+    comment_body = db.Column(db.Text)
     comment_date = db.Column(db.Date, default=datetime.today().date())
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    def __init__(self, id_user, id_product, comment_body):
+        self.id_user = id_user
+        self.id_product = id_product
+        self.comment_body = comment_body
+
     def __repr__(self):
-        return f"Comment id <{self.id}>: '<{self.body}>' provided for product {self.id_product} " \
+        return f"Comment id <{self.id}>: '<{self.comment_body}>' provided for product {self.id_product} " \
                f"by user {self.id_user} on {self.comment_date}"
 
 

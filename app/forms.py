@@ -73,3 +73,10 @@ class UpdateOrderForm(FlaskForm):
     id_product = SelectField("Product", choices=[], coerce=int, validators=[DataRequired()])
     status = SelectField('Status', choices=[], validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+class ContactUsForm(FlaskForm):
+    sender = StringField("Name", validators=[DataRequired()])
+    e_mail = EmailField("E-mail", validators=[DataRequired(), Email()])
+    message = TextAreaField("Message", validators=[DataRequired()])
+    submit = SubmitField("Send")

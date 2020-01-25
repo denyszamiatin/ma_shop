@@ -1,23 +1,23 @@
-
 {% extends 'index.html' %}
 {% block title %} MA {{ product.name }} {% endblock %}
 {% block content %}
 
 <div class="container">
+
     {% with messages = get_flashed_messages() %}
-    {% if messages%}
-    {% for message in messages %}
-    {% if message == "Your mark has been added successfully" %}
-    <div class="container">
-        <span class="badge badge-pill badge-success">{{message}}</span>
-    </div>
-    {%else%}
-    <div class="container">
-        <span class="badge badge-pill badge-primary">{{message}}</span>
-    </div>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
+        {% if messages%}
+            {% for message in messages %}
+                {% if "successfully" in message %}
+                    <div class="container">
+                        <p class="alert alert-success">{{message}}</p>
+                    </div>
+                {%else%}
+                    <div class="container">
+                        <p class="alert alert-warning">{{message}}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     {% endwith %}
 
     <div class="container">
@@ -49,7 +49,7 @@
                 <td>
                     <img class="img-responsive" src="/static/img/{{ product.id }}.jpg" alt="{{ product.name }}" width="480" height="280">
                 </td>
-                <td/>
+                <td>
                         <h5>Product mark (based on {{ number_of_marks }} ratings):</h5>
                             <p class="badge badge-primary">{{ avg_mark }}</p>
                         <h5>Description:</h5>
@@ -58,7 +58,7 @@
                             </p>
                        <!-- COMMENT_LIST-->
                         <h5>Comments:</h5>
-                        <div class="card table-responsive smooth-scroll" width="480" style="width:100%; height: 100px; overflow-y: scroll;">
+                        <div class="form-control smooth-scroll" style="height: 100px; overflow-y: scroll;">
                             {% for item in comments_list %}
                                 <div class="border-top">
                                     <p><i>{{item.first_name}} on {{item.comment_date}}:</i></p>
@@ -86,7 +86,7 @@
                                         {% endfor %}
                                     </tr>
                                     <tr>
-                                        <td colspan="5">{{ form.submit }}
+                                        <td colspan="5">{{ form.submit(class="btn btn-dark pull-right") }}
                                     </tr>
                                 </table>
                             </form>
@@ -99,8 +99,12 @@
                         <tr>
                             {% if 'user_id' in session %}
                             <form method="POST" action="{{ url_for('add_comment', product_id=product.id)}}">
-                                <td>{{form_c.comment_body(placeholder="Please type you comment here")}} </td>
-                                <td><div class="container">{{form_c.submit}}</div></td>
+                                <td>
+                                    {{form_c.comment_body(placeholder="Please type you comment here", class="form-control")}}
+                                </td>
+                                <td>
+                                    {{form_c.submit(class="btn btn-dark pull-right")}}
+                                </td>
                             </form>
                             {% endif %}
                         </tr>

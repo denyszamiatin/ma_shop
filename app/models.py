@@ -151,7 +151,7 @@ class Comments(db.Model):
         """
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
-    comment_body = db.Column(db.Text)
+    comment_body = db.Column(db.Text, nullable=False)
     comment_date = db.Column(db.Date, default=datetime.today().date())
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -271,3 +271,34 @@ class Orders(db.Model):
 
     def __str__(self):
         return f'<User_id: {self.id_user}, date: {self.order_date}>'
+
+
+class Messages(db.Model):
+    """
+       Class to create table "messages" in database.
+       Variables
+       ----------
+       id
+       sender
+       e-mail
+       message
+       time_sent
+       Methods
+       -------
+       __str__
+       """
+    __tablename__ = "messages"
+    id = db.Column(db.Integer, primary_key=True)
+    sender = db.Column(db.String(1000), nullable=False)
+    e_mail = db.Column(db.String(1000), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    time_sent = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, sender, e_mail, message):
+        self.sender = sender
+        self.e_mail = e_mail
+        self.message = message
+
+    def __str__(self):
+        return f'Message {self.id}: "{self.message}" received from {self.sender} ({self.e_mail}) on' \
+               f' {self.time_sent}'

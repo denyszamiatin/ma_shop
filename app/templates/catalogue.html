@@ -43,7 +43,7 @@
                 {% if "user_id" in session %}
                     <div class="col-sm text-center" style="margin-top:10px;">
                     <form method="POST" action="/product/add_to_cart/{{ product.id }}">
-                    <button type="submit" class="btn btn-secondary">Add to cart<i class='fas fa-cart-plus'></i></button>
+                    <button type="submit" class="btn btn-success">Add to cart<i class='fas fa-cart-plus'></i></button>
                     </form>
                     </div>
                 {% else %}

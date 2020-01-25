@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-
+from datetime import datetime
 import psycopg2
 from PIL import Image
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file, abort
@@ -8,16 +8,18 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
 
 from app.config import DATABASE, basedir, ITEMS_PER_PAGE, STATUS_ORDER
-from cart import cart
-from comments import comments
 from errors import errors
 from products import products
 from users import validation
-from .forms import *
-from .models import *
+from .forms import AddProductForm, CommentsForm, CategoryForm, MarkForm, NewsForm, RestorePasswordForm, \
+    SetNewPasswordForm, UpdateOrderForm, UserLoginForm, UserRegistrationForm, ContactUsForm
+from .models import OrderArchive, ProductCategories, Cart, News, Mark, Comments, Users, Products, OrderProduct, Orders, \
+    Messages, app, check_password_hash, db
 from .login import login_required, admin_role_required
 from .breadcrumb import breadcrumb
-from .api import *
+from .api import order_archive_schema, orders_archive_schema, order_product_schema, order_products_schema, order_schema, \
+    orders_schema, cart_schema, carts_schema, comment_schema, comments_schema, product_category_schema, \
+    product_categories_schema, product_schema, products_schema, user_schema, users_schema
 from .send_mail import send_mail
 from .registration_token import generate_confirmation_token, confirm_token
 
@@ -166,10 +168,25 @@ def news():
     return render_template("news.html", news=news.items, next_url=next_url, prev_url=prev_url)
 
 
-@app.route('/contacts')
+@app.route('/contacts', methods=("GET", "POST"))
 @breadcrumb('Contacts')
-def contacts():
-    return render_template("contacts.html")
+def messaging():
+    form = ContactUsForm()
+    if request.method == "POST":
+        new_message = form.message.data
+        sender = form.sender.data
+        e_mail = form.e_mail.data
+        message = Messages(sender, e_mail, new_message)
+        db.session.add(message)
+        db.session.commit()
+        return redirect(url_for("message_sent"))
+    return render_template("contacts.html", form=form)
+
+
+@app.route('/contacts/message_sent')
+@breadcrumb('Message sent')
+def message_sent():
+    return render_template("message_sent.html")
 
 
 @app.route('/logout')
@@ -228,7 +245,7 @@ def registration():
                 db.session.add(user)
                 db.session.commit()
             except IntegrityError:
-                flash(f"User with email {email} already exist")
+                flash(f"User with email {email} already exists")
             token = generate_confirmation_token(email)
             confirm_url = app.config['SITE_URL'] + url_for('confirmation', token=token)
             subject = "Please confirm your email"
@@ -506,6 +523,7 @@ def inject_email():
 
 
 @app.route('/cart/create_order', methods=("GET", "POST"))
+@breadcrumb('Order created')
 @login_required
 def create_order():
     new_order = []

@@ -560,6 +560,7 @@ def manage_orders():
 def update_order(order_id):
     order_user = Orders.query.filter_by(id=order_id).first()
     order_product = OrderProduct.query.filter_by(id_order=order_id).first()
+    order_products = OrderProduct.query.filter_by(id_order=order_id).all()
     form = UpdateOrderForm()
     form.id_user.choices = [(int(user.id), " ".join([user.first_name, user.second_name])) for user in
                             Users.query.all()]
@@ -571,11 +572,27 @@ def update_order(order_id):
             form.populate_obj(order_user)
             form.populate_obj(order_product)
             db.session.commit()
+            if form.status.data == 'Completed':
+                try:
+                    create_archive_order(order_user, session["user_id"], order_id, order_products)
+                except IntegrityError:
+                    flash("Order is not archived!")
             flash("Order edited")
         except IntegrityError:
             flash('Order was not edited!!')
         return redirect(url_for('manage_orders'))
     return render_template("update_order.html", form=form)
+
+
+def create_archive_order(order, order_user, order_id, order_products):
+    if OrderArchive.query.filter_by(id_order=order_id).first() is None:
+        order_json = order_schema.dump(order)
+        products_json = products_schema.dump(order_products)
+        archive_order = OrderArchive(id_user=order_user, id_order=order_id,
+                                     order_information=order_json, order_product=products_json)
+        db.session.add(archive_order)
+        db.session.commit()
+        flash('Order archived')
 
 
 @app.route("/set_new_password/<token>", methods=("GET", "POST"))

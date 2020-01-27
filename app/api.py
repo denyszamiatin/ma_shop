@@ -17,7 +17,7 @@ class OrderSchema(ModelSchema):
         model = Orders
 
 
-order_schema = OrderSchema
+order_schema = OrderSchema()
 orders_schema = OrderSchema(many=True)
 
 

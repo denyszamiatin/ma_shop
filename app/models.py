@@ -11,9 +11,9 @@ class OrderArchive(db.Model):
     __tablename__ = "order_archive"
     id = db.Column(db.Integer, primary_key=True)
     id_user = db.Column(db.Integer, db.ForeignKey('users.id'))
-    id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
-    id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
-    price = db.Column(db.Numeric)
+    id_order = db.Column(db.Integer)
+    order_information = db.Column(db.JSON)
+    order_product = db.Column(db.JSON)
     date_archive = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __str__(self):

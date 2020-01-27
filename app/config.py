@@ -20,14 +20,6 @@ class Config(object):
     ADMIN_EMAIL = "admin@ma_shop.org"
 
 
-DATABASE = {
-    "database": "ma_shop",
-    "user": "ma_admin",
-    "password": env.str('OLD_DATABASE_PASS'),
-    "host": "localhost",
-    "port": 5432
-}
-
 """App config variables"""
 STATUS_ORDER = [('New order', 'New order'), ('Completed', 'Completed'), ('Canceled', 'Canceled')]
 

@@ -1,16 +1,12 @@
 import io
 from pathlib import Path
 from datetime import datetime
-import psycopg2
 from PIL import Image
 from flask import render_template, request, redirect, url_for, flash, g, session, send_file, abort
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
-
-from app.config import DATABASE, basedir, ITEMS_PER_PAGE, STATUS_ORDER
-from errors import errors
-from products import products
-from users import validation
+from app.config import basedir, ITEMS_PER_PAGE, STATUS_ORDER
+from . import validation
 from .forms import AddProductForm, CommentsForm, CategoryForm, MarkForm, NewsForm, RestorePasswordForm, \
     SetNewPasswordForm, UpdateOrderForm, UserLoginForm, UserRegistrationForm, ContactUsForm
 from .models import OrderArchive, ProductCategories, Cart, News, Mark, Comments, Users, Products, OrderProduct, Orders, \
@@ -35,23 +31,11 @@ def save_image_and_thumbnail(image_data, product_id):
     rgb_im.save(Path(basedir, app.config['UPLOAD_FOLDER'], thumbnail_name))
 
 
-@app.before_request
-def get_db():
-    if not hasattr(g, 'db'):
-        g.db = psycopg2.connect(**DATABASE)
-
-
 @app.teardown_request
 def close_db(error):
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
-
-
-@app.route('/image/<ln>')
-def image(ln):
-    sn = products.get_product_image(g.db, ln)
-    return send_file(io.BytesIO(sn), mimetype='image/jpeg')
 
 
 @app.route('/')
@@ -466,14 +450,6 @@ def edit_news_id(news_id):
     return render_template('edit_news_id.html', post=post, form=form)
 
 
-@app.route("/admin/delete_product", methods=("GET", "POST"))
-@login_required
-@admin_role_required
-def delete_product():
-    all_products = products.get_all(g.db)
-    return render_template("delete_product.html", products=all_products)
-
-
 @app.route("/admin/delete_confirm/<product_id>", methods=("GET", "POST"))
 @login_required
 @admin_role_required
@@ -486,7 +462,6 @@ def delete_confirm(product_id):
 @login_required
 @admin_role_required
 def delete(product_id):
-    # remove_images(f'{product_id}.jpg', f'{product_id}_thumbnail.jpg')
     product = Products.query.filter_by(id=product_id, deleted=False).first()
     product.deleted = True
     db.session.commit()

@@ -168,13 +168,13 @@ class UserApi(Resource):
     def get(self, uuid):
         user = Users.query.filter_by(uuid=uuid).first()
         if not user:
-            return {"massage": "User not found"}, 404
+            return {"message": "User not found"}, 404
         return user_schema.dump(user)
 
     def delete(self, uuid):
         user = Users.query.filter_by(uuid=uuid).first()
         if not user:
-            return {"massage": "User not found"}, 404
+            return {"message": "User not found"}, 404
         db.session.delete(user)
         db.session.commit()
         return "", 204
@@ -183,7 +183,7 @@ class UserApi(Resource):
         json_data = request.json
         user = Users.query.filter_by(uuid=uuid).first()
         if not user:
-            return {"massage": "User not found"}, 404
+            return {"message": "User not found"}, 404
         try:
             updated_user = user_schema.load(json_data, session=db.session)
             user.first_name = updated_user.first_name
@@ -299,7 +299,7 @@ class OrderArchiveApi(Resource):
     def delete(self, uuid):
         order_archive = OrderArchive.query.filter_by(uuid=uuid).first()
         if not order_archive:
-            return {"massage": "No such Order in Archive"}, 404
+            return {"message": "No such Order in Archive"}, 404
         db.session.delete(order_archive)
         db.session.commit()
         return "", 204

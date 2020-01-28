@@ -8,7 +8,7 @@ from flask import request
 from werkzeug.security import generate_password_hash
 
 from app import db, api
-from .models import ProductCategories, Users, Comments, Orders, Products, Cart, OrderProduct
+from .models import ProductCategories, Users, Comments, Orders, Products, Cart, OrderProduct, Mark
 from .models import OrderArchive
 
 
@@ -77,8 +77,10 @@ class ProductCategorySchema(ModelSchema):
     class Meta:
         model = ProductCategories
 
+
 product_category_schema = ProductCategorySchema()
 product_categories_schema = ProductCategorySchema(many=True)
+
 
 class ProductCategoriesApi(Resource):
     def get(self):
@@ -126,6 +128,7 @@ class ProductCategoryApi(Resource):
         category.name = new_category.name
         db.session.commit()
         return product_category_schema.dump(category)
+
 
 api.add_resource(ProductCategoriesApi, '/api/categories')
 api.add_resource(ProductCategoryApi, '/api/category/<uuid>')
@@ -496,3 +499,66 @@ class OrderProductApi(Resource):
 
 api.add_resource(OrderProductsApi, '/api/order_products')
 api.add_resource(OrderProductApi, '/api/order_product/<id>')
+
+
+class MarkSchema(ModelSchema):
+    class Meta:
+        model = Mark
+
+
+mark_schema = MarkSchema()
+marks_schema = MarkSchema(many=True)
+
+
+class MarksApi(Resource):
+    def get(self):
+        marks = Mark.query.all()
+        return marks_schema.dump(marks)
+
+    def post(self):
+        json_data = request.json
+        try:
+            mark = mark_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        try:
+            db.session.add(mark)
+            db.session.commit()
+        except IntegrityError:
+            return {"message": "Mark exists"}, 409
+        return mark_schema.dump(mark)
+
+
+class MarkApi(Resource):
+    def get(self, id):
+        mark = Mark.query.filter_by(id=id).first()
+        if not mark:
+            return {"message": "Mark not found"}, 404
+        return mark_schema.dump(mark)
+
+    def delete(self, id):
+        mark = Mark.query.filter_by(id=id).first()
+        if not mark:
+            return {"message": "mark not found"}, 404
+        db.session.delete(mark)
+        db.session.commit()
+        return "", 204
+
+    def put(self, id):
+        json_data = request.json
+        try:
+            new_mark = mark_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        mark = Mark.query.filter_by(id=id).first()
+        if not mark:
+            return {"message": "Mark not found"}, 404
+
+        mark.rating = new_mark.rating
+        db.session.commit()
+        return mark_schema.dump(mark)
+
+
+api.add_resource(MarksApi, '/api/mark')
+api.add_resource(MarkApi, '/api/mark/<id>')
+

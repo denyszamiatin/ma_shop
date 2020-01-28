@@ -133,6 +133,10 @@ class Mark(db.Model):
         return f'<Mark id {self.id} is rating {self.rating} provided ' \
                f'for product {self.id_product} by user {self.id_user} on {self.mark_date}>'
 
+    def __repr__(self):
+        return f'<Mark id {self.id} is rating {self.rating} provided ' \
+               f'for product {self.id_product} by user {self.id_user} on {self.mark_date}>'
+
 
 class Comments(db.Model):
     """

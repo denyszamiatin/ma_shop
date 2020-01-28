@@ -1,15 +1,12 @@
 from sqlalchemy.exc import IntegrityError
-
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import Schema, fields
 from marshmallow.exceptions import ValidationError
 from flask_restful import Resource
 from flask import request
 from werkzeug.security import generate_password_hash
-
 from app import db, api
-from .models import ProductCategories, Users, Comments, Orders, Products, Cart, OrderProduct, Mark
-from .models import OrderArchive
+from .models import ProductCategories, Users, Comments, Orders, Products, Cart, OrderProduct, Mark, OrderArchive, News
 
 
 class OrderSchema(ModelSchema):
@@ -562,3 +559,59 @@ class MarkApi(Resource):
 api.add_resource(MarksApi, '/api/mark')
 api.add_resource(MarkApi, '/api/mark/<id>')
 
+
+class NewsSchema(ModelSchema):
+    class Meta:
+        model = News
+
+
+news_single_schema = NewsSchema()
+news_plural_schema = NewsSchema(many=True)
+
+
+class NewsPluralApi(Resource):
+    def post(self):
+        json_data = request.json
+        try:
+            news_plural = news_plural_schema.load(json_data, session=db.session)
+        except ValidationError as error:
+            return {"message": str(error)}, 422
+        try:
+            db.session.add(news_plural)
+            db.session.commit()
+        except IntegrityError:
+            return {"message": "News exists"}, 409
+        return news_plural_schema.dump(news_plural)
+
+    def get(self):
+        news_plural = News.query.all()
+        return news_plural_schema.dump(news_plural)
+
+
+class NewsSingleApi(Resource):
+    def get(self, id):
+        news_single = News.filter_by(id=id).first()
+        if not news_single:
+            return {"message": "News not found"}, 404
+        return news_single_schema.dump(news_single)
+
+    def delete(self, id):
+        news_single = News.filter_by(id=id).first()
+        if not news_single:
+            return {"message": "News not found"}, 404
+        db.session.delete(news_single)
+        db.session.commit()
+        return "", 204
+
+    def put(self, id):
+        json_data = request.json
+        news_single = News.filter_by(id=id).first()
+        if not news_single:
+            return {"message": "News not found"}, 404
+        news_single.body = json_data['body']
+        db.session.commit()
+        return news_single_schema.dump(news_single)
+
+
+api.add_resource(NewsPluralApi, '/api/news')
+api.add_resource(NewsSingleApi, '/api/news/<id>')

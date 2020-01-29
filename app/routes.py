@@ -12,7 +12,6 @@ from .forms import AddProductForm, CommentsForm, CategoryForm, MarkForm, NewsFor
 from .models import OrderArchive, ProductCategories, Cart, News, Mark, Comments, Users, Products, OrderProduct, Orders, \
     Messages, app, check_password_hash, db
 from .login import login_required, admin_role_required
-from .breadcrumb import breadcrumb
 from .api import order_archive_schema, orders_archive_schema, order_product_schema, order_products_schema, order_schema, \
     orders_schema, cart_schema, carts_schema, comment_schema, comments_schema, product_category_schema, \
     product_categories_schema, product_schema, products_schema, user_schema, users_schema
@@ -39,7 +38,6 @@ def close_db(error):
 
 
 @app.route('/')
-@breadcrumb('Home')
 def index():
     return render_template("index.html")
 
@@ -53,7 +51,6 @@ def paging(items, page_template):
 
 
 @app.route('/product/product_description/<product_id>', methods=("GET", "POST"))
-@breadcrumb("Description")
 def show_product(product_id):
     form = MarkForm()
     form_c = CommentsForm()
@@ -112,7 +109,6 @@ def add_to_cart(product_id):
 
 @app.route('/cart', methods=("GET", "POST"))
 @login_required
-@breadcrumb('Cart')
 def cart_call():
     cart_items = {}
     items_qty = 0
@@ -141,7 +137,6 @@ def cart_call():
 
 
 @app.route('/news')
-@breadcrumb('News')
 def news():
     page = request.args.get('page', 1, type=int)
     news = db.session.query(News) \
@@ -153,7 +148,6 @@ def news():
 
 
 @app.route('/contacts', methods=("GET", "POST"))
-@breadcrumb('Contacts')
 def messaging():
     form = ContactUsForm()
     if request.method == "POST":
@@ -168,7 +162,6 @@ def messaging():
 
 
 @app.route('/contacts/message_sent')
-@breadcrumb('Message sent')
 def message_sent():
     return render_template("message_sent.html")
 
@@ -184,7 +177,6 @@ def logout():
 
 
 @app.route('/login', methods=("GET", "POST"))
-@breadcrumb('Login')
 def login():
     if 'user_id' in session:
         return redirect(url_for('index'))
@@ -209,7 +201,6 @@ def login():
 
 
 @app.route('/registration', methods=("GET", "POST"))
-@breadcrumb('Registration')
 def registration():
     if 'user_id' in session:
         return redirect(url_for('index'))
@@ -306,7 +297,6 @@ def add_product():
 
 @app.route('/catalogue/<category>', methods=("GET", "POST"))
 @app.route('/catalogue', methods=("GET", "POST"))
-@breadcrumb('Catalogue')
 def get_catalogue(category="all"):
     categories = ProductCategories.query.all()
     existing_categories = [str(category.id) for category in categories]
@@ -498,7 +488,6 @@ def inject_email():
 
 
 @app.route('/cart/create_order', methods=("GET", "POST"))
-@breadcrumb('Order created')
 @login_required
 def create_order():
     new_order = []

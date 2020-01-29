@@ -30,16 +30,6 @@
     </div>
   </div>
 </nav>
-<!-- Breadcrumb -->
-    <div class="container breadcrumb">
-        <p>Breadcrumbs:
-            {% for crumb in g.breadcrumbs %}
-                <a href="{{ crumb.path }}">{{ crumb.title }}</a>
-                {% if not loop.last %}&raquo;{% endif %}
-            {% endfor %}
-        </p>
-    </div>
-     <!-- /Breadcrumb -->
 {% endblock %}}
 
 {% block content %}

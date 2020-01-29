@@ -20,6 +20,14 @@
         {% endif %}
     {% endwith %}
 
+    <div class="container breadcrumb">
+        <p>Breadcrumbs:
+            <a href="/">Home</a> &raquo;
+            <a href="/catalogue/{{ product.category_id }}">{{ product_category }}</a> &raquo;
+            <a href="/product/product_description/{{ product.id }}">{{ product.name }}</a>
+        </p>
+    </div>
+
     <div class="container">
         <table>
             <tr>

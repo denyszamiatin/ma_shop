@@ -211,6 +211,9 @@ class Users(db.Model):
     def __str__(self):
         return f"<User id: {self.id}>"
 
+    def get_full_name(self):
+        return f'{self.first_name} {self.second_name}'
+
 
 class Products(db.Model):
     """
@@ -242,9 +245,9 @@ class OrderProduct(db.Model):
     products - product id
     """
     id = db.Column(db.Integer, primary_key=True)
-    id_order = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    id_order = db.Column(db.Integer, db.ForeignKey('orders.id', ondelete='CASCADE'))
     id_product = db.Column(db.Integer, db.ForeignKey('products.id'))
-    orders = db.relationship('Orders')
+    orders = db.relationship('Orders', cascade="all, delete")
     products = db.relationship('Products')
 
     def __init__(self, id_order, id_product):

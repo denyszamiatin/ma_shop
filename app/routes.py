@@ -500,7 +500,7 @@ def create_order():
         try:
             send_mail(user_order.users.email, "Ma shop", f"Order #{user_order.id} was created")
         except ConnectionRefusedError as error:
-            print(error)
+            flash('Something wrong!')
         for product_id in all_ids:
             product_order = OrderProduct(id_order=user_order.id, id_product=product_id)
             db.session.add(product_order)
@@ -526,8 +526,7 @@ def update_order(order_id):
     order_product = OrderProduct.query.filter_by(id_order=order_id).first()
     order_products = OrderProduct.query.filter_by(id_order=order_id).all()
     form = UpdateOrderForm()
-    form.id_user.choices = [(int(user.id), " ".join([user.first_name, user.second_name])) for user in
-                            Users.query.all()]
+    form.id_user.choices = [(int(user.id), user.get_full_name()) for user in Users.query.all()]
     form.id_product.choices = [(int(product.id), product.name) for product
                                in Products.query.filter_by(deleted="False").all()]
     form.status.choices = STATUS_ORDER
@@ -539,6 +538,8 @@ def update_order(order_id):
             if form.status.data == 'Completed':
                 try:
                     create_archive_order(order_user, session["user_id"], order_id, order_products)
+                    Orders.query.filter_by(id=order_id).delete()
+                    db.session.commit()
                 except IntegrityError:
                     flash("Order is not archived!")
             flash("Order edited")
@@ -549,14 +550,12 @@ def update_order(order_id):
 
 
 def create_archive_order(order, order_user, order_id, order_products):
-    if OrderArchive.query.filter_by(id_order=order_id).first() is None:
-        order_json = order_schema.dump(order)
-        products_json = products_schema.dump(order_products)
-        archive_order = OrderArchive(id_user=order_user, id_order=order_id,
-                                     order_information=order_json, order_product=products_json)
-        db.session.add(archive_order)
-        db.session.commit()
-        flash('Order archived')
+    order_json = order_schema.dump(order)
+    products_json = products_schema.dump(order_products)
+    archive_order = OrderArchive(id_user=order_user, id_order=order_id,
+                                 order_information=order_json, order_product=products_json)
+    db.session.add(archive_order)
+    db.session.commit()
 
 
 @app.route("/set_new_password/<token>", methods=("GET", "POST"))
